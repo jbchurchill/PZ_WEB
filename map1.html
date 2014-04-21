@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+		<title>Testing - https://developers.arcgis.com/javascript/jstutorials/</title>
+    <link rel="stylesheet" href="http://js.arcgis.com/3.9/js/esri/css/esri.css">
+    <link rel="stylesheet" href="http://js.arcgis.com/3.9/js/dojo/dijit/themes/tundra/claro.css">
+  <script src="http://js.arcgis.com/3.9/"></script>
+  <script>
+    require(["esri/map", "dojo/domReady!"], function(Map) {
+      // code to create the map and add a basemap will go here
+      map = new Map("mapDiv", {
+        center: [-79.13, 39.463],
+        zoom: 11,
+        basemap: "streets" 
+      })
+    });
+  </script>
+  <style>
+    html, body, #mapDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+    }
+  </style>
+	</head>
+	<body class="claro">
+	   <div id="mapDiv"></div>
+	</body>
+</html>

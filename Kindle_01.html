@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Create a Map</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <link rel="stylesheet" href="http://js.arcgis.com/3.9/js/dojo/dijit/themes/claro/claro.css">
+  <link rel="stylesheet" href="http://js.arcgis.com/3.9/js/esri/css/esri.css">
+  <style>
+    html, body, #mapDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+    }
+  </style>
+  
+  <script src="http://js.arcgis.com/3.9/"></script>
+  <script>
+    require(["esri/map", "esri/layers/ArcGISDynamicMapServiceLayer", "dojo/domReady!", "esri/arcgis/utils"],
+    function(Map, ArcGISDynamicMapServiceLayer) {
+      map = new Map("mapDiv", {
+        basemap: "topo",
+        // center: [-122.45, 37.75], // long, lat
+        center: [-79.5, 39.5],
+        zoom: 10,
+        sliderStyle: "large" // small
+      })
+      // var operationalLayer = new ArcGISDynamicMapServiceLayer("http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Demographics/ESRI_Population_World/MapServer", {"opacity":0.5});
+      // var operationalLayer = new ArcGISDynamicMapServiceLayer("https://gis.sanantonio.gov/ArcGIS/rest/services/Demographics/MapServer", {"slider":false, "nav":true, "opacity":0.5, "imageParameters":imageParameters});
+      // operationLayer.setVisibleLayers([0,3])
+      // THIS NEXT LINE DOESN'T SEEM TO WORK
+      var operationalLayer = new ArcGISDynamicMapServiceLayer("http://192.168.100.35:6080/arcgis/rest/services/Zoning/MapServer", {"opacity":0.5});
+      map.addLayer(operationalLayer);
+    });
+  </script>
+</head>
+<body class="claro">
+  <div id="mapDiv"></div>
+</body>
+</html>

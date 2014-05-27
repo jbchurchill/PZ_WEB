@@ -42,21 +42,34 @@
           infoWindow: popup
         });
         
-        var landBaseLayer = new ArcGISDynamicMapServiceLayer("http://192.168.100.35:6080/arcgis/rest/services/Zoning/MapServer",{opacity:.55});
+        var landBaseLayer = new ArcGISDynamicMapServiceLayer("http://192.168.100.35:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",{opacity:.55});
         map.addLayer(landBaseLayer);
     
     map.on("click", executeIdentifyTask);
-      identifyTask = new IdentifyTask("http://192.168.100.35:6080/arcgis/rest/services/Zoning/MapServer");
+      identifyTask = new IdentifyTask("http://192.168.100.35:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
        
         identifyParams = new IdentifyParameters();
         identifyParams.tolerance = 3;
         identifyParams.returnGeometry = true;
-        identifyParams.layerIds = [0,2];
+        identifyParams.layerIds = [1, 2, 3, 4, 5, 6, 10];
         identifyParams.layerOption = IdentifyParameters.LAYER_OPTION_ALL;
         identifyParams.width  = map.width;
         identifyParams.height = map.height;
     });
-      
+
+      // THIS FUNCTION CURRENTLY DOES NOTHING      
+      function getLU(lucode) {
+        switch(lucode){
+          case 1:
+            return "Single Family Residence";
+          case 2:
+            return "Mobile Homes (with additions)"
+          case 3:
+            return "Multi-Family Residence (duplex and above)"
+          default:
+            return "<NULL>"
+        }
+      }
      
       function executeIdentifyTask(evt) {
         identifyParams.geometry = evt.mapPoint;
@@ -70,15 +83,34 @@
           return dojo.map(response, function(result) {
             var feature = result.feature;
             feature.attributes.layerName = result.layerName;
-            if(result.layerName === 'Zoning'){
+            // alert(result.layerName);
+            if(result.layerName === 'County_Zoning_Layer'){
               console.log(feature.attributes.GENZONE);
-              var template = new esri.InfoTemplate("", "${GENZONE} <br/> Land Use Code: ${FLU}");
+              var template = new esri.InfoTemplate("", "<div style=\"font-weight: bold; font-size: larger;\">Layer: County Zoning Layer </div><br /><br /> ${GENZONE} <br/> Land Use Code: ${FLU}");
               feature.setInfoTemplate(template);
             }
             // need to replace Building Footprints with an actual existing layer in our Service
             // so far zoning is the only layer in the service.
-            else if (result.layerName === 'Building Footprints'){
-              var template = new esri.InfoTemplate("", "Parcel ID: ${PARCELID}");
+            else if (result.layerName === 'addresspoints'){
+              var template = new esri.InfoTemplate("", 
+              "<div style=\"font-weight: bold; font-size: larger;\">Layer: Address Points</div><br /> Address: ${ADDRESS} <br /><br /> City: ${CITY} <br /> Zip: ${ZIP_CODE} <br /> ESN: ${ESN} <br /> Community: ${COMMUNITY} <br /> Map: ${MAP} <br /> Parcel: ${PARCEL} <br />"
+              + "Lot: ${LOT} <br /> Tract: ${TRACT} <br /> LU: ${LU} <br /> Key date: ${KEYDATE} <br /> Rental: ${RENTAL} <br />"
+              + "Rental Co.: ${RENTAL_CO} <br /> Tax Account: ${TAX_ACCOUNT_ID} <br /> Owner: ${OWNER_FIRST_NAME} ${OWNER_LAST_NAME} <br />");
+              feature.setInfoTemplate(template);
+            } else if (result.layerName === 'Critical_Facilities') {
+              var template = new esri.InfoTemplate("",
+              "<div style=\"font-weight: bold; font-size: larger;\">Layer: Critical Facilities </div><br /><br /> Land Use: ${LU} <br /> Address: ${ADDRESS} ${ROADNAME} <br /> Last Name: ${LASTNAME} <br /> ");
+              feature.setInfoTemplate(template);
+            } else if (result.layerName === 'celltowers') {
+              var content = "Data Source: ${SOURCE_OF_DATA} <br />";
+              // I AM TRYING TO DO THIS CONDITIONALLY BUT THIS CAUSES AN ERROR
+              // if (${SOURCE_OF_DATA}) {
+                // content+="Data Source: ${SOURCE_OF_DATA} <br />";
+              // }
+              var template = new esri.InfoTemplate("",
+              "<div style=\"font-weight: bold; font-size: larger;\">Layer: Cell Towers</div><br /><br /> Address: ${TOWER_ADDRESS} <br /> "
+              + "Community: ${TOWER_COMMUNITY} <br /> Ground Elev: ${GROUND_ELEV} ${HEIGHT_ELEV_UNITS}<br /> Tower Ht: ${TOWER_HEIGHT} ${HEIGHT_ELEV_UNITS} <br />"
+              + "Comments: ${COMMENTS} <br />" + content);
               feature.setInfoTemplate(template);
             }
             return feature;
@@ -102,5 +134,6 @@
   <body>
     <div id="mapDiv"></div>
   </body>
+  
 
 </html>

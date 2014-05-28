@@ -31,6 +31,10 @@
         padding-top: 10px;
         padding-left: 5px;
       }
+      .sectionhead {
+        font-weight: bold;
+        font-size: larger;
+      }
     </style>
 
     <script>var dojoConfig = { parseOnLoad: true };</script>
@@ -73,11 +77,11 @@
     
     map.on("click", executeIdentifyTask);
       identifyTask = new IdentifyTask("http://192.168.100.35:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
-       
+      
         identifyParams = new IdentifyParameters();
         identifyParams.tolerance = 3;
         identifyParams.returnGeometry = true;
-        identifyParams.layerIds = [1, 2, 3, 4, 5, 6, 10];
+        // identifyParams.layerIds = [1, 2, 3, 4, 5, 6, 8, 10];
         identifyParams.layerOption = IdentifyParameters.LAYER_OPTION_ALL;
         identifyParams.width  = map.width;
         identifyParams.height = map.height;
@@ -87,6 +91,15 @@
         identifyParams.geometry = evt.mapPoint;
         identifyParams.mapExtent = map.extent;
        
+        var ZoningIsOn = document.getElementById("ZoneOn").checked;
+        if (ZoningIsOn) {
+          // alert("on");
+          identifyParams.layerIds = [1, 2, 3, 4, 5, 6, 10];
+        } else {
+          // alert("off");
+          identifyParams.layerIds = [1, 2, 3, 4, 5, 6, 8, 10];
+        }  
+        
         var deferred = identifyTask.execute(identifyParams);
 
         deferred.addCallback(function(response) {     
@@ -95,34 +108,53 @@
           return dojo.map(response, function(result) {
             var feature = result.feature;
             feature.attributes.layerName = result.layerName;
-            // alert(result.layerName);
+            
             if(result.layerName === 'County_Zoning_Layer'){
               console.log(feature.attributes.GENZONE);
-              var template = new esri.InfoTemplate("", "<div style=\"font-weight: bold; font-size: larger;\">Layer: County Zoning Layer </div><br /><br /> ${GENZONE} <br/> Land Use Code: ${FLU}");
+              var template = new esri.InfoTemplate("", "<span class=\"sectionhead\">Layer: County Zoning Layer </span><br /><br /><hr>${GENZONE} <br/> Land Use Code: ${FLU}");
               feature.setInfoTemplate(template);
             }
+            else if (result.layerName === 'Garrett.DBO.TaxParcel'){
+            //   console.log(feature.attributes.ACCTID);
+              var template = new esri.InfoTemplate("",
+              "<span class=\"sectionhead\">Layer: Parcels</span><br /><br /><hr>Address: ${ADDRESS} <br />"
+              + "City: ${CITY} <br /> Owner: ${OWNNAME1} ${OWNNAME2} <br /> Tax Id: ${ACCTID} <br /><hr><span class=\"sectionhead\">Deed Reference</span><br />"
+              + "Liber: ${DR1LIBER} <br /> Folio: ${DR1FOLIO} <br /><hr> Subdivision: ${SUBDIVSN} <br /> Plat: ${PLAT} <br /> Block: ${BLOCK} <br /> Grid: ${GRID} <br />"
+              + "Map: ${MAP} <br /> Parcel: ${PARCEL} <br /> Lot: ${LOT} <br /> Area: ${ACRES} Acres <br /><hr><span class=\"sectionhead\">Plat Reference</span><br />"
+              + "Liber: ${PLTLIBER} <br /> Folio: ${PLTFOLIO} <br /><hr>"
+              + "Year Built: ${YRBLT_CAMA} <br /> SDAT Link: <a href=\"${SDATWEBADR}\" target=\"_blank\">LINK</a> <br />");
+              //   + "Address: ${ADDRESS} <br />"
+              // );
+              map.infoWindow.resize(250, 500);
+              feature.setInfoTemplate(template);
             // need to replace Building Footprints with an actual existing layer in our Service
             // so far zoning is the only layer in the service.
-            else if (result.layerName === 'addresspoints'){
+            } else if (result.layerName === 'addresspoints'){
               var template = new esri.InfoTemplate("", 
-              "<div style=\"font-weight: bold; font-size: larger;\">Layer: Address Points</div><br /> Address: ${ADDRESS} <br /><br /> City: ${CITY} <br /> Zip: ${ZIP_CODE} <br /> ESN: ${ESN} <br /> Community: ${COMMUNITY} <br /> Map: ${MAP} <br /> Parcel: ${PARCEL} <br />"
+              "<span class=\"sectionhead\">Layer: Address Points</span><br /><br /><hr>Address: ${ADDRESS} <br /><br /> City: ${CITY} <br /> Zip: ${ZIP_CODE} <br /> ESN: ${ESN} <br /> Community: ${COMMUNITY} <br /> Map: ${MAP} <br /> Parcel: ${PARCEL} <br />"
               + "Lot: ${LOT} <br /> Tract: ${TRACT} <br /> LU: ${LU} <br /> Key date: ${KEYDATE} <br /> Rental: ${RENTAL} <br />"
               + "Rental Co.: ${RENTAL_CO} <br /> Tax Account: ${TAX_ACCOUNT_ID} <br /> Owner: ${OWNER_FIRST_NAME} ${OWNER_LAST_NAME} <br />");
               feature.setInfoTemplate(template);
             } else if (result.layerName === 'Critical_Facilities') {
               var template = new esri.InfoTemplate("",
-              "<div style=\"font-weight: bold; font-size: larger;\">Layer: Critical Facilities </div><br /><br /> Land Use: ${LU} <br /> Address: ${ADDRESS} ${ROADNAME} <br /> Last Name: ${LASTNAME} <br /> ");
+              "<span class=\"sectionhead\">Layer: Critical Facilities </span><br /><br /><hr>Land Use: ${LU} <br /> Address: ${ADDRESS} ${ROADNAME} <br /> Last Name: ${LASTNAME} <br /> ");
               feature.setInfoTemplate(template);
             } else if (result.layerName === 'celltowers') {
               var content = "Data Source: ${SOURCE_OF_DATA} <br />";
               // I AM TRYING TO DO THIS CONDITIONALLY BUT THIS CAUSES AN ERROR
               // if (${SOURCE_OF_DATA}) {
-                // content+="Data Source: ${SOURCE_OF_DATA} <br />";
+              // content+="Data Source: ${SOURCE_OF_DATA} <br />";
               // }
               var template = new esri.InfoTemplate("",
-              "<div style=\"font-weight: bold; font-size: larger;\">Layer: Cell Towers</div><br /><br /> Address: ${TOWER_ADDRESS} <br /> "
+              "<span class=\"sectionhead\">Layer: Cell Towers</span><br /><br /><hr>Address: ${TOWER_ADDRESS} <br /> "
               + "Community: ${TOWER_COMMUNITY} <br /> Ground Elev: ${GROUND_ELEV} ${HEIGHT_ELEV_UNITS}<br /> Tower Ht: ${TOWER_HEIGHT} ${HEIGHT_ELEV_UNITS} <br />"
               + "Comments: ${COMMENTS} <br />" + content);
+              feature.setInfoTemplate(template);
+            } else if (result.layerName === 'centerlines') {
+              var template = new esri.InfoTemplate("",
+              "<span class=\"sectionhead\">Layer: Street Centerlines</span><br /><br /><hr>Name: ${STREET_ALL} <br />"
+              + "Maintenance: ${MAINTENANCE} <br /> Length: ${SHAPE_Length:NumberFormat} feet <br />");
+              // NumberFormat(round:1) // does not seem to work but just using NumberFormat gets it to 3 decimal places
               feature.setInfoTemplate(template);
             }
             return feature;
@@ -155,8 +187,20 @@
                data-dojo-props="title:'Switch Basemap', closable:false,  open:false">
             <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">
               <div id="basemapGallery" ></div>
-            </div><!-- TitlePane -->
-          </div><!-- unnamed div -->
+            </div><!-- ContentPane 1 -->
+          </div><!-- TitlePane 1 -->  
+          <div data-dojo-type="dijit/TitlePane" 
+               data-dojo-props="title:'ID Zoning', closable:false,  open:false">
+            <div data-dojo-type="dijit/layout/ContentPane" style="width:80px; height:50px; overflow:auto;">
+              <div id="idZoning" >
+                <form id="Zoning">
+                  <input type="radio" id="ZoneOn" name="ZoningOn" />on<br />
+                  <input type="radio" id="ZoneOff" name="ZoningOn" checked="true" />off<br />
+                </form>
+              </div><!-- idZoning -->
+            </div><!-- ContentPane 2 -->
+          </div><!-- Title Pane 2 -->     
+        </div><!-- unnamed div -->
       </div><!-- mapDiv -->
     </div><!-- Border Container -->
   </body>

@@ -19,8 +19,9 @@
       #mapDiv {
         height:100%;
         width: 100%;
-        margin: 0;
+        margin: 0.75em 0;
         padding: 0;
+        border-top: 1px solid red;
       }
       #mapControls {
         height: 10%;
@@ -35,21 +36,35 @@
         font-weight: bold;
         font-size: larger;
       }
+      #messages{
+        background-color: white;
+        margin: 0.4em;
+        padding: 0 0.2em;
+      }
+      .selType{
+        float:left;
+        margin: 0 2em 0 1em;
+      }
     </style>
 
     <script>var dojoConfig = { parseOnLoad: true };</script>
-    <script src="http://js.arcgis.com/3.7/"></script>
+    <script src="http://js.arcgis.com/3.9/"></script>
     <script>
     var map;
       var identifyTask, identifyParams;   
       require([
-        "esri/map",  "esri/dijit/BasemapGallery", "esri/dijit/Popup", "esri/layers/ArcGISDynamicMapServiceLayer", "esri/tasks/IdentifyTask", 
-    "esri/tasks/IdentifyResult", "esri/tasks/IdentifyParameters", "esri/dijit/InfoWindow", "esri/symbols/SimpleFillSymbol", 
-    "esri/symbols/SimpleLineSymbol", "esri/InfoTemplate", "dojo/_base/Color" ,"dojo/on", "dijit/layout/BorderContainer", "dijit/layout/ContentPane", "dijit/TitlePane",
+        "esri/map",  "esri/dijit/BasemapGallery", "esri/dijit/Popup", "esri/layers/ArcGISDynamicMapServiceLayer", "esri/tasks/query",
+    "esri/toolbars/draw", "esri/tasks/IdentifyTask", 
+    "esri/layers/FeatureLayer", "esri/tasks/IdentifyResult", "esri/tasks/IdentifyParameters", "esri/dijit/InfoWindow", "esri/symbols/SimpleFillSymbol", 
+    "esri/symbols/SimpleLineSymbol", "esri/InfoTemplate", "dojo/_base/array", "dojo/_base/Color", "dojo/dom", "dojo/on", "dojo/parser", 
+    "dijit/layout/BorderContainer", "dijit/layout/ContentPane", "dijit/TitlePane", "dijit/form/Button", "dijit/form/RadioButton",
       "dojo/domReady!"
-      ], function(Map, BasemapGallery, Popup, ArcGISDynamicMapServiceLayer, IdentifyTask, IdentifyResult, IdentifyParameters, InfoWindow, 
-        SimpleFillSymbol, SimpleLineSymbol, InfoTemplate, Color, on) {
+      ], function(Map, BasemapGallery, Popup, ArcGISDynamicMapServiceLayer, Query, Draw, IdentifyTask, FeatureLayer, IdentifyResult, IdentifyParameters, InfoWindow, 
+        SimpleFillSymbol, SimpleLineSymbol, InfoTemplate, arrayUtil, Color, dom, on, parser, BorderContainer, ContentPane, TitlePane, Button, RadioButton) {
      //setup the popup window 
+     
+        parser.parse();
+        
         var popup = new Popup({
           fillSymbol: new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255,0,0]), 2), new Color([255,255,0,0.25]))
         }, dojo.create("div"));
@@ -60,6 +75,10 @@
           zoom: 10,
           infoWindow: popup
         });
+        
+        // <!-- FROM SELECT SCRIPT -->
+        map.on("load", initSelectToolbar);
+        // map.on("load", initSelectToolbar2);
         
          //add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
         var basemapGallery = new BasemapGallery({
@@ -72,9 +91,123 @@
           console.log("basemap gallery error:  ", msg);
         });
         
+        // IDENTIFY LAYERS
         var landBaseLayer = new ArcGISDynamicMapServiceLayer("http://192.168.100.35:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",{opacity:.55});
         map.addLayer(landBaseLayer);
-    
+        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // SELECT POINTS <!-- FROM SELECT SCRIPT --><!-- This is not correct since these are polygon symbol types -->
+        var fieldsSelectionSymbol, content, infoTemplate, featureLayer, typeIsParcels = false;
+        function setupSelections() {
+          
+          // var typeIsParcels = dom.byId("points");
+          // typeIsParcels = document.getElementById("parcels");
+          if (typeIsParcels) {
+            
+            fieldsSelectionSymbol = 
+              new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+              new SimpleLineSymbol(SimpleLineSymbol.STYLE_DASHDOT,
+              new Color([255, 0, 0]), 2), new Color([255, 255, 0, 0.5]));
+            content = "Map: ${MAP}<br />Parcel: ${PARCEL}<br />" +
+                "Lot: ${LOT}<br />Grid: ${GRID}<br />Tax ID: ${ACCTID}<br /><hr>";
+            infoTemplate = new InfoTemplate("${FIELD_NAME}", content);
+            
+            // Parcels = Layer 8
+            featureLayer = new FeatureLayer("http://192.168.100.35:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/8",
+            {
+              mode: FeatureLayer.MODE_ONDEMAND,
+              outFields: ["*"]
+            });
+            featureLayer.on("selection-complete", sumSelectedParcelInfo);
+            // alert("Geometry Type is Parcels"); // TESTING
+          } else {
+            fieldsSelectionSymbol = new esri.symbol.SimpleMarkerSymbol().setColor(new dojo.Color([0,255,255]));
+            fieldsSelectionSymbol.setSize(9);
+            content = "Address: ${ADDRESS}<br />" +
+                  "City: ${CITY} <br /> Owner: ${OWNNAME1} ${OWNNAME2} <br /> Tax Id: ${ACCTID} <br /><hr>";
+            infoTemplate = new InfoTemplate("${FIELD_NAME}", content);
+            // Address Points = Layer 4
+            featureLayer = new FeatureLayer("http://192.168.100.35:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/4",
+              {
+                mode: FeatureLayer.MODE_ONDEMAND,
+                // infoTemplate: infoTemplate,
+                outFields: ["*"]
+              });
+            featureLayer.on("selection-complete", sumSelectedPoints);
+            // alert("Geometry Type is Points"); // TESTING
+          }
+          
+        featureLayer.setSelectionSymbol(fieldsSelectionSymbol);  
+        featureLayer.on("selection-clear", function () {
+          dom.byId('messages').innerHTML = "<i>No Selected Point or Parcels</i>";
+        });
+        map.addLayer(featureLayer);
+          
+        }
+        
+        on(dom.byId("polys"), "click", function () {
+          typeIsParcels = true;
+          featureLayer.clearSelection();
+          setupSelections();
+          
+        });
+        on(dom.byId("points"), "click", function() {
+          typeIsParcels = false;
+          featureLayer.clearSelection();
+          setupSelections();
+        });
+
+        // If Rectangle radio button is selected select by rectangle, if not, select by polygon
+        on(dom.byId("selectPointsButton"), "click", function () {
+          // setupSelections();
+          var SelectRectangle = document.getElementById("rectangle").checked;
+          if (SelectRectangle) {
+          // selectionToolbar.activate(Draw.FREEHAND_POLYGON);
+              selectionToolbar.activate(Draw.EXTENT);
+          } else {
+              selectionToolbar.activate(Draw.FREEHAND_POLYGON);
+          }    
+        });
+        
+        on(dom.byId("clearSelectionButton"), "click", function () {
+          featureLayer.clearSelection();
+        });
+
+        function initSelectToolbar (event) {
+          setupSelections();
+          selectionToolbar = new Draw(event.map);
+          var selectQuery = new Query();
+
+          on(selectionToolbar, "DrawEnd", function (geometry) {
+            selectionToolbar.deactivate();
+            selectQuery.geometry = geometry;
+            featureLayer.selectFeatures(selectQuery,
+              FeatureLayer.SELECTION_NEW);
+          });
+        }
+        
+        // Determine how many points were selected and list the Addresses for each point
+        function sumSelectedPoints (event) {
+          var pointSum = 0;
+          var arrStructNum = [];
+          var strAddresses = "";
+          //summarize the cumulative gas production to display
+          arrayUtil.forEach(event.features, function (feature) {
+            strAddresses += feature.attributes.ADDRESS + "<br />";
+            arrStructNum.push(feature.attributes.ADDRESS);
+            pointSum += 1; //feature.attributes.STRUCTURE_NUMBER;
+            // alert(feature.attributes.ADDRESS);
+          });
+          dom.byId('messages').innerHTML = "<b>Number of Selected Points: " +
+                                            pointSum + "</b><br />" + strAddresses; // 
+                                            // + JSON.stringify(arrStructNum, null, 4);
+        }
+          
+        function sumSelectedParcelInfo (event) {
+          alert("HEY LOOKA THERE!");
+        };
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // IDENTIFY LAYERS
     map.on("click", executeIdentifyTask);
       identifyTask = new IdentifyTask("http://192.168.100.35:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
       
@@ -179,16 +312,29 @@
     <div data-dojo-type="dijit/layout/BorderContainer" 
          data-dojo-props="design:'headline', gutters:false" 
          style="width:100%;height:100%;margin:0;">
+      
+      <button id="selectPointsButton" data-dojo-type="dijit/form/Button">Select Points/Polys</button>
+      <button id="clearSelectionButton" data-dojo-type="dijit/form/Button">Clear Selection</button>
+      <div class="selType">
+          <input type="radio" id="rectangle" name="selectType"  checked="true">Rectangle<br />
+          <input type="radio" id="polygon" name="selectType">Polygon<br />
+      </div>
+      <div class="selType">
+          <input type="radio" id="points" data-dojo-type="dijit/form/RadioButton" name="geomType" checked="true" />Address Points<br />
+          <input type="radio" id="polys" data-dojo-type="dijit/form/RadioButton" name="geomType" />Parcels<br />
+      </div>
+      <!-- onclick="runTest();"  -->
       <div id="mapDiv" data-dojo-type="dijit/layout/ContentPane" 
            data-dojo-props="region:'center'" 
            style="padding:0;">
         <div style="position:absolute; right:20px; top:10px; z-Index:999;">
+          <span id="messages"></span>  
           <div data-dojo-type="dijit/TitlePane" 
                data-dojo-props="title:'Switch Basemap', closable:false,  open:false">
             <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">
               <div id="basemapGallery" ></div>
             </div><!-- ContentPane 1 -->
-          </div><!-- TitlePane 1 -->  
+          </div><!-- TitlePane 1 "Switch Basemap" -->  
           <div data-dojo-type="dijit/TitlePane" 
                data-dojo-props="title:'ID Zoning', closable:false,  open:false">
             <div data-dojo-type="dijit/layout/ContentPane" style="width:80px; height:50px; overflow:auto;">
@@ -199,7 +345,7 @@
                 </form>
               </div><!-- idZoning -->
             </div><!-- ContentPane 2 -->
-          </div><!-- Title Pane 2 -->     
+          </div><!-- Title Pane 2 "ID Zoning" -->     
         </div><!-- unnamed div -->
       </div><!-- mapDiv -->
     </div><!-- Border Container -->

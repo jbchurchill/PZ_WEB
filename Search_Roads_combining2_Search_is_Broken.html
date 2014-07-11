@@ -47,38 +47,88 @@
       }
     </style>
 
-    <script>var dojoConfig = { parseOnLoad: true };</script>
+    <!-- <script>var dojoConfig = { parseOnLoad: true };</script> -->
     <script src="http://js.arcgis.com/3.9/"></script>
     <script>
-    var map;
-      var identifyTask, identifyParams;   
-      require([
-        "esri/map",  "esri/dijit/BasemapGallery", "esri/dijit/Popup", "esri/layers/ArcGISDynamicMapServiceLayer", "esri/tasks/query",
-    "esri/toolbars/draw", "esri/tasks/IdentifyTask", 
-    "esri/layers/FeatureLayer", "esri/tasks/IdentifyResult", "esri/tasks/IdentifyParameters", "esri/dijit/InfoWindow", "esri/symbols/SimpleFillSymbol", 
-    "esri/symbols/SimpleLineSymbol", "esri/InfoTemplate", "dojo/_base/array", "dojo/_base/Color", "dojo/dom", "dojo/on", "dojo/parser", 
-    "dijit/layout/BorderContainer", "dijit/layout/ContentPane", "dijit/TitlePane", "dijit/form/Button", "dijit/form/RadioButton",
+    var findTask, findParams; // *
+    var map, center, zoom; // * center and zoom are new
+    var grid, store; // *
+    var identifyTask, identifyParams;   
+    require([
+      "esri/map", 
+      "esri/dijit/BasemapGallery", 
+      "esri/dijit/Popup", 
+      "esri/layers/ArcGISDynamicMapServiceLayer", 
+      
+      "esri/tasks/query",
+      "esri/toolbars/draw", 
+      "esri/tasks/IdentifyTask", 
+      "esri/tasks/FindTask", 
+      "esri/tasks/FindParameters",
+      "esri/layers/FeatureLayer", 
+      "esri/tasks/IdentifyResult", 
+      "esri/tasks/IdentifyParameters", 
+      "esri/dijit/InfoWindow", 
+      "esri/symbols/SimpleFillSymbol", 
+      "esri/symbols/SimpleLineSymbol", 
+      "esri/InfoTemplate", 
+      "dojo/_base/array", 
+      "dojo/_base/Color", 
+      "dojo/dom", 
+      "dojo/on", 
+      "dijit/registry",
+      "dojo/parser", 
+      "dijit/layout/BorderContainer", 
+      "dijit/layout/ContentPane", 
+      "dijit/TitlePane", 
+      "dijit/form/Button", 
+      "dijit/form/RadioButton",
+      // "dojo/parser", 
       "dojo/domReady!"
-      ], function(Map, BasemapGallery, Popup, ArcGISDynamicMapServiceLayer, Query, Draw, IdentifyTask, FeatureLayer, IdentifyResult, IdentifyParameters, InfoWindow, 
-        SimpleFillSymbol, SimpleLineSymbol, InfoTemplate, arrayUtil, Color, dom, on, parser, BorderContainer, ContentPane, TitlePane, Button, RadioButton) {
+      ], function(Map, BasemapGallery, Popup, ArcGISDynamicMapServiceLayer, Query, Draw, IdentifyTask, FindTask, FindParameters, FeatureLayer, IdentifyResult, IdentifyParameters, InfoWindow, 
+        SimpleFillSymbol, SimpleLineSymbol, InfoTemplate, arrayUtil, Color, dom, on, registry, parser, BorderContainer, ContentPane, TitlePane, Button, RadioButton) {
      //setup the popup window 
      
         parser.parse();
         
+        
+
+        // *
+        // registry.byId("search").on("click", doFind);
+        // on(dom.byId("search"), "click", doFind);
+        // mapOnLoad = dojo.connect("search", "click", doFind);
+
         var popup = new Popup({
           fillSymbol: new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255,0,0]), 2), new Color([255,255,0,0.25]))
         }, dojo.create("div"));
-   
+        
+        center = [-79.2, 39.5];
+        zoom = 10;
         map = new Map("mapDiv", {
           basemap: "streets",
-          center: [-79.2, 39.5],
-          zoom: 10,
+          center: center,
+          zoom: zoom,
           infoWindow: popup
         });
         
-        // <!-- FROM SELECT SCRIPT -->
+        findTask = new FindTask("http://192.168.100.35:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/");
+        map.on("load", function () {
+        //Create the find parameters
+        findParams = new FindParameters();
+        findParams.returnGeometry = true;
+        findParams.layerIds = [6];
+        //findParams.searchFields = ["OWNERNME1", "OWNERNME2"];
+        findParams.searchFields = ["RDNAMELOCAL"]; // "MAINTENANCE", "FRADDL_P", "TOADDL_P", "FRADDR_P", "TOADDR_P"];
+        findParams.outSpatialReference = map.spatialReference;
+        console.log("find sr: ", findParams.outSpatialReference);
+        // initSelectToolbar;
+        });                  
+        // mapOnLoad = connect.connect(map, "onLoad", initSelectToolbar);
         map.on("load", initSelectToolbar);
-        // map.on("load", initSelectToolbar2);
+        
+        // <!-- FROM SELECT SCRIPT -->
+        // map.on("load", initSelectToolbar);
+        // I put this in as the last setp on the map.on("load", function()) above
         
          //add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
         var basemapGallery = new BasemapGallery({
@@ -143,7 +193,7 @@
         });
         map.addLayer(featureLayer);
           
-        }
+        } // End of setupSelections function
         
         on(dom.byId("polys"), "click", function () {
           typeIsParcels = true;
@@ -156,7 +206,8 @@
           featureLayer.clearSelection();
           setupSelections();
         });
-
+        
+        // SELECT POINTS/POLYS CODE
         // If Rectangle radio button is selected select by rectangle, if not, select by polygon
         on(dom.byId("selectPointsButton"), "click", function () {
           // setupSelections();
@@ -175,9 +226,10 @@
 
         function initSelectToolbar (event) {
           setupSelections();
+          
           selectionToolbar = new Draw(event.map);
           var selectQuery = new Query();
-
+          
           on(selectionToolbar, "DrawEnd", function (geometry) {
             selectionToolbar.deactivate();
             selectQuery.geometry = geometry;
@@ -219,6 +271,8 @@
                                             parcelSum + "</strong><br />" + strParcelInfo;
           
         };
+        
+      
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // IDENTIFY LAYERS
     map.on("click", executeIdentifyTask);
@@ -231,7 +285,78 @@
         identifyParams.layerOption = IdentifyParameters.LAYER_OPTION_ALL;
         identifyParams.width  = map.width;
         identifyParams.height = map.height;
-    });
+        
+        
+        
+        document.onreadystatechange = function(){
+          if (document.readyState == "complete"){
+            registry.byId("search").on("click", doFind);
+          }
+        }  
+
+        
+        
+        
+    }); // end of require function
+    
+    // AN ATTEMPT TO MOVE FUNCTIONS OUT OF THE REQUIRE BLOCK
+        // SEARCH FEATURE
+        /////////////////////////////////////////////////////////////////////////////////////
+        // registry.byId("search").on("click", doFind);
+        // dom.
+        
+        
+        function doFind() {
+          alert("I doFind This annoying");
+          //Set the search text to the value in the box
+          findParams.searchText = dom.byId("ownerName").value;
+          alert("Im Here");
+          findTask.execute(findParams, showResults);
+        }
+        
+        function showResults(results) {
+          //This function works with an array of FindResult that the task returns
+          map.graphics.clear();
+          var symbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([98, 194, 204]), 3);
+          
+          //create array of attributes
+          var items = arrayUtils.map(results, function (result) {
+            var graphic = result.feature;
+            graphic.setSymbol(symbol);
+            map.graphics.add(graphic);
+            return result.feature.attributes;
+          });
+
+          //Create data object to be used in store
+          var data = {
+            identifier : "OBJECTID", //This field needs to have unique values
+            label : "OBJECTID", //Name field for display. Not pertinent to a grid but may be used elsewhere.
+            items : items
+          };
+
+          //Create data store and bind to grid.
+          store = new ItemFileReadStore({
+            data : data
+          });
+          var grid = registry.byId("grid");
+          grid.setStore(store);
+          grid.on("rowclick", onRowClickHandler);
+
+          //Zoom back to the initial map extent
+          map.centerAndZoom(center, zoom);
+        }
+
+        //Zoom to the parcel when the user clicks a row
+        function onRowClickHandler(evt) {
+          var clickedTaxLotId = evt.grid.getItem(evt.rowIndex).OBJECTID;
+          var selectedTaxLot = arrayUtils.filter(map.graphics.graphics, function (graphic) {
+            return ((graphic.attributes) && graphic.attributes.OBJECTID === clickedTaxLotId);
+          });
+          if ( selectedTaxLot.length ) {
+            map.setExtent(selectedTaxLot[0].geometry.getExtent(), true);
+          }
+        }
+        /////////////////////////////////////////////////////////////////////////////////////    
 
       function executeIdentifyTask(evt) {
         identifyParams.geometry = evt.mapPoint;
@@ -305,9 +430,9 @@
             }
             return feature;
           });
-        });
-
-      
+          
+        }); // end of deferred callback function
+        // registry.byId("search").on("click", doFind);
         // InfoWindow expects an array of features from each deferred
         // object that you pass. If the response from the task execution 
         // above is not an array of features, then you need to add a callback
@@ -315,12 +440,12 @@
         // array of features.
         map.infoWindow.setFeatures([ deferred ]);
         map.infoWindow.show(evt.mapPoint);
-      }
-      
+        
+      }; // end of function executeIdentifyTask
       
     </script>
   </head>
-  
+
   <body class="claro">
     <div data-dojo-type="dijit/layout/BorderContainer" 
          data-dojo-props="design:'headline', gutters:false" 
@@ -332,6 +457,7 @@
           <input type="radio" id="rectangle" name="selectType"  checked="true">Rectangle<br />
           <input type="radio" id="polygon" name="selectType">Polygon<br />
       </div>
+      <span id="textNode2"></span>
       <div class="selType">
           <input type="radio" id="points" data-dojo-type="dijit/form/RadioButton" name="geomType" checked="true" />Address Points<br />
           <input type="radio" id="polys" data-dojo-type="dijit/form/RadioButton" name="geomType" />Parcels<br />
@@ -364,7 +490,8 @@
     <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom'" style="height:190px;">
           <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'" style="height:30px; margin-top: 0;">
       Road name: <input type="text" id="ownerName" size="60" value="ROCK LODGE RD" />      
-          <button id="search" data-dojo-type="dijit.form.Button" type="button" data-dojo-attach-point="button" >Search       
+          <!--<button id="search" data-dojo-type="dijit.form.Button" type="button" data-dojo-attach-point="button" >Search-->
+          <button id="search" type="button" onclick="doFind;">Search
           </button>
       </div>
 

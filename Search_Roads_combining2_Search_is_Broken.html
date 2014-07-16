@@ -72,10 +72,14 @@
       "esri/symbols/SimpleFillSymbol", 
       "esri/symbols/SimpleLineSymbol", 
       "esri/InfoTemplate", 
-      "dojo/_base/array", 
-      "dojo/_base/Color", 
+      "dojo/_base/array",
+      "dojo/_base/connect",
+      "dojox/grid/DataGrid",
+      "dojo/data/ItemFileReadStore",
+      // "dojo/_base/Color", 
+      "esri/Color",
+      "dojo/on",
       "dojo/dom", 
-      "dojo/on", 
       "dijit/registry",
       "dojo/parser", 
       "dijit/layout/BorderContainer", 
@@ -86,7 +90,7 @@
       // "dojo/parser", 
       "dojo/domReady!"
       ], function(Map, BasemapGallery, Popup, ArcGISDynamicMapServiceLayer, Query, Draw, IdentifyTask, FindTask, FindParameters, FeatureLayer, IdentifyResult, IdentifyParameters, InfoWindow, 
-        SimpleFillSymbol, SimpleLineSymbol, InfoTemplate, arrayUtil, Color, dom, on, registry, parser, BorderContainer, ContentPane, TitlePane, Button, RadioButton) {
+        SimpleFillSymbol, SimpleLineSymbol, InfoTemplate, arrayUtil, connect, DataGrid, ItemFileReadStore, Color, on, dom, registry, parser, BorderContainer, ContentPane, TitlePane, Button, RadioButton) {
      //setup the popup window 
      
         parser.parse();
@@ -94,7 +98,7 @@
         
 
         // *
-        // registry.byId("search").on("click", doFind);
+        registry.byId("search").on("click", doFind);
         // on(dom.byId("search"), "click", doFind);
         // mapOnLoad = dojo.connect("search", "click", doFind);
 
@@ -288,11 +292,11 @@
         
         
         
-        document.onreadystatechange = function(){
-          if (document.readyState == "complete"){
-            registry.byId("search").on("click", doFind);
-          }
-        }  
+        //document.onreadystatechange = function(){
+        //  if (document.readyState == "complete"){
+        //    registry.byId("search").on("click", doFind);
+        //  }
+        //}  
 
         
         

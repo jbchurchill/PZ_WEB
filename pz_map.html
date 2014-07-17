@@ -298,12 +298,6 @@
         //  }
         //}  
 
-        
-        
-        
-    }); // end of require function
-    
-    // AN ATTEMPT TO MOVE FUNCTIONS OUT OF THE REQUIRE BLOCK
         // SEARCH FEATURE
         /////////////////////////////////////////////////////////////////////////////////////
         // registry.byId("search").on("click", doFind);
@@ -311,10 +305,8 @@
         
         
         function doFind() {
-          alert("I doFind This annoying");
           //Set the search text to the value in the box
           findParams.searchText = dom.byId("ownerName").value;
-          alert("Im Here");
           findTask.execute(findParams, showResults);
         }
         
@@ -324,7 +316,7 @@
           var symbol = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([98, 194, 204]), 3);
           
           //create array of attributes
-          var items = arrayUtils.map(results, function (result) {
+          var items = arrayUtil.map(results, function (result) {
             var graphic = result.feature;
             graphic.setSymbol(symbol);
             map.graphics.add(graphic);
@@ -353,7 +345,7 @@
         //Zoom to the parcel when the user clicks a row
         function onRowClickHandler(evt) {
           var clickedTaxLotId = evt.grid.getItem(evt.rowIndex).OBJECTID;
-          var selectedTaxLot = arrayUtils.filter(map.graphics.graphics, function (graphic) {
+          var selectedTaxLot = arrayUtil.filter(map.graphics.graphics, function (graphic) {
             return ((graphic.attributes) && graphic.attributes.OBJECTID === clickedTaxLotId);
           });
           if ( selectedTaxLot.length ) {
@@ -361,6 +353,14 @@
           }
         }
         /////////////////////////////////////////////////////////////////////////////////////    
+
+        
+        
+        
+    }); // end of require function
+    
+    // AN ATTEMPT TO MOVE FUNCTIONS OUT OF THE REQUIRE BLOCK
+    // THIS TURNS OUT TO BE A BAD IDEA
 
       function executeIdentifyTask(evt) {
         identifyParams.geometry = evt.mapPoint;
@@ -454,7 +454,9 @@
     <div data-dojo-type="dijit/layout/BorderContainer" 
          data-dojo-props="design:'headline', gutters:false" 
          style="width:100%;height:100%;margin:0;">
-      
+      <div data-dojo-type="dijit/layout/ContentPane" id="cp"
+        data-dojo-props="region: 'top'">
+        
       <button id="selectPointsButton" data-dojo-type="dijit/form/Button">Select Points/Polys</button>
       <button id="clearSelectionButton" data-dojo-type="dijit/form/Button">Clear Selection</button>
       <div class="selType">
@@ -466,6 +468,7 @@
           <input type="radio" id="points" data-dojo-type="dijit/form/RadioButton" name="geomType" checked="true" />Address Points<br />
           <input type="radio" id="polys" data-dojo-type="dijit/form/RadioButton" name="geomType" />Parcels<br />
       </div>
+      </div><!-- #cp CONTENT PANE -->
       <!-- onclick="runTest();"  -->
       <div id="mapDiv" data-dojo-type="dijit/layout/ContentPane" 
            data-dojo-props="region:'center'" 
@@ -494,8 +497,8 @@
     <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom'" style="height:190px;">
           <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'" style="height:30px; margin-top: 0;">
       Road name: <input type="text" id="ownerName" size="60" value="ROCK LODGE RD" />      
-          <!--<button id="search" data-dojo-type="dijit.form.Button" type="button" data-dojo-attach-point="button" >Search-->
-          <button id="search" type="button" onclick="doFind;">Search
+          <button id="search" data-dojo-type="dijit.form.Button" type="button" data-dojo-attach-point="button" >Search
+          <!--<button id="search" type="button" onclick="doFind;">Search -->
           </button>
       </div>
 

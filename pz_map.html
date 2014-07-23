@@ -7,8 +7,8 @@
       on iOS devices-->
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
     <title>Identify with Popup</title>
-    <link rel="stylesheet" href="http://js.arcgis.com/3.9/js/dojo/dijit/themes/claro/claro.css">
-    <link rel="stylesheet" href="http://js.arcgis.com/3.9/js/esri/css/esri.css">
+    <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/dojo/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/esri/css/esri.css">
     <style>
       html, body {
         height:100%;
@@ -46,20 +46,19 @@
         margin: 0 2em 0 1em;
       }
     </style>
-
-    <!-- <script>var dojoConfig = { parseOnLoad: true };</script> -->
-    <script src="http://js.arcgis.com/3.9/"></script>
+    
+    
+    <script src="http://js.arcgis.com/3.10/"></script>
     <script>
-    var findTask, findParams; // *
-    var map, center, zoom; // * center and zoom are new
-    var grid, store; // *
+    var findTask, findParams;
+    var map, center, zoom;
+    var grid, store;
     var identifyTask, identifyParams;   
     require([
       "esri/map", 
       "esri/dijit/BasemapGallery", 
       "esri/dijit/Popup", 
       "esri/layers/ArcGISDynamicMapServiceLayer", 
-      
       "esri/tasks/query",
       "esri/toolbars/draw", 
       "esri/tasks/IdentifyTask", 
@@ -76,7 +75,6 @@
       "dojo/_base/connect",
       "dojox/grid/DataGrid",
       "dojo/data/ItemFileReadStore",
-      // "dojo/_base/Color", 
       "esri/Color",
       "dojo/on",
       "dojo/dom", 
@@ -87,21 +85,15 @@
       "dijit/TitlePane", 
       "dijit/form/Button", 
       "dijit/form/RadioButton",
-      // "dojo/parser", 
       "dojo/domReady!"
       ], function(Map, BasemapGallery, Popup, ArcGISDynamicMapServiceLayer, Query, Draw, IdentifyTask, FindTask, FindParameters, FeatureLayer, IdentifyResult, IdentifyParameters, InfoWindow, 
         SimpleFillSymbol, SimpleLineSymbol, InfoTemplate, arrayUtil, connect, DataGrid, ItemFileReadStore, Color, on, dom, registry, parser, BorderContainer, ContentPane, TitlePane, Button, RadioButton) {
-     //setup the popup window 
-     
+          
         parser.parse();
         
         
-
-        // *
         registry.byId("search").on("click", doFind);
-        // on(dom.byId("search"), "click", doFind);
-        // mapOnLoad = dojo.connect("search", "click", doFind);
-
+        
         var popup = new Popup({
           fillSymbol: new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255,0,0]), 2), new Color([255,255,0,0.25]))
         }, dojo.create("div"));
@@ -121,18 +113,13 @@
         findParams = new FindParameters();
         findParams.returnGeometry = true;
         findParams.layerIds = [6];
-        //findParams.searchFields = ["OWNERNME1", "OWNERNME2"];
         findParams.searchFields = ["RDNAMELOCAL"]; // "MAINTENANCE", "FRADDL_P", "TOADDL_P", "FRADDR_P", "TOADDR_P"];
         findParams.outSpatialReference = map.spatialReference;
         console.log("find sr: ", findParams.outSpatialReference);
         // initSelectToolbar;
         });                  
-        // mapOnLoad = connect.connect(map, "onLoad", initSelectToolbar);
-        map.on("load", initSelectToolbar);
         
-        // <!-- FROM SELECT SCRIPT -->
-        // map.on("load", initSelectToolbar);
-        // I put this in as the last setp on the map.on("load", function()) above
+        map.on("load", initSelectToolbar);
         
          //add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
         var basemapGallery = new BasemapGallery({
@@ -150,12 +137,10 @@
         map.addLayer(landBaseLayer);
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // SELECT POINTS <!-- FROM SELECT SCRIPT --><!-- This is not correct since these are polygon symbol types -->
+        // SELECT POINTS SECTION
         var fieldsSelectionSymbol, content, infoTemplate, featureLayer, typeIsParcels = false;
         function setupSelections() {
           
-          // var typeIsParcels = dom.byId("points");
-          // typeIsParcels = document.getElementById("parcels");
           if (typeIsParcels) {
             
             fieldsSelectionSymbol = 
@@ -173,7 +158,6 @@
               outFields: ["*"]
             });
             featureLayer.on("selection-complete", sumSelectedParcelInfo);
-            // alert("Geometry Type is Parcels"); // TESTING
           } else {
             fieldsSelectionSymbol = new esri.symbol.SimpleMarkerSymbol().setColor(new dojo.Color([0,255,255]));
             fieldsSelectionSymbol.setSize(9);
@@ -184,11 +168,9 @@
             featureLayer = new FeatureLayer("http://192.168.100.35:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/4",
               {
                 mode: FeatureLayer.MODE_ONDEMAND,
-                // infoTemplate: infoTemplate,
                 outFields: ["*"]
               });
             featureLayer.on("selection-complete", sumSelectedPoints);
-            // alert("Geometry Type is Points"); // TESTING
           }
           
         featureLayer.setSelectionSymbol(fieldsSelectionSymbol);  
@@ -214,10 +196,8 @@
         // SELECT POINTS/POLYS CODE
         // If Rectangle radio button is selected select by rectangle, if not, select by polygon
         on(dom.byId("selectPointsButton"), "click", function () {
-          // setupSelections();
           var SelectRectangle = document.getElementById("rectangle").checked;
           if (SelectRectangle) {
-          // selectionToolbar.activate(Draw.FREEHAND_POLYGON);
               selectionToolbar.activate(Draw.EXTENT);
           } else {
               selectionToolbar.activate(Draw.FREEHAND_POLYGON);
@@ -247,16 +227,14 @@
           var pointSum = 0;
           var arrStructNum = [];
           var strAddresses = "";
-          //summarize the cumulative gas production to display
+          //show the selected address points in the map display
           arrayUtil.forEach(event.features, function (feature) {
             strAddresses += feature.attributes.ADDRESS + "<br />";
             arrStructNum.push(feature.attributes.ADDRESS);
-            pointSum += 1; //feature.attributes.STRUCTURE_NUMBER;
-            // alert(feature.attributes.ADDRESS);
+            pointSum += 1;
           });
           dom.byId('messages').innerHTML = "<strong>Number of Selected Points: " +
-                                            pointSum + "</strong><br />" + strAddresses; // 
-                                            // + JSON.stringify(arrStructNum, null, 4);
+                                            pointSum + "</strong><br />" + strAddresses;
         }
           
         function sumSelectedParcelInfo (event) {
@@ -291,18 +269,8 @@
         identifyParams.height = map.height;
         
         
-        
-        //document.onreadystatechange = function(){
-        //  if (document.readyState == "complete"){
-        //    registry.byId("search").on("click", doFind);
-        //  }
-        //}  
-
-        // SEARCH FEATURE
         /////////////////////////////////////////////////////////////////////////////////////
-        // registry.byId("search").on("click", doFind);
-        // dom.
-        
+        // SEARCH FEATURE
         
         function doFind() {
           //Set the search text to the value in the box
@@ -353,25 +321,20 @@
           }
         }
         /////////////////////////////////////////////////////////////////////////////////////    
-
         
         
         
     }); // end of require function
     
-    // AN ATTEMPT TO MOVE FUNCTIONS OUT OF THE REQUIRE BLOCK
-    // THIS TURNS OUT TO BE A BAD IDEA
-
+    
       function executeIdentifyTask(evt) {
         identifyParams.geometry = evt.mapPoint;
         identifyParams.mapExtent = map.extent;
        
         var ZoningIsOn = document.getElementById("ZoneOn").checked;
         if (ZoningIsOn) {
-          // alert("on");
           identifyParams.layerIds = [1, 2, 3, 4, 5, 6, 10];
         } else {
-          // alert("off");
           identifyParams.layerIds = [1, 2, 3, 4, 5, 6, 8, 10];
         }  
         
@@ -390,7 +353,6 @@
               feature.setInfoTemplate(template);
             }
             else if (result.layerName === 'Garrett.DBO.TaxParcel'){
-            //   console.log(feature.attributes.ACCTID);
               var template = new esri.InfoTemplate("",
               "<span class=\"sectionhead\">Layer: Parcels</span><br /><br /><hr>Address: ${ADDRESS} <br />"
               + "City: ${CITY} <br /> Owner: ${OWNNAME1} ${OWNNAME2} <br /> Tax Id: ${ACCTID} <br /><hr><span class=\"sectionhead\">Deed Reference</span><br />"
@@ -398,12 +360,9 @@
               + "Map: ${MAP} <br /> Parcel: ${PARCEL} <br /> Lot: ${LOT} <br /> Area: ${ACRES} Acres <br /><hr><span class=\"sectionhead\">Plat Reference</span><br />"
               + "Liber: ${PLTLIBER} <br /> Folio: ${PLTFOLIO} <br /><hr>"
               + "Year Built: ${YRBLT_CAMA} <br /> SDAT Link: <a href=\"${SDATWEBADR}\" target=\"_blank\">LINK</a> <br />");
-              //   + "Address: ${ADDRESS} <br />"
-              // );
+              
               map.infoWindow.resize(250, 500);
               feature.setInfoTemplate(template);
-            // need to replace Building Footprints with an actual existing layer in our Service
-            // so far zoning is the only layer in the service.
             } else if (result.layerName === 'addresspoints'){
               var template = new esri.InfoTemplate("", 
               "<span class=\"sectionhead\">Layer: Address Points</span><br /><br /><hr>Address: ${ADDRESS} <br /><br /> City: ${CITY} <br /> Zip: ${ZIP_CODE} <br /> ESN: ${ESN} <br /> Community: ${COMMUNITY} <br /> Map: ${MAP} <br /> Parcel: ${PARCEL} <br />"
@@ -417,8 +376,10 @@
             } else if (result.layerName === 'celltowers') {
               var content = "Data Source: ${SOURCE_OF_DATA} <br />";
               // I AM TRYING TO DO THIS CONDITIONALLY BUT THIS CAUSES AN ERROR
-              // if (${SOURCE_OF_DATA}) {
-              // content+="Data Source: ${SOURCE_OF_DATA} <br />";
+              // if (!${SOURCE_OF_DATA} == null) {
+              // content="Data Source: ${SOURCE_OF_DATA} <br />";
+              // } else {
+              //   content="";
               // }
               var template = new esri.InfoTemplate("",
               "<span class=\"sectionhead\">Layer: Cell Towers</span><br /><br /><hr>Address: ${TOWER_ADDRESS} <br /> "
@@ -429,7 +390,6 @@
               var template = new esri.InfoTemplate("",
               "<span class=\"sectionhead\">Layer: Street Centerlines</span><br /><br /><hr>Name: ${STREET_ALL} <br />"
               + "Maintenance: ${MAINTENANCE} <br /> Length: ${SHAPE_Length:NumberFormat} feet <br />");
-              // NumberFormat(round:1) // does not seem to work but just using NumberFormat gets it to 3 decimal places
               feature.setInfoTemplate(template);
             }
             return feature;
@@ -463,7 +423,6 @@
           <input type="radio" id="rectangle" name="selectType"  checked="true">Rectangle<br />
           <input type="radio" id="polygon" name="selectType">Polygon<br />
       </div>
-      <span id="textNode2"></span>
       <div class="selType">
           <input type="radio" id="points" data-dojo-type="dijit/form/RadioButton" name="geomType" checked="true" />Address Points<br />
           <input type="radio" id="polys" data-dojo-type="dijit/form/RadioButton" name="geomType" />Parcels<br />

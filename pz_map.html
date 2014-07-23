@@ -126,6 +126,16 @@
           showArcGISBasemaps: true,
           map: map
         }, "basemapGallery");
+        
+      var mdImagelayer = new esri.layers.ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer");
+      
+      var mdImageBasemap = new esri.dijit.Basemap({
+        layers: [mdImagelayer],
+        title: "MD Imagery",
+        thumbnailUrl: "http://gis.garrettcounty.org/arcgis/images/image_v2.png"
+      });
+      basemapGallery.add(mdImageBasemap);
+
         basemapGallery.startup();
         
         basemapGallery.on("error", function(msg) {

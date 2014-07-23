@@ -341,15 +341,11 @@
         identifyParams.geometry = evt.mapPoint;
         identifyParams.mapExtent = map.extent;
        
-        var ZoningIsOn = document.getElementById("ZoneOn").checked;
-        if (ZoningIsOn) {
-          identifyParams.layerIds = [1, 2, 3, 4, 5, 6, 10];
-        } else {
-          identifyParams.layerIds = [1, 2, 3, 4, 5, 6, 8, 10];
-        }  
+        // layers that can be identified by "click"
+        identifyParams.layerIds = [1, 2, 3, 4, 5, 6, 8, 10];
         
         var deferred = identifyTask.execute(identifyParams);
-
+        
         deferred.addCallback(function(response) {     
           // response is an array of identify result objects    
           // Let's return an array of features.
@@ -450,17 +446,6 @@
               <div id="basemapGallery" ></div>
             </div><!-- ContentPane 1 -->
           </div><!-- TitlePane 1 "Switch Basemap" -->  
-          <div data-dojo-type="dijit/TitlePane" 
-               data-dojo-props="title:'ID Zoning', closable:false,  open:false">
-            <div data-dojo-type="dijit/layout/ContentPane" style="width:80px; height:50px; overflow:auto;">
-              <div id="idZoning" >
-                <form id="Zoning">
-                  <input type="radio" id="ZoneOn" name="ZoningOn" />on<br />
-                  <input type="radio" id="ZoneOff" name="ZoningOn" checked="true" />off<br />
-                </form>
-              </div><!-- idZoning -->
-            </div><!-- ContentPane 2 -->
-          </div><!-- Title Pane 2 "ID Zoning" -->     
         </div><!-- unnamed div -->
       </div><!-- mapDiv -->
     <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom'" style="height:190px;">

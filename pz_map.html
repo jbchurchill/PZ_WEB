@@ -216,6 +216,8 @@
         
         on(dom.byId("clearSelectionButton"), "click", function () {
           featureLayer.clearSelection();
+          map.graphics.clear();
+          showResults("");
         });
 
         function initSelectToolbar (event) {

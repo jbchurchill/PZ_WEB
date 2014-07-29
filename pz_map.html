@@ -59,6 +59,7 @@
       "esri/dijit/BasemapGallery", 
       "esri/dijit/Popup", 
       "esri/layers/ArcGISDynamicMapServiceLayer", 
+      "esri/layers/ImageParameters", 
       "esri/tasks/query",
       "esri/toolbars/draw", 
       "esri/tasks/IdentifyTask", 
@@ -78,6 +79,7 @@
       "esri/Color",
       "dojo/on",
       "dojo/dom", 
+      "dojo/query", 
       "dijit/registry",
       "dojo/parser", 
       "dijit/layout/BorderContainer", 
@@ -86,11 +88,14 @@
       "dijit/form/Button", 
       "dijit/form/RadioButton",
       "dojo/domReady!"
-      ], function(Map, BasemapGallery, Popup, ArcGISDynamicMapServiceLayer, Query, Draw, IdentifyTask, FindTask, FindParameters, FeatureLayer, IdentifyResult, IdentifyParameters, InfoWindow, 
-        SimpleFillSymbol, SimpleLineSymbol, InfoTemplate, arrayUtil, connect, DataGrid, ItemFileReadStore, Color, on, dom, registry, parser, BorderContainer, ContentPane, TitlePane, Button, RadioButton) {
+      ], function(Map, BasemapGallery, Popup, ArcGISDynamicMapServiceLayer, ImageParameters, Query, Draw, IdentifyTask, FindTask, FindParameters, FeatureLayer, IdentifyResult, IdentifyParameters, InfoWindow, 
+        SimpleFillSymbol, SimpleLineSymbol, InfoTemplate, arrayUtil, connect, DataGrid, ItemFileReadStore, Color, on, dom, query, registry, parser, BorderContainer, ContentPane, TitlePane, Button, RadioButton) {
           
         parser.parse();
         
+        // doZoom variable allows us to zoom to extent of selected features (default) 
+        // or not when that is unwanted (like when clicking "Clear Selection")
+        var doZoom = 1;
         
         registry.byId("search").on("click", doFind);
         
@@ -112,7 +117,7 @@
         //Create the find parameters
         findParams = new FindParameters();
         findParams.returnGeometry = true;
-        findParams.layerIds = [6];
+        findParams.layerIds = [6]; // Shows the Roads (6) when it first loads
         findParams.searchFields = ["RDNAMELOCAL"]; // "MAINTENANCE", "FRADDL_P", "TOADDL_P", "FRADDR_P", "TOADDR_P"];
         findParams.outSpatialReference = map.spatialReference;
         console.log("find sr: ", findParams.outSpatialReference);
@@ -142,9 +147,19 @@
           console.log("basemap gallery error:  ", msg);
         });
         
+        // TURN LAYERS OFF AND ON
+        var imageParameters = new ImageParameters();
+        imageParameters.layerIds = [1, 4, 5, 6, 8];
+        imageParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
+        //can also be: LAYER_OPTION_EXCLUDE, LAYER_OPTION_HIDE, LAYER_OPTION_INCLUDE
+        var visibleLayerIds = []; // [1, 2, 3, 4, 5, 6, 8];
+        // TURN LAYERS OFF AND ON
+        
         // IDENTIFY LAYERS
-        var landBaseLayer = new ArcGISDynamicMapServiceLayer("http://192.168.100.35:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",{opacity:.55});
+        var landBaseLayer = new ArcGISDynamicMapServiceLayer("http://192.168.100.35:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
+        {"imageParameters": imageParameters, opacity:.55}); // , opacity:.55}); // NEW
         map.addLayer(landBaseLayer);
+        
         
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
         // SELECT POINTS SECTION
@@ -217,6 +232,7 @@
         on(dom.byId("clearSelectionButton"), "click", function () {
           featureLayer.clearSelection();
           map.graphics.clear();
+          doZoom = 0;
           showResults("");
         });
 
@@ -319,7 +335,10 @@
           grid.on("rowclick", onRowClickHandler);
 
           //Zoom back to the initial map extent
-          map.centerAndZoom(center, zoom);
+          if (doZoom == 1) {
+            map.centerAndZoom(center, zoom);
+          }
+          doZoom = 1;
         }
 
         //Zoom to the parcel when the user clicks a row
@@ -334,7 +353,31 @@
         }
         /////////////////////////////////////////////////////////////////////////////////////    
         
+        // TURN LAYERS ON AND OFF
+        on(dom.byId("layer10CheckBox"), "change", updateLayerVisibility);
+        on(dom.byId("layer2CheckBox"), "change", updateLayerVisibility);
+        on(dom.byId("layer3CheckBox"), "change", updateLayerVisibility);
+        on(dom.byId("layer7CheckBox"), "change", updateLayerVisibility);
         
+        function updateLayerVisibility () {
+          var inputs = query(".list_item");
+          var inputCount = inputs.length;
+          //in this application layer 2 is always on.
+          visibleLayerIds = [1, 4, 5, 6, 8];
+          
+          for (var i = 0; i < inputCount; i++) {
+            if (inputs[i].checked) {
+              visibleLayerIds.push(inputs[i].value);
+            }
+          }
+          
+          if (visibleLayerIds.length === 0) {
+            visibleLayerIds.push(-1);
+          }
+          
+          landBaseLayer.setVisibleLayers(visibleLayerIds);
+        }        
+        // TURN LAYERS ON AND OFF
         
     }); // end of require function
     
@@ -448,6 +491,20 @@
               <div id="basemapGallery" ></div>
             </div><!-- ContentPane 1 -->
           </div><!-- TitlePane 1 "Switch Basemap" -->  
+          <div data-dojo-type="dijit/TitlePane"
+              data-dojo-props="title:'Additional Layers', closable:false,  open:false">
+            <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">
+              <div id="addLayers" >
+                <h3>Additional Layers : </h3>
+                <span id="layer_list">
+                  <input type='checkbox' class='list_item' id='layer2CheckBox' value=2 />Gas Wells&nbsp;&nbsp;<br/>
+                  <input type='checkbox' class='list_item' id='layer3CheckBox' value=3 />Wind Turbines&nbsp;&nbsp;<br />
+                  <input type='checkbox' class='list_item' id='layer7CheckBox' value=7 />Zip Codes&nbsp;&nbsp;<br />
+                  <input type='checkbox' class='list_item' id='layer10CheckBox' value=10 />Zoning&nbsp;&nbsp;<br />
+                </span><br />
+              </div><!-- addLayers -->
+            </div><!-- Content Pane - Additional Layers -->
+          </div><!-- Title Pane - Additional Layers -->
         </div><!-- unnamed div -->
       </div><!-- mapDiv -->
     <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom'" style="height:190px;">

@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">  
+<html>  
+ <head>  
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />  
+  <meta http-equiv="X-UA-Compatible" content="IE=7" />  
+  <!--The viewport meta tag is used to improve the presentation and behavior of the samples  
+    on iOS devices-->  
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no" />  
+  <title>Template</title>    
+  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/2.8/js/dojo/dijit/themes/claro/claro.css"/>  
+  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/2.8/js/dojo/dojox/layout/resources/ResizeHandle.css"/>  
+  <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/2.8/js/dojo/dojox/layout/resources/ExpandoPane.css"/>  
+   
+  <style type="text/css">  
+   html, body {  
+     width: 100%;  
+     height: 100%;  
+     margin: 0;  
+     background-color:#dedede;  
+     overflow:hidden;  
+     font-family: Arial, Helvetica, sans-serif;  
+   }  
+     
+   #borderContainer {  
+     width: 100%;  
+     height: 100%;  
+     padding:3px;  
+   }  
+     
+   #mapPanel {  
+    background: #cfcfcf;  
+    height: 100%;  
+    width: 100%;  
+   }  
+     
+   #map {  
+    width:100%;  
+    height: 100%;  
+   }  
+     
+   #leftPanel {  
+    background: #f8f8f8;  
+    margin: 0px;  
+    height: 100%;  
+    width: 35%;  
+   }  
+  
+   #headerPanel {  
+    background: #FFFFFF;  
+    padding: 3px;  
+    height:6%;  
+    padding-bottom: 5px;  
+    border-bottom: solid 3px black;  
+   }  
+     
+   #contentPanel {  
+    height: 94%;  
+    width: 100%;  
+   }  
+     
+   .claro .dijitAccordionTitle {  
+    color: #5b5b5b;  
+   }  
+  
+   .claro .dijitAccordionTitleHover {  
+    color: #000000;  
+   }  
+  
+   .claro .dijitAccordionInnerContainerSelected .dijitAccordionTitle {  
+    color: #000000;  
+    font-weight: bold;  
+   }  
+     
+   .dojoxExpandoTitleNode {  
+    color: #8a8a8a;  
+    font-size: 85%;  
+    font-weight: normal;  
+    font-style: italic;  
+   }  
+  
+   .claro .dijitTooltipContainer  
+   {  
+    font-weight:bold;  
+   }  
+      
+  </style>    
+  <script type="text/javascript">var djConfig = {parseOnLoad: true};</script>  
+  <script type="text/javascript" src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=2.8"></script>  
+  <script type="text/javascript">  
+   dojo.require("esri.map");  
+   dojo.require("dijit.dijit"); // optimize: load dijit layer  
+   dojo.require("dijit.layout.BorderContainer");  
+   dojo.require("dijit.layout.ContentPane");  
+   dojo.require("dojox.layout.ExpandoPane");  
+   dojo.require("dojo.parser");  
+   dojo.require("esri.dijit.Popup");  
+      dojo.require("dijit.layout.AccordionContainer");  
+   dojo.require("dijit.Tooltip");  
+   dojo.require("dijit.Dialog");  
+        
+   var map;  
+   var dialogBox;  
+     
+   function init() {  
+    var initialExtent = new esri.geometry.Extent({  
+      "xmin": -13592500,"ymin": 6060280,"xmax": -13506825,"ymax": 6166129,"spatialReference": {"wkid": 3857}  
+    });     
+  
+    var popup = new esri.dijit.Popup(null, dojo.create("div"));  
+        
+    map = new esri.Map("map", {  
+      extent: initialExtent  
+    });  
+  
+    var basemap = new esri.layers.ArcGISTiledMapServiceLayer("http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer");  
+    map.addLayer(basemap);  
+  
+    //resize the map when the ExpandoPane resizes  
+    dojo.connect(dijit.byId("mapPanel"), "resize", function(changeSize, resultSize){  
+     map.resize();  
+    });  
+   }  
+     
+   dojo.ready(function(){  
+      // create a new Tooltip and connect it to the panes within the accordion widget  
+      new dijit.Tooltip({  
+       connectId: ["closureSection_button", "dataLayerSection_button","mapLegendSection_button","disclaimerSection_button"],  
+       label: "Click to view this section"  
+      });  
+   });  
+     
+   dojo.addOnLoad(init);  
+  </script>  
+ </head>  
+ <body class="claro">  
+  <div id="headerPanel" data-dojo-type="dijit.layout.BorderContainer" class="dijitContentPane">  
+   <div style="width:100%;height:100%;">  
+    <span style="width:100%;">  
+                    <span style="font-size:185%;font-weight:900;padding-left:5px;text-shadow:1px 1px #cfcfcf">A Page Title</span>  
+                </span>  
+   </div>  
+  </div>    
+  <div id="contentPanel" data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="design:'sidebar', gutters:true, liveSplitters:true">    
+   <div id="leftPanel" data-dojo-type="dojox.layout.ExpandoPane" title="Click the Arrow to Minimize this Panel" data-dojo-props="title: 'To Minimize this Panel, Click the Arrow', splitter:true, region:'leading'" style="width:400px;">  
+    <div data-dojo-type="dijit.layout.AccordionContainer">  
+     <div id="closureSection" data-dojo-type="dijit.layout.ContentPane" title="Content Section 01" data-dojo-props="label:'Click to Expand'" selected="true"></div>  
+     <div id="dataLayerSection" data-dojo-type="dijit.layout.ContentPane" title="Content Section 02" data-dojo-props="label:'Click to Expand'"></div>  
+     <div id="mapLegendSection" data-dojo-type="dijit.layout.ContentPane" title="Content Section 03" data-dojo-props="label:'Click to Expand'"></div>  
+     <div id="disclaimerSection" data-dojo-type="dijit.layout.ContentPane" title="Content Section 04"></div>         
+    </div>      
+   </div>      
+   <div id="mapPanel" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="splitter:true, region:'center'" style="border:1px solid black;padding:0px !important">  
+    <div id="map"></div>  
+   </div>  
+  </div>  
+ </body>  
+</html>  

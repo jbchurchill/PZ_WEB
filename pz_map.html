@@ -8,6 +8,7 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
     <title>Identify with Popup</title>
     <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/dojo/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="http://archive.dojotoolkit.org/nightly/dojotoolkit/dojox/layout/resources/ExpandoPane.css">
     <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/esri/css/esri.css">
     <style>
       html, body {
@@ -75,6 +76,7 @@
       "dojo/_base/array",
       "dojo/_base/connect",
       "dojox/grid/DataGrid",
+      "dojox/layout/ExpandoPane", 
       "dojo/data/ItemFileReadStore",
       "esri/Color",
       "dojo/on",
@@ -90,7 +92,7 @@
       "dijit/form/RadioButton",
       "dojo/domReady!"
       ], function(Map, BasemapGallery, Popup, ArcGISDynamicMapServiceLayer, ImageParameters, Query, Draw, IdentifyTask, FindTask, FindParameters, FeatureLayer, IdentifyResult, IdentifyParameters, InfoWindow, 
-        SimpleFillSymbol, SimpleLineSymbol, InfoTemplate, arrayUtil, connect, DataGrid, ItemFileReadStore, Color, on, dom, query, registry, parser, BorderContainer, ContentPane, AccordionContainer, TitlePane, Button, RadioButton) {
+        SimpleFillSymbol, SimpleLineSymbol, InfoTemplate, arrayUtil, connect, DataGrid, ExpandoPane, ItemFileReadStore, Color, on, dom, query, registry, parser, BorderContainer, ContentPane, AccordionContainer, TitlePane, Button, RadioButton) {
           
         parser.parse();
         
@@ -532,7 +534,10 @@
           </div><!-- Title Pane - Additional Layers -->
         </div><!-- unnamed div -->
       </div><!-- mapDiv -->
-    <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom'" style="height:190px;">
+      
+    <div data-dojo-type="dojox.layout.ExpandoPane" title="Search Functionality"
+        data-dojo-props="region:'bottom', design:'footer', gutters:true, liveSplitters:true, startExpanded:false, easeIn:'expoInOut', easeOut:'expoInOut', duration:800" 
+        style="height:390px;">
 
     <!-- <div data-dojo-type="dijit/TitlePane"
         data-dojo-props="title:'Search Roads', closable:false,  open:false" style="height:30px;"> -->

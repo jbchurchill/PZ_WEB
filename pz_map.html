@@ -112,7 +112,7 @@
           infoWindow: popup
         });
         
-        findTask = new FindTask(""http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
+        findTask = new FindTask("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
         map.on("load", function () {
         //Create the find parameters
         findParams = new FindParameters();

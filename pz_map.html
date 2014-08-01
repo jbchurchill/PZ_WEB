@@ -494,7 +494,6 @@
          style="width:100%;height:100%;margin:0;">
       <div data-dojo-type="dijit/layout/ContentPane" id="cp"
         data-dojo-props="region: 'top'">
-        
       <button id="selectPointsButton" data-dojo-type="dijit/form/Button">Select Points/Polys</button>
       <button id="clearSelectionButton" data-dojo-type="dijit/form/Button">Clear Selection</button>
       <div class="selType">
@@ -505,6 +504,9 @@
           <input type="radio" id="points" data-dojo-type="dijit/form/RadioButton" name="geomType" checked="true" />Address Points<br />
           <input type="radio" id="polys" data-dojo-type="dijit/form/RadioButton" name="geomType" />Parcels<br />
       </div>
+      <span style="font-size: 0.6em; float:right;">
+      Click the triangle at the lower right corner to search roads or parcels.
+      </span>
       </div><!-- #cp CONTENT PANE -->
       <!-- onclick="runTest();"  -->
       <div id="mapDiv" data-dojo-type="dijit/layout/ContentPane" 

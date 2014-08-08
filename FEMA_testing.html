@@ -58,7 +58,8 @@
         identifyParams.tolerance = 3;
         identifyParams.returnGeometry = true;
         // identifyParams.layerIds = [1, 2, 3, 4, 5, 6, 8, 10];
-        identifyParams.layerOption = IdentifyParameters.LAYER_OPTION_ALL;
+        identifyParams.layerOption = IdentifyParameters.LAYER_OPTION_VISIBLE; // .LAYER_OPTION_ALL; 
+        // setting LAYER_OPTION_VISIBLE was an important change, eliminating attempts to identify layers not within scale range.
         identifyParams.width  = map.width;
         identifyParams.height = map.height;        
         

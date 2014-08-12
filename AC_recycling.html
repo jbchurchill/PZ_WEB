@@ -1,0 +1,343 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=7" />
+    <title>Recycle in Allegany County</title>
+    <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/2.6/js/dojo/dijit/themes/claro/claro.css">
+
+    <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/2.6/js/dojo/dojox/grid/resources/Grid.css">
+    <style type="text/css">
+      body,html,#main{margin:0;padding:0;height:100%;width:100%;}
+      #map{padding:0;border:solid 1px;z-index:1}
+      
+      #logo{
+	      position:absolute;
+	      bottom:20px;
+	      right:30px;
+	      z-index:100; 
+	      width:130px; 
+	      heigth:130px;
+	      opacity:0.4;
+      }  
+      
+      .dojoxGridHeader .dojoxGridCell{
+        background: #336699;
+        color: white;
+        font-size: smaller;
+      }
+      
+      .dojoxGridHeader{
+        background: #336699;
+        color: white;
+        font-style: bold;
+      }
+      
+      .dojoxGridRow {
+        background: white;
+        font-size: smaller;
+      }
+      
+      .dojoxGridRowOdd {
+        background: #336699;
+        color: white;
+        font-size: smaller;
+      }      
+      
+      .dojoxGridCell {
+        border-color: lightgrey;
+      }
+      
+      .dijitTooltip {
+        max-width: 20em;
+      }
+      
+    </style>
+
+    <script type="text/javascript">
+      var djConfig = { parseOnLoad:true };
+    </script>
+    <script type="text/javascript" src=
+      "http://serverapi.arcgisonline.com/jsapi/arcgis/?v=2.6">
+    </script>
+    <script type="text/javascript">
+      dojo.require("dijit.dijit");
+      dojo.require("esri.map");
+      dojo.require("esri.layers.FeatureLayer");
+      dojo.require("dojo.parser");
+      dojo.require("dijit.layout.BorderContainer");
+      dojo.require("dijit.layout.ContentPane");
+      dojo.require("dijit.form.Button");
+      dojo.require("dijit.form.TextBox");
+      dojo.require("dijit.Tooltip");
+      dojo.require("dojox.grid.DataGrid");
+      dojo.require("dojo.data.ItemFileReadStore");
+      dojo.require("esri.dijit.InfoWindow");
+      dojo.require("dijit.layout.TabContainer");
+     
+      
+
+      var map;
+      var statesLayer;
+
+      function init() {
+        var initExtent = new esri.geometry.Extent({"xmin":729000,"ymin":662000,"xmax":930000,"ymax":750000,"spatialReference":{"wkid":2248}});
+        map = new esri.Map("map",{
+          extent:initExtent,
+          logo:false
+        });
+
+        dojo.connect(map,"onLoad",function(){
+          dojo.connect(dijit.byId('map'), 'resize', map,map.resize);  
+        });
+       
+        map.addLayer(new esri.layers.ArcGISTiledMapServiceLayer("http://alleganygis.allconet.org/allcogis/rest/services/Dashboards/AerialHybrid2011PNG32/MapServer"));
+        map.addLayer(new esri.layers.ArcGISDynamicMapServiceLayer("http://alleganygis.allconet.org/allcogis/rest/services/RecyclingSites/MapServer"));
+        
+        //Simple info template from original design
+        //var infoTemplate = new esri.InfoTemplate("${name}", "<tr>Town/City: <td>${towncity}</tr></td> <br><tr>Address: <td>${address}</tr></td> <br> <tr>Hours: <td>${hours}</tr></td> <br> <tr>Plastic: <td>${plastic}</tr></td> <br> <tr>Glass: <td>${glass}</tr></td> <br> <tr>Newspaper: <td>${newspaper}</tr></td> <br> <tr>Aluminum: <td>${aluminum}</tr></td> <br> <tr>Office Paper: <td>${officepaper}</tr></td> <br> <tr>Oil: <td>${oil}</tr></td> <br> <tr>Antifreeze: <td>${antifreeze}</tr></td> <br> <tr>Cardboard: <td>${cardboard}</tr></td> <br> <tr>Magazines: <td>${magazines}</tr></td> <br><br> <img src=${photo} alt=${name} />");
+        //map.infoWindow.resize(275,275);
+        
+        var infoTemplate = new esri.InfoTemplate();
+        infoTemplate.setTitle("${name}");
+        infoTemplate.setContent(getWindowContent);
+        map.infoWindow.resize(340,300);
+        
+        var maxOffset = function maxOffset(map, pixelTolerance) {
+          return Math.floor(map.extent.getWidth() / map.width) * pixelTolerance;
+        };               
+       
+        //add the recycling sites selection data
+        statesLayer = new esri.layers.FeatureLayer("http://alleganygis.allconet.org/allcogis/rest/services/RecyclingSites/MapServer/0",{
+          mode:esri.layers.FeatureLayer.MODE_SELECTION,
+          maxAllowableOffset:maxOffset(map,1),
+          outFields:["name","address","hours","plastic","glass","newspaper","aluminum","officepaper","oil","anitfreeze","cardboard","magazines","objectid","towncity","photo","special"]
+        });
+        
+        //add the recycling sites static data for info popups
+        featureLayer = new esri.layers.FeatureLayer("http://alleganygis.allconet.org/allcogis/rest/services/RecyclingSites/MapServer/0",{
+          mode: esri.layers.FeatureLayer.MODE_ONDEMAND,
+          infoTemplate: infoTemplate,
+          outFields: ["*"]
+        });
+        
+       
+       
+        //define a selection symbol
+        var highlightSymbol = new esri.symbol.SimpleMarkerSymbol(esri.symbol.SimpleMarkerSymbol.STYLE_SQUARE, 30,
+            new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID,
+            new dojo.Color([255,0,0]), 1),
+            new dojo.Color([0,255,0,0.25]));
+        statesLayer.setSelectionSymbol(highlightSymbol);
+       
+        dojo.connect(statesLayer,'onLoad',function(layer){    
+          var query = new esri.tasks.Query();    
+          query.where = "1=1";
+          layer.queryFeatures(query,function(featureSet){
+            var items = dojo.map(featureSet.features,function(feature){
+              return feature.attributes;
+            });
+            var data = {
+                identifier:"objectid",
+                items:items};
+            store = new dojo.data.ItemFileReadStore({data:data});
+            grid.setStore(store);
+            grid.setSortIndex(1,"true"); //sort on the state name          
+          });
+
+         
+        });
+        map.addLayers([statesLayer]);
+        map.addLayers([featureLayer]);
+       
+        //modify the grid so only the towncity field is sortable
+        grid.canSort = function(col){ if(Math.abs(col) == 2) { return true; } else { return false; } };
+        
+        //create tool tip popup behavior and content
+        dojo.addOnLoad(function() {
+          var showTooltip = function(e) {
+            console.log("watch");
+            var column;
+            var msg;
+            if (e.rowIndex < 0) { // header
+                column = e.cell.name;
+            } 
+            
+            //Insert the following line into msg to add an image to tool tip popup
+            //<br/><img src='http://arcgis.allconet.org/Recycle/image/miracle.jpg' alt='no image'/><br/>
+            if (column == "Plastic") {
+                msg = "#1 and #2 plastic bottles and jugs only. Sort plastic by type and remove caps.";
+            }
+            if (column == "Glass") {
+                msg = "Clear, brown, green, yellow, and blue glass ARE accepted. Please rinse, remove lids, and separate by color. Blue glass may be mixed with green glass. Yellow may be mixed with brown. Labels acceptable on glass. The following types of glass are NOT accepted: automobile, plate, lightbulbs, and ceramics.";
+            }
+            if (column == "Newspaper") {
+                msg = "Glossy inserts are acceptable with Newspapers";
+            }
+            if (column == "Aluminum and Tin") {
+                msg = "Metal food and beverage containers ARE accepted. Rinse all metal items, labels are acceptable on metal items";
+            }
+            if (column == "Office Paper") {
+                msg = "Labels, staples, tape, and metal clips on envelopes are acceptable with mixed office paper. Glossy inserts and the cardboard backs of tablet paper are not acceptable with mixed office paper.";
+            }
+            if (column == "Oil") {
+                msg = "Used motor oil should be emptied into large containment tank on site.";   
+            }
+            if (column == "Antifreeze") {
+                msg = "Used antifreeze should be emptied into large containment tank on site.";   
+            }
+            if (column == "Cardboard") {
+                msg = "Labels, staples, and tape ARE acceptable on corrugated cardboard. Paperboard and paper bags also accepted. Waxy coated cardboard and styrofoam/plastic inserts NOT accepted.";
+            }
+            if (column == "Magazines") {
+                msg = "Glossy paper catalogs are considered magazines.";
+            }
+            if (column == "Hours") {
+                msg = "If hours are not listed the site is accessible from dawn to dusk seven days a week.";
+            }
+            
+            
+            if (msg) {
+                console.log(msg);
+                dijit.showTooltip(msg, e.cellNode, ['below']);
+            }
+        };
+        var hideTooltip = function(e) {
+            dijit.hideTooltip(e.cellNode);
+        };
+        //dojo.connect(grid, "onCellMouseOver", showTooltip);
+        //dojo.connect(grid, "onCellMouseOut", hideTooltip);
+        dojo.connect(grid, "onHeaderCellMouseOver", showTooltip);
+        dojo.connect(grid, "onHeaderCellMouseOut", hideTooltip);
+        // grid is the dijit
+        }); 
+      }
+
+    function getWindowContent(graphic) {
+          //make a tab container
+          var tc = new dijit.layout.TabContainer({
+          style:"width:100%;height:100%;font-size: smaller"
+          }, dojo.create("div"));                  
+         
+          //display attribute information
+          var cp1 = new dijit.layout.ContentPane({            
+            title: "Details",
+            content: "Town/City: " + graphic.attributes.towncity + "<br/>Name: " + graphic.attributes.name + "<br/>Address: " + graphic.attributes.address + "<br/>Hours: " + graphic.attributes.hours + "<br/><br/>Accepts the following:"//+ "<br/>Plastic: " + graphic.attributes.plastic + "<br/>Glass: " + graphic.attributes.glass + "<br/>Newspaper: " + graphic.attributes.newspaper + "<br/>Aluminum and Tin: " + graphic.attributes.aluminum + "<br/>Office Paper: " + graphic.attributes.officepaper + "<br/>Oil: " + graphic.attributes.oil + "<br/>Antifreeze: " + graphic.attributes.anitfreeze + "<br/>Cardboard: " + graphic.attributes.cardboard + "<br/>Magazines: " + graphic.attributes.magazines
+          });
+          
+          //check to see if a site accepts a material before listing it
+          if (graphic.attributes.plastic == "YES"){
+            cp1.set('content', cp1.get('content')+ "<br/>Plastic");
+          };
+          
+          if (graphic.attributes.glass == "YES"){
+            cp1.set('content', cp1.get('content')+ "<br/>Glass");
+          };
+          
+          if (graphic.attributes.newspaper == "YES"){
+            cp1.set('content', cp1.get('content')+ "<br/>Newspaper");
+          };
+          
+          if (graphic.attributes.aluminum == "YES"){
+            cp1.set('content', cp1.get('content')+ "<br/>Aluminum and Tin");
+          };
+          
+          if (graphic.attributes.officepaper == "YES"){
+            cp1.set('content', cp1.get('content')+ "<br/>Office Paper");
+          };
+          
+          if (graphic.attributes.oil == "YES"){
+            cp1.set('content', cp1.get('content')+ "<br/>Oil");
+          };
+          
+          if (graphic.attributes.anitfreeze == "YES"){
+            cp1.set('content', cp1.get('content')+ "<br/>Antifreeze");
+          };
+          
+          if (graphic.attributes.cardboard == "YES"){
+            cp1.set('content', cp1.get('content')+ "<br/>Cardboard");
+          };
+          
+          if (graphic.attributes.magazines == "YES"){
+            cp1.set('content', cp1.get('content')+ "<br/>Magazines");
+          };
+          
+          if (graphic.attributes.special !== null){
+            cp1.set('content', cp1.get('content')+ "<br/>" + graphic.attributes.special);
+          };
+          
+          tc.addChild(cp1);
+         
+         //display photo
+          var cp2 = new dijit.layout.ContentPane({
+            title: "Photo",
+            content: "<img src=" + graphic.attributes.photo + " alt='Sorry! No photo at this time.' />"
+          });
+                          
+          tc.addChild(cp2);
+
+          return tc.domNode;
+    }
+
+    function makeZoomButton(id){
+      var zBtn = "<div dojoType='dijit.form.Button'><img src='zoom.png'";
+      zBtn = zBtn + " width='18' height='18'";
+      zBtn = zBtn + " onClick=\"zoomRow('"+id+"')\"></div>";
+      return zBtn;
+    }
+    function zoomRow(id){
+      statesLayer.clearSelection();
+      var query = new esri.tasks.Query();
+      query.objectIds = [id];
+      statesLayer.selectFeatures(query,esri.layers.FeatureLayer.SELECTION_NEW,function(features){
+        //zoom to the selected feature
+         map.centerAndZoom(features[0].geometry, 9);
+    });
+    }
+    
+
+dojo.addOnLoad(init);
+</script>
+  </head>
+  <body class="claro">
+  
+<!-- The section below handles the dojo grid and map -->  
+  
+    <div id="mainWindow" dojotype="dijit.layout.BorderContainer" design="headline" style="width:100%; height:100%;">           
+      <div id="map" dojotype="dijit.layout.ContentPane" region="center" >                         
+      </div>
+      <div dojotype="dijit.layout.ContentPane" region="top" style="width:100%; height:35%">
+        <table dojotype="dojox.grid.DataGrid" jsid="grid" id="grid" selectionMode="none">
+         <thead>
+            <tr>
+              <th field="objectid" formatter="makeZoomButton" width="25px">
+                <img alt="" src="images/zoom.png"/>
+              </th>
+              <th field="towncity" width="100px" >Town/City</th>
+              <th field="name" width="200px" >Name</th>
+              <th field="address" width="200px">Address</th>
+              <th field="hours" width="100px">Hours</th>
+              <th field="plastic" width="50px">Plastic</th>
+              <th field="glass" width="40px">Glass</th>
+              <th field="newspaper" width="85px">Newspaper</th>
+              <th field="aluminum" width="130px">Aluminum and Tin</th>
+              <th field="officepaper" width="105px">Office Paper</th>
+              <th field="oil" width="30px">Oil</th>
+              <th field="anitfreeze" width="80px">Antifreeze</th>
+              <th field="cardboard" width="85px">Cardboard</th>
+              <th field="magazines" width="85px">Magazines</th>
+              
+            </tr>
+          </thead>
+        </table>
+      </div>
+    </div> 
+    <div id="logo">
+      <a target="_blank" href="http://www.gov.allconet.org/recycle/contact.htm"><img style="width: 100%;" style="height: 100%;" src="http://alleganygis.allconet.org/Recycle/image/county_seal_recycle.gif" alt="View Logo" /></a>  
+    </div>
+    
+<!-- The section above handles the dojo grid and map -->    
+  
+  </body>
+</html>

@@ -1,0 +1,23 @@
+Schema of html and related files in this working tree
+
+Testing Files:
+GC_geolocator_needed.html (trying to incorporate a geolocator (for which I don't have a service yet) into the pz_map.html
+AC_recycling.html (code lifted from Allegany County)
+AC_school_districts.html (code lifted from Allegany County; has the geolocator being used in the GC_geolocator_needed.html file)
+FEMA_w_gc_service.html I'm attempting to use the FEMA service that I created in a web map with parcels and addresspoints.
+
+Releases:
+pz_map.html (currently at version 1.1b)
+
+Unknown or not current
+Splitter_sample.html
+Search_parcels (adding search for parcels functionality)
+test3.html (?)
+add_custom_basemap.html (getting a custom basemap service added to the basemap widget)
+states.json (I don't remember why this is in there)
+test.html (?)
+Grid_QueryResult.html (dojo grid sample ?)
+graphics_extent_query.html (?)
+select_points.html (working on functionality that would go into pz_map.html v1.0b)
+widget_msmt_and_HomeButton.html (early testing with measurement widget)
+widget_measurement 

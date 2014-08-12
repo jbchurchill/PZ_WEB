@@ -1,0 +1,379 @@
+ <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+  
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=7" />
+    <!--The viewport meta tag is used to improve the presentation and behavior of the samples
+      on iOS devices-->
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
+    <title>
+        Measure Distances
+    </title>
+    <link rel="stylesheet" type="text/css" href="http://serverapi.arcgisonline.com/jsapi/arcgis/2.1/js/dojo/dijit/themes/soria/soria.css">
+    <style>
+      html,body,#main {
+      height:100%;
+      width:100%;
+      margin:0;
+      padding:0;
+      }
+
+      .shadow {
+      background-color:#FFF;
+      box-shadow:0 6px 3px -3px #888;
+      moz-border-radius:6px;
+      moz-box-shadow:0 6px 3px -3px #888;
+      webkit-border-radius:6px;
+      webkit-box-shadow:0 6px 3px -3px #888;
+      padding:8px;
+      }
+
+      .togglebutton {
+      color:#000;
+      font-family:Helvetica, Calibri, Arial, sans-serif;
+      font-size:16px;
+      text-align:center;
+      text-decoration:none;
+      margin:0;
+      padding:5px;
+      }
+
+      .togglebutton.mousedown {
+      background:url(images/buttonbg.jpg) repeat-x scroll left center transparent;
+      }
+
+      .floatingWindow {
+      background:url(images/paneledge.png) repeat scroll left top transparent;
+      border:solid 1px #00628B;
+      color:#000;
+      font-family:Tahoma;
+      moz-border-radius:10px;
+      position:absolute;
+      text-align:left;
+      webkit-border-radius:10px;
+      padding:10px;
+      }
+
+      .title {
+      font-size:10pt;
+      padding-left:5px;
+      }
+
+      .details {
+      font-size:8pt;
+      padding:10px;
+      }
+
+      .disabled {
+      color:gray;
+      }
+    </style>
+    <script type="text/javascript">
+      var djConfig = {
+          parseOnLoad: true
+      };
+    </script>
+    <script type="text/javascript" src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=2.1">
+    </script>
+    <script type="text/javascript">
+        dojo.require("dijit.dijit");
+        dojo.require("dijit.layout.BorderContainer");
+        dojo.require("dijit.layout.ContentPane");
+        dojo.require("dijit.form.CheckBox");
+        dojo.require("dijit.form.Button");
+        dojo.require("esri.map");
+        dojo.require("esri.tasks.query");
+        dojo.require("esri.tasks.locator");
+
+
+        var geometryService;
+        var baseLayers = [];
+        var resizeTimer;
+        var map, locator;
+        var endGraphic;
+        var units;
+        var totalDistance = 0,
+            inputPoints = [],
+            legDistance = [];
+	var elementary; //elementary
+	var middle; //middle
+	var high;
+	var locator;
+
+
+        function init() {
+            esriConfig.defaults.io.proxyUrl = "/arcgisserver/apis/javascript/proxy/proxy.ashx";
+
+            var initialExtent = new esri.geometry.Extent({
+                "xmin": 701650,
+                "ymin": 629750,
+                "xmax": 970350,
+                "ymax": 775250,
+                "spatialReference": {
+                    "wkid": 2248
+                }
+            });
+            map = new esri.Map("map", {
+                extent: initialExtent,
+                slider: true
+            });
+
+            dojo.connect(dijit.byId('map'), 'resize', function() { //resize the map when browser size changes
+                resizeMap();
+            });
+            dojo.connect(map, "onClick", mapClickHandler);
+
+            var imagery = new esri.layers.ArcGISTiledMapServiceLayer("http://alleganygis.allconet.org/allcogis/rest/services/Dashboards/AerialHybrid2011PNG32/MapServer", {
+                id: "imagery",
+                visible: false
+            });
+            baseLayers.push(imagery);
+            var streetMap = new esri.layers.ArcGISTiledMapServiceLayer("http://alleganygis.allconet.org/allcogis/rest/services/Dashboards/AerialHybrid2011PNG32/MapServer", {
+                id: "streetMap"
+            });
+            baseLayers.push(streetMap);
+            var topoMap = new esri.layers.ArcGISTiledMapServiceLayer("http://alleganygis.allconet.org/allcogis/rest/services/Dashboards/AerialHybrid2011PNG32/MapServer", {
+                id: "topo",
+                visible: false
+            });
+
+	    baseLayers.push(topoMap);
+            map.addLayers(baseLayers);
+
+	    elementary = new esri.layers.ArcGISDynamicMapServiceLayer("http://alleganygis.allconet.org/allcogis/rest/services/Schools/ElemSchools/MapServer", {id:"elementary"});
+            map.addLayer(elementary);
+            elementary.hide();
+
+  	    middle = new esri.layers.ArcGISDynamicMapServiceLayer("http://alleganygis.allconet.org/allcogis/rest/services/Schools/MiddleSchools/MapServer", {id:"middle"});
+            map.addLayer(middle);
+            middle.hide();
+
+   	    high = new esri.layers.ArcGISDynamicMapServiceLayer("http://alleganygis.allconet.org/allcogis/rest/services/Schools/HighSchools/MapServer", {id:"high"});
+            map.addLayer(high);
+            high.hide();
+			
+		zipcodes = new esri.layers.ArcGISDynamicMapServiceLayer("http://alleganygis.allconet.org/allcogis/rest/services/ZipCodes/MapServer", {id:"zipcodes"});
+            map.addLayer(zipcodes);
+            zipcodes.hide();
+
+
+            locator = new esri.tasks.Locator("http://alleganygis.allconet.org/allcogis/rest/services/AlleganyGeocoder/GeocodeServer");
+            dojo.connect(locator, "onAddressToLocationsComplete", showResults);
+
+	    var dynamicMapServiceLayer = new esri.layers.ArcGISDynamicMapServiceLayer("http://alleganygis.allconet.org/allcogis/rest/services/AddressPoints/MapServer");
+            map.addLayer(dynamicMapServiceLayer);
+
+
+
+            geometryService = new esri.tasks.GeometryService("http://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
+
+	
+        }
+
+	function TurnOffH() {
+          	elementary.hide();
+	  	high.show();
+      	}
+
+      	function TurnOffH1() {
+          	middle.hide();
+	  	high.show();
+      	}
+
+      	function TurnOffM() {
+          	high.hide();
+          	middle.show();
+      	}
+
+      	function TurnOffM1() {
+          	elementary.hide();
+          	middle.show();
+      	}
+
+      	function TurnOffE() {
+          	middle.hide();
+          	elementary.show();
+      	}
+
+      	function TurnOffE1() {
+          	high.hide();
+          	elementary.show();
+      	}
+		
+		function showZip() {
+			if (zipcodes.visible == true){
+				zipcodes.hide();
+			}
+			else{
+				zipcodes.show();
+			}
+      	}
+
+
+        function mapClickHandler(evt) {
+            var inPoint = new esri.geometry.Point(evt.mapPoint.x, evt.mapPoint.y, map.spatialReference);
+            inputPoints.push(inPoint);
+            //define the symbology for the graphics
+            var markerSymbol = new esri.symbol.SimpleMarkerSymbol(esri.symbol.SimpleMarkerSymbol.STYLE_SQUARE, 12, new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255, 255, 0]), 1), new dojo.Color([158, 184, 71, 0.65]));
+            var polylineSymbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([255, 255, 0]), 4);
+            var font = new esri.symbol.Font("18px", esri.symbol.Font.STYLE_NORMAL, esri.symbol.Font.VARIANT_NORMAL, esri.symbol.Font.WEIGHT_BOLDER);
+            var textSymbol;
+            if (inputPoints.length === 1) { //start location label
+                textSymbol = new esri.symbol.TextSymbol("Start", font, new dojo.Color([255, 255, 0]));
+                textSymbol.yoffset = 8;
+                map.graphics.add(new esri.Graphic(evt.mapPoint, textSymbol));
+            }
+
+            if (inputPoints.length >= 2) { //end location label
+                textSymbol = new esri.symbol.TextSymbol("Finish", font, new dojo.Color([255, 255, 0]));
+                textSymbol.yoffset = 8;
+                if (endGraphic) { //if an end label already exists remove it
+                    map.graphics.remove(endGraphic);
+                }
+                endGraphic = new esri.Graphic(evt.mapPoint, textSymbol);
+                map.graphics.add(endGraphic);
+            }
+            //add a graphic for the clicked location
+            map.graphics.add(new esri.Graphic(evt.mapPoint, markerSymbol));
+
+            //if there are two input points call the geometry service and perform the distance operation
+            if (inputPoints.length >= 2) {
+                dojo.style(dojo.byId("distanceDetails"), "display", "block");
+                var distParams = new esri.tasks.DistanceParameters();
+                distParams.distanceUnit = esri.tasks.GeometryService.UNIT_STATUTE_MILE;
+
+                distParams.geometry1 = inputPoints[inputPoints.length - 2];
+                distParams.geometry2 = inputPoints[inputPoints.length - 1];
+                distParams.geodesic = true;
+
+                //draw a polyline to connect the input points
+                var polyline = new esri.geometry.Polyline(map.spatialReference);
+                polyline.addPath([distParams.geometry1, distParams.geometry2]);
+                map.graphics.add(new esri.Graphic(polyline, polylineSymbol));
+                //Calculate the geodesic distance
+                geometryService.distance(distParams, function(distance) {
+                    legDistance.push(dojo.number.format(distance, {
+                        places: 2
+                    }));
+                    totalDistance += distance;
+                    var content = "";
+                    dojo.forEach(legDistance, function(leg, index) {
+                        content = content + "<b>Leg " + (index + 1) + "</b>" + ": " + leg + "<br />";
+                    });
+                    content = content + "<b>Total:</b> " + dojo.number.format(totalDistance, {
+                        places: 2
+                    }) + " miles <br />";
+                    dojo.byId('distanceDetails').innerHTML = content;
+                });
+
+            }
+        }
+
+        function resizeMap() { //Handle resize of browser
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                map.resize();
+                map.reposition();
+            }, 500);
+        }
+
+        function resetMap() {
+            map.graphics.clear();
+            inputPoints.length = 0;
+            totalDistance = 0;
+            legDistance.length = 0;
+            dojo.byId("distanceDetails").innerHTML = "";
+            dojo.style(dojo.byId("distanceDetails"), "display", "none");
+        }
+
+        function locate() {
+        	map.graphics.clear();
+        	var add = dojo.byId("address").value.split(",");
+        	var address = {
+          	Street : add[0],
+          	Zone: add[1]
+        };
+        locator.addressToLocations(address,["Loc_name"]);
+        }
+
+        function showResults(candidates) {
+        	var candidate;
+        	var symbol = new esri.symbol.SimpleMarkerSymbol();
+        	var infoTemplate = new esri.InfoTemplate("Location", "Address: ${address}<br />Score: ${score}<br />Source locator: ${locatorName}");
+
+        	symbol.setStyle(esri.symbol.SimpleMarkerSymbol.STYLE_CIRCLE);
+        	symbol.setColor(new dojo.Color([255,255,255,0.75]));
+
+        	var points =  new esri.geometry.Multipoint(map.spatialReference);
+
+        	for (var i=0, il=candidates.length; i<il; i++) {
+          	  candidate = candidates[i];
+          	  if (candidate.score > 85) {
+            	    var attributes = { address: candidate.address, score:candidate.score, locatorName:candidate.attributes.Loc_name };
+            	    var graphic = new esri.Graphic(candidate.location, symbol, attributes, infoTemplate);
+            	    map.graphics.add(graphic);
+            	    map.graphics.add(new esri.Graphic(candidate.location, new esri.symbol.TextSymbol(attributes.address).setOffset(0, 8)));
+            	    points.addPoint(candidate.location);
+          	}
+          }
+          map.setExtent(points.getExtent().expand(3));
+      	}
+
+
+        function toggleBaseLayer(name) {
+
+            if (map !== null) {
+                dojo.forEach(baseLayers, function(baseLayer) {
+                    (baseLayer.id === name) ? baseLayer.show() : baseLayer.hide();
+                });
+            }
+        }
+
+
+        dojo.addOnLoad(init);
+      </script>
+  </head>
+  
+  <body class="soria">
+  <div id="mainWindow" dojotype="dijit.layout.BorderContainer" design="sidebar"
+  gutters="false" style="width: 100%; height: 100%; margin: 0;">
+      <div id="detailsWindow" class="floatingWindow" style="left:125px;top:25px;z-index:998;width:250px;">
+          <div class="shadow">
+              <div class="title">
+                  Enter address and zip code as shown below to zoom to the desired location - then click two or more
+                  input points on the map to calculate the distance.
+              </div>
+              <div class="details">
+                  <input type="text" id="address" size="30" value="108 Washington St 21502" /> <i>(Address Zip)</i>
+                  <div dojoType="dijit.form.Button" value="Locate" onclick="locate()">
+                      Go
+                  </div>
+                  <div dojoType="dijit.form.Button" id="resetButton" onClick="resetMap();">
+                      Clear Route
+                  </div>
+                  <div dojoType="dijit.form.Button" id="zip" onClick="showZip();">
+                      Show/Hide Zip
+                  </div>
+                  <br />
+                  <div id="distanceDetails" style="padding:5px;overflow:auto;max-height:300px;display:none;">
+                  </div>
+                  <br />
+              </div>
+          </div>
+      </div>
+      <div id="centerPane" dojotype="dijit.layout.BorderContainer" region="center"
+      gutters="false" style="margin:2px 2px 2px 2px;">
+          <div id="map" dojotype="dijit.layout.ContentPane" region="center" style="position:relative; overflow:hidden;">
+              <div style="position:absolute; top:5px; right:30px; z-index:999; color:black;">
+                  <img onClick="TurnOffE();TurnOffE1();"src="http://alleganygis.allconet.org/images/schoolelem.png" align="ABSMIDDLE" />
+     		  <img onClick="TurnOffM();TurnOffM1();"src="http://alleganygis.allconet.org/images/schoolmiddle.png" align="ABSMIDDLE" />
+                  <img onClick="TurnOffH();TurnOffH1();"src="http://alleganygis.allconet.org/images/schoolhigh.png" align="ABSMIDDLE"" />
+              </div>
+
+          </div>
+      </div>
+  </body>
+
+
+</html>

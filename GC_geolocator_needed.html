@@ -434,8 +434,10 @@
         // TURN LAYERS ON AND OFF
         
       // START GEOLOCATE
+      // Appears to be geolocating to Enugu Nigeria and interestingly if I enter a Frostburg Address ...
+      // instead of a Cumberland Address, it is correspondingly nearby (but further to the west).
         // dojo.require("esri.tasks.locator");
-        dojo.on("click", locate);
+        on(dom.byId("goButton"), "click", locate);
         var locator;
         locator = new esri.tasks.Locator("http://alleganygis.allconet.org/allcogis/rest/services/AlleganyGeocoder/GeocodeServer");
         dojo.connect(locator, "onAddressToLocationsComplete", showResults);
@@ -445,9 +447,13 @@
         	var address = {
           	Street : add[0],
           	Zone: add[1]
-        };
-        locator.addressToLocations(address,["Loc_name"]);
+          };
+          locator.addressToLocations(address,["Loc_name"]);
         }
+        // dojo.on("click", locate);
+        // on(dom.byId("address"), "click", locate());
+
+        // dom.byId("address", locate);
 
         function showResults(candidates) {
         	var candidate;
@@ -616,7 +622,7 @@
             </div>
             <div class="details">
               <input type="text" id="address" size="30" value="108 Washington St 21502" /> <i>(Address Zip)</i>
-              <div dojoType="dijit.form.Button" value="Locate"><!-- // onclick="locate()" -->
+              <div dojoType="dijit.form.Button" id="goButton" value="Locate"><!-- // onclick="locate()" -->
                 Go
               </div>
               <div dojoType="dijit.form.Button" id="resetButton" onClick="resetMap();">

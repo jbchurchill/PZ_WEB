@@ -424,7 +424,7 @@
               //console.log("index: " + addlIdArray[i].value + " value: " + inputs[i].value);
               if (!(contains(addlIdArray, inputs[i].value))) { // .indexOf(inputs[i]) == inputs[i].value)){
                 addlIdArray.push(inputs[i]);
-                console.log("new value: " + inputs[i].value);
+                // console.log("new value: " + inputs[i].value);
               }
             }
           }
@@ -455,9 +455,9 @@
         // layers that can be identified by "click"
         identifyParams.layerIds = [1, 2, 3, 4, 5, 6, 8, 10];
         // TESTING IDENTIFY ADDL FXALITY
-        console.log("Array Length: " + addlIdArray.length);
+        // console.log("Array Length: " + addlIdArray.length);
         for (i=0; i < addlIdArray.length; i++) {
-          console.log("ADDL LAYER at " + i + " :" + addlIdArray[i].value);
+          // console.log("ADDL LAYER at " + i + " :" + addlIdArray[i].value);
           identifyParams.layerIds.push(addlIdArray[i].value);
           
         }
@@ -472,7 +472,7 @@
             feature.attributes.layerName = result.layerName;
             
             if(result.layerName === 'County_Zoning_Layer'){
-              console.log(feature.attributes.GENZONE);
+              // console.log(feature.attributes.GENZONE);
               var template = new esri.InfoTemplate("", "<span class=\"sectionhead\">Layer: County Zoning Layer </span><br /><br /><hr>${GENZONE} <br/> Land Use Code: ${FLU}");
               feature.setInfoTemplate(template);
             }
@@ -514,6 +514,24 @@
               var template = new esri.InfoTemplate("",
               "<span class=\"sectionhead\">Layer: Street Centerlines</span><br /><br /><hr>Name: ${STREET_ALL} <br />"
               + "Maintenance: ${MAINTENANCE} <br /> Length: ${SHAPE_Length:NumberFormat} feet <br />");
+              feature.setInfoTemplate(template);
+            } else if (result.layerName === 'Election_Districts'){
+              var template = new esri.InfoTemplate("",
+              "<span class=\"sectionhead\">Layer: Election Districts</span><br /><br /><hr>Election District: ${Dist_Numb} <br /> "
+              + "Commissioner District: ${Comm_Dist} <br />");
+              feature.setInfoTemplate(template);
+            } else if (result.layerName === 'Zip Codes'){
+              var template = new esri.InfoTemplate("",
+              "<span class=\"sectionhead\">Layer: Zip Codes</span><br /><br /><hr>Zip Code: ${ZIPNAME} <br />");
+              feature.setInfoTemplate(template);
+            } else if (result.layerName === 'Wind_Turbines'){
+              var template = new esri.InfoTemplate("",
+              "<span class=\"sectionhead\">Layer: Wind Turbines</span><br /><br /><hr>Identifier: ${Identifier} <br />"
+              + "Owner: ${Owner} <br />");
+              feature.setInfoTemplate(template);
+            } else if (result.layerName === 'Gas_Wells'){
+              var template = new esri.InfoTemplate("",
+              "<span class=\"sectionhead\">Layer: Gas Wells</span><br /><br /><hr>Well Number: ${OBJECTID} <br />");
               feature.setInfoTemplate(template);
             }
             return feature;

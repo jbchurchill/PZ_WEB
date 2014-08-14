@@ -61,7 +61,18 @@
     var findTask, findParams;
     var map, center, zoom;
     var grid, store;
-    var identifyTask, identifyParams;   
+    var identifyTask, identifyParams;
+    var addlIdArray = [];
+    
+    function contains(a, obj) {
+      for (var i = 0; i < a.length; i++) {
+        if (a[i] === obj) {
+          return true;
+        }
+      }
+      return false;
+    } 
+    
     require([
       "esri/map", 
       "esri/dijit/BasemapGallery", 
@@ -82,6 +93,7 @@
       "esri/InfoTemplate", 
       "dojo/_base/array",
       "dojo/_base/connect",
+      "dojo/_base/lang", 
       "dojox/grid/DataGrid",
       "dojox/layout/ExpandoPane", 
       "dojo/data/ItemFileReadStore",
@@ -100,13 +112,14 @@
       "esri/dijit/Geocoder", 
       "dojo/domReady!"
       ], function(Map, BasemapGallery, Popup, ArcGISDynamicMapServiceLayer, ImageParameters, Query, Draw, IdentifyTask, FindTask, FindParameters, FeatureLayer, IdentifyResult, IdentifyParameters, InfoWindow, 
-        SimpleFillSymbol, SimpleLineSymbol, InfoTemplate, arrayUtil, connect, DataGrid, ExpandoPane, ItemFileReadStore, Color, on, dom, query, registry, parser, BorderContainer, ContentPane, AccordionContainer, TitlePane, Button, RadioButton, Geocoder) {
+        SimpleFillSymbol, SimpleLineSymbol, InfoTemplate, arrayUtil, connect, lang, DataGrid, ExpandoPane, ItemFileReadStore, Color, on, dom, query, registry, parser, BorderContainer, ContentPane, AccordionContainer, TitlePane, Button, RadioButton, Geocoder) {
           
         parser.parse();
         
         // doZoom variable allows us to zoom to extent of selected features (default) 
         // or not when that is unwanted (like when clicking "Clear Selection")
         var doZoom = 1;
+        
         
         registry.byId("search").on("click", doFind);
         registry.byId("search2").on("click", doFind);
@@ -393,21 +406,30 @@
         on(dom.byId("layer2CheckBox"), "change", updateLayerVisibility);
         on(dom.byId("layer3CheckBox"), "change", updateLayerVisibility);
         on(dom.byId("layer7CheckBox"), "change", updateLayerVisibility);
+        on(dom.byId("layer11CheckBox"), "change", updateLayerVisibility);
+        
         
         function updateLayerVisibility () {
           var inputs = query(".list_item");
           var inputCount = inputs.length;
-          //in this application layer 2 is always on.
+          //in this application, layer 2 is always on.
           visibleLayerIds = [1, 4, 5, 6, 8];
-          
+          addlIdArray = []; // array used to track layers turned on in the "Additional Layers" pane.
+          // It informs the identifyParams.layerIds array in the executeIdentifyTask function below.
           for (var i = 0; i < inputCount; i++) {
             if (inputs[i].checked) {
               visibleLayerIds.push(inputs[i].value);
+              if (!(contains(addlIdArray, inputs[i].value))) {
+                addlIdArray.push(inputs[i]);
+              }
             }
           }
           
           if (visibleLayerIds.length === 0) {
             visibleLayerIds.push(-1);
+          }
+          if (addlIdArray.length === 0) {
+            addlIdArray.push(-1);
           }
           
           landBaseLayer.setVisibleLayers(visibleLayerIds);
@@ -421,13 +443,19 @@
       // End Geocoder
     }); // end of require function
     
-    
+      
       function executeIdentifyTask(evt) {
         identifyParams.geometry = evt.mapPoint;
         identifyParams.mapExtent = map.extent;
        
-        // layers that can be identified by "click"
-        identifyParams.layerIds = [1, 2, 3, 4, 5, 6, 8, 10];
+        // layers that can be identified by "click" that are NOT in the "Additional Layers" Content Pane
+        identifyParams.layerIds = [1, 2, 3, 4, 5, 6, 8];
+        // If a layer is checked in the "Additional Layers" pane, it will have been added
+        // to the array (in updateLayerVisibility above), so add it to the list of those 
+        // that can be clicked and identified.
+        for (i=0; i < addlIdArray.length; i++) {
+          identifyParams.layerIds.push(addlIdArray[i].value);
+        }
         
         var deferred = identifyTask.execute(identifyParams);
         
@@ -439,7 +467,6 @@
             feature.attributes.layerName = result.layerName;
             
             if(result.layerName === 'County_Zoning_Layer'){
-              console.log(feature.attributes.GENZONE);
               var template = new esri.InfoTemplate("", "<span class=\"sectionhead\">Layer: County Zoning Layer </span><br /><br /><hr>${GENZONE} <br/> Land Use Code: ${FLU}");
               feature.setInfoTemplate(template);
             }
@@ -481,6 +508,24 @@
               var template = new esri.InfoTemplate("",
               "<span class=\"sectionhead\">Layer: Street Centerlines</span><br /><br /><hr>Name: ${STREET_ALL} <br />"
               + "Maintenance: ${MAINTENANCE} <br /> Length: ${SHAPE_Length:NumberFormat} feet <br />");
+              feature.setInfoTemplate(template);
+            } else if (result.layerName === 'Election_Districts'){
+              var template = new esri.InfoTemplate("",
+              "<span class=\"sectionhead\">Layer: Election Districts</span><br /><br /><hr>Election District: ${Dist_Numb} <br /> "
+              + "Commissioner District: ${Comm_Dist} <br />");
+              feature.setInfoTemplate(template);
+            } else if (result.layerName === 'Zip Codes'){
+              var template = new esri.InfoTemplate("",
+              "<span class=\"sectionhead\">Layer: Zip Codes</span><br /><br /><hr>Zip Code: ${ZIPNAME} <br />");
+              feature.setInfoTemplate(template);
+            } else if (result.layerName === 'Wind_Turbines'){
+              var template = new esri.InfoTemplate("",
+              "<span class=\"sectionhead\">Layer: Wind Turbines</span><br /><br /><hr>Identifier: ${Identifier} <br />"
+              + "Owner: ${Owner} <br />");
+              feature.setInfoTemplate(template);
+            } else if (result.layerName === 'Gas_Wells'){
+              var template = new esri.InfoTemplate("",
+              "<span class=\"sectionhead\">Layer: Gas Wells</span><br /><br /><hr>Well Number: ${OBJECTID} <br />");
               feature.setInfoTemplate(template);
             }
             return feature;
@@ -544,6 +589,7 @@
                   <input type='checkbox' class='list_item' id='layer3CheckBox' value=3 />Wind Turbines&nbsp;&nbsp;<br />
                   <input type='checkbox' class='list_item' id='layer7CheckBox' value=7 />Zip Codes&nbsp;&nbsp;<br />
                   <input type='checkbox' class='list_item' id='layer10CheckBox' value=10 />Zoning&nbsp;&nbsp;<br />
+                  <input type='checkbox' class='list_item' id='layer11CheckBox' value=11 />Election Districts&nbsp;&nbsp;<br />
                 </span><br />
               </div><!-- addLayers -->
             </div><!-- Content Pane - Additional Layers -->

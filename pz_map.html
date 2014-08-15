@@ -470,7 +470,7 @@
             feature.attributes.layerName = result.layerName;
             
             if (result.layerName === 'addresspoints'){
-              var template = new esri.InfoTemplate("", 
+              var template = new esri.InfoTemplate("Address Info", 
               "<span class=\"sectionhead\">Layer: Address Points</span><br /><br /><hr>Address: ${ADDRESS} <br /><br /> City: ${CITY} <br /> Zip: ${ZIP_CODE} <br /> ESN: ${ESN} <br /> Community: ${COMMUNITY} <br /> Map: ${MAP} <br /> Parcel: ${PARCEL} <br />"
               + "Lot: ${LOT} <br /> Tract: ${TRACT} <br /> LU: ${LU} <br /> Key date: ${KEYDATE} <br /> Rental: ${RENTAL} <br />"
               + "Rental Co.: ${RENTAL_CO} <br /> Tax Account: ${TAX_ACCOUNT_ID} <br /> Owner: ${OWNER_FIRST_NAME} ${OWNER_LAST_NAME} <br />");
@@ -517,7 +517,7 @@
               + "Owner: ${Owner} <br />");
               feature.setInfoTemplate(template);
             } else if(result.layerName === 'County_Zoning_Layer'){
-              var template = new esri.InfoTemplate("", "<span class=\"sectionhead\">Layer: County Zoning Layer </span><br /><br /><hr>${GENZONE} <br/> Land Use Code: ${FLU}");
+              var template = new esri.InfoTemplate("Zoning Info", "<span class=\"sectionhead\">Layer: County Zoning Layer </span><br /><br /><hr>${GENZONE} <br/> Land Use Code: ${FLU}");
               feature.setInfoTemplate(template);
             }
             else if (result.layerName === 'Garrett.DBO.TaxParcel'){

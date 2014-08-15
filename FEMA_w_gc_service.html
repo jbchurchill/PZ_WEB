@@ -72,17 +72,10 @@
               "<span class=\"sectionhead\">Layer: Street Centerlines</span><br /><br /><hr>Name: ${STREET_ALL} <br />"
               + "Maintenance: ${MAINTENANCE} <br /> Length: ${SHAPE_Length:NumberFormat} feet <br />");              
             
-        // fpFEMA_task = new IdentifyTask("https://hazards.fema.gov/gis/nfhl/services");
+        // FEMA service does not work very well in my experience.
         // fpFEMA_task = new IdentifyTask("https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer/");
         fpFEMA_task = new IdentifyTask("http://gis.garrettcounty.org:6080/arcgis/rest/services/FEMA/Flood_Hazard/MapServer/");
         // featureLayer = new FeatureLayer("https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer/28",
-        featureLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/FEMA/Flood_Hazard/MapServer/2",
-            {
-              mode: FeatureLayer.MODE_ONDEMAND,
-              outFields: ["*"],
-              infoTemplate: flzTemplate
-            });
-        map.addLayer(featureLayer);
         
         
         var imageParameters = new ImageParameters();

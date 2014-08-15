@@ -297,7 +297,7 @@
           arrayUtil.forEach(event.features, function (feature) {
             strParcelInfo += "<strong>MAP: </strong>" + feature.attributes.MAP + "<br />" +
             "<strong>PARCEL: </strong>" + feature.attributes.PARCEL + "<br />" +
-            "<strong>LINK: </strong><a href=\"" + feature.attributes.SDATWEBADR + "\" target=\"_blank\">Link</a><br /><hr />";
+            "<strong>LINK: </strong><a href=\"" + feature.attributes.SDAT_URL + "\" target=\"_blank\">Link</a><br /><hr />";
             arrParcelData.push(feature.attributes.MAP);
             parcelSum += 1;
           });

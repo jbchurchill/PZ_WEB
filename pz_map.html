@@ -515,7 +515,8 @@
               feature.setInfoTemplate(template);
             } else if (result.layerName === 'Zip Codes'){
               var template = new esri.InfoTemplate("",
-              "<span class=\"sectionhead\">Layer: Zip Codes</span><br /><br /><hr>Zip Code: ${ZIPNAME} <br />");
+              "<span class=\"sectionhead\">Layer: Zip Codes</span><br /><br /><hr>Zip Code: ${ZIPNAME} <br />"
+              + "Zip Code:  ${ZIPCODE1} <br />");
               feature.setInfoTemplate(template);
             } else if (result.layerName === 'Wind_Turbines'){
               var template = new esri.InfoTemplate("",

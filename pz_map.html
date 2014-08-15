@@ -448,14 +448,18 @@
         identifyParams.mapExtent = map.extent;
        
         // layers that can be identified by "click" that are NOT in the "Additional Layers" Content Pane
-        identifyParams.layerIds = [1, 2, 3, 4, 5, 6, 8];
+        identifyParams.layerIds = [1, 4, 5, 6, 8];
         // If a layer is checked in the "Additional Layers" pane, it will have been added
         // to the array (in updateLayerVisibility above), so add it to the list of those 
         // that can be clicked and identified.
         for (i=0; i < addlIdArray.length; i++) {
           identifyParams.layerIds.push(addlIdArray[i].value);
         }
-        
+        // Sort the layers to identify by click
+        var iP_ids = identifyParams.layerIds;
+        iP_ids.sort(function(a, b){
+          return a - b;
+        });
         var deferred = identifyTask.execute(identifyParams);
         
         deferred.addCallback(function(response) {     
@@ -465,22 +469,7 @@
             var feature = result.feature;
             feature.attributes.layerName = result.layerName;
             
-            if(result.layerName === 'County_Zoning_Layer'){
-              var template = new esri.InfoTemplate("", "<span class=\"sectionhead\">Layer: County Zoning Layer </span><br /><br /><hr>${GENZONE} <br/> Land Use Code: ${FLU}");
-              feature.setInfoTemplate(template);
-            }
-            else if (result.layerName === 'Garrett.DBO.TaxParcel'){
-              var template = new esri.InfoTemplate("",
-              "<span class=\"sectionhead\">Layer: Parcels</span><br /><br /><hr>Address: ${ADDRESS} <br />"
-              + "City: ${CITY} <br /> Owner: ${OWNNAME1} ${OWNNAME2} <br /> Tax Id: ${ACCTID} <br /><hr><span class=\"sectionhead\">Deed Reference</span><br />"
-              + "Liber: ${DR1LIBER} <br /> Folio: ${DR1FOLIO} <br /><hr> Subdivision: ${SUBDIVSN} <br /> Plat: ${PLAT} <br /> Block: ${BLOCK} <br /> Grid: ${GRID} <br />"
-              + "Map: ${MAP} <br /> Parcel: ${PARCEL} <br /> Lot: ${LOT} <br /> Area: ${ACRES} Acres <br /><hr><span class=\"sectionhead\">Plat Reference</span><br />"
-              + "Liber: ${PLTLIBER} <br /> Folio: ${PLTFOLIO} <br /><hr>"
-              + "Year Built: ${YRBLT_CAMA} <br /> SDAT Link: <a href=\"${SDAT_URL}\" target=\"_blank\">LINK</a> <br />");
-              
-              map.infoWindow.resize(250, 500);
-              feature.setInfoTemplate(template);
-            } else if (result.layerName === 'addresspoints'){
+            if (result.layerName === 'addresspoints'){
               var template = new esri.InfoTemplate("", 
               "<span class=\"sectionhead\">Layer: Address Points</span><br /><br /><hr>Address: ${ADDRESS} <br /><br /> City: ${CITY} <br /> Zip: ${ZIP_CODE} <br /> ESN: ${ESN} <br /> Community: ${COMMUNITY} <br /> Map: ${MAP} <br /> Parcel: ${PARCEL} <br />"
               + "Lot: ${LOT} <br /> Tract: ${TRACT} <br /> LU: ${LU} <br /> Key date: ${KEYDATE} <br /> Rental: ${RENTAL} <br />"
@@ -490,6 +479,10 @@
               var template = new esri.InfoTemplate("",
               "<span class=\"sectionhead\">Layer: Critical Facilities </span><br /><br /><hr>Land Use: ${LU} <br /> Address: ${ADDRESS} ${ROADNAME} <br /> Last Name: ${LASTNAME} <br /> ");
               feature.setInfoTemplate(template);
+            } else if (result.layerName === 'Gas_Wells'){
+              var template = new esri.InfoTemplate("",
+              "<span class=\"sectionhead\">Layer: Gas Wells</span><br /><br /><hr>Well Number: ${OBJECTID} <br />");
+              feature.setInfoTemplate(template);             
             } else if (result.layerName === 'celltowers') {
               var content = "Data Source: ${SOURCE_OF_DATA} <br />";
               // I AM TRYING TO DO THIS CONDITIONALLY BUT THIS CAUSES AN ERROR
@@ -516,16 +509,26 @@
             } else if (result.layerName === 'Zip Codes'){
               var template = new esri.InfoTemplate("",
               "<span class=\"sectionhead\">Layer: Zip Codes</span><br /><br /><hr>Zip Code: ${ZIPNAME} <br />"
-              + "Zip Code:  ${ZIPCODE1} <br />");
+              + "Zip Code: ${ZIPCODE1} <br />");
               feature.setInfoTemplate(template);
             } else if (result.layerName === 'Wind_Turbines'){
               var template = new esri.InfoTemplate("",
               "<span class=\"sectionhead\">Layer: Wind Turbines</span><br /><br /><hr>Identifier: ${Identifier} <br />"
               + "Owner: ${Owner} <br />");
               feature.setInfoTemplate(template);
-            } else if (result.layerName === 'Gas_Wells'){
+            } else if(result.layerName === 'County_Zoning_Layer'){
+              var template = new esri.InfoTemplate("", "<span class=\"sectionhead\">Layer: County Zoning Layer </span><br /><br /><hr>${GENZONE} <br/> Land Use Code: ${FLU}");
+              feature.setInfoTemplate(template);
+            }
+            else if (result.layerName === 'Garrett.DBO.TaxParcel'){
               var template = new esri.InfoTemplate("",
-              "<span class=\"sectionhead\">Layer: Gas Wells</span><br /><br /><hr>Well Number: ${OBJECTID} <br />");
+              "<span class=\"sectionhead\">Layer: Parcels</span><br /><br /><hr>Address: ${ADDRESS} <br />"
+              + "City: ${CITY} <br /> Owner: ${OWNNAME1} ${OWNNAME2} <br /> Tax Id: ${ACCTID} <br /><hr><span class=\"sectionhead\">Deed Reference</span><br />"
+              + "Liber: ${DR1LIBER} <br /> Folio: ${DR1FOLIO} <br /><hr> Subdivision: ${SUBDIVSN} <br /> Plat: ${PLAT} <br /> Block: ${BLOCK} <br /> Grid: ${GRID} <br />"
+              + "Map: ${MAP} <br /> Parcel: ${PARCEL} <br /> Lot: ${LOT} <br /> Area: ${ACRES} Acres <br /><hr><span class=\"sectionhead\">Plat Reference</span><br />"
+              + "Liber: ${PLTLIBER} <br /> Folio: ${PLTFOLIO} <br /><hr>"
+              + "Year Built: ${YRBLT_CAMA} <br /> SDAT Link: <a href=\"${SDAT_URL}\" target=\"_blank\">LINK</a> <br />"); 
+              map.infoWindow.resize(250, 500);
               feature.setInfoTemplate(template);
             }
             return feature;
@@ -619,7 +622,7 @@
           <!--<th field="PARCELID">Parcel ID</th>-->
           <th field="STREET_ALL">NAME</th>
           <!--<th field="OWNERNME1" >Owner 1</th>-->
-          <th width="120px" field="MAINTENANCE">MAINTENANCE</th>
+          <th width="130px" field="MAINTENANCE">MAINTENANCE</th>
           <!--<th field="OWNERNME2">Owner 2</th>-->
           <th field="FROM_LEFT_P" >FROM LEFT</th>
           <th field="TO_LEFT_P">TO LEFT</th>

@@ -462,7 +462,65 @@
         });
         var deferred = identifyTask.execute(identifyParams);
         
-        deferred.addCallback(function(response) {     
+        // checkNull infoTemplate Formatting Function
+        checkNull = function(value, key, data){
+          
+          function determineVal(val, strKey, addBreak){
+            if (val == "Null"){
+              content = "";
+            } else {
+              if (addBreak) {
+                if (strKey == "SDAT Link: <a href=\"") {
+                  val += "\" target=\"_blank\">LINK</a>";
+                }
+                val += "<br />";
+              }
+              content = strKey + val;
+            }
+          }
+          
+          switch(key){
+            case "SOURCE_OF_DATA":
+              determineVal(value, "Source of Data: ", true);
+              break;
+            case "TOWER_HEIGHT":
+              determineVal(value, "Tower Height: ", false);
+              break;
+            case "HEIGHT_ELEV_UNITS":
+              determineVal(value, ", ", true);
+              break;
+            case "TOWER_COMMUNITY":
+              determineVal(value, "Community: ", true);
+              break;
+            case "GROUND_ELEV":
+              determineVal(value, "Ground Elevation: ", false);
+              break;
+            case "SUBDIVSN":
+              determineVal(value, "Subdivision: ", true);
+              break;
+            case "PLAT":
+              determineVal(value, "Plat: ", true);
+              break;
+            case "BLOCK":
+              determineVal(value, "Block: ", true);    
+              break;
+            case "PLTLIBER":
+              determineVal(value, "<hr><span class=\"sectionhead\">Plat Reference</span><br />Liber: ", true)  ;
+              break;
+            case "PLTFOLIO":
+              determineVal(value, "Folio: ", true);
+              break;
+            case "OWNNAME2":
+              determineVal(value, " ", false);
+              break;
+            case "SDAT_URL":
+              determineVal(value, "SDAT Link: <a href=\"", true);
+              break;
+          }
+          return content;
+        }
+        
+        deferred.addCallback(function(response) {
           // response is an array of identify result objects    
           // Let's return an array of features.
           return dojo.map(response, function(result) {
@@ -482,24 +540,17 @@
             } else if (result.layerName === 'Gas_Wells'){
               var template = new esri.InfoTemplate("",
               "<span class=\"sectionhead\">Layer: Gas Wells</span><br /><br /><hr>Well Number: ${OBJECTID} <br />");
-              feature.setInfoTemplate(template);             
+              feature.setInfoTemplate(template);
             } else if (result.layerName === 'celltowers') {
-              var content = "Data Source: ${SOURCE_OF_DATA} <br />";
-              // I AM TRYING TO DO THIS CONDITIONALLY BUT THIS CAUSES AN ERROR
-              // if (!${SOURCE_OF_DATA} == null) {
-              // content="Data Source: ${SOURCE_OF_DATA} <br />";
-              // } else {
-              //   content="";
-              // }
               var template = new esri.InfoTemplate("",
               "<span class=\"sectionhead\">Layer: Cell Towers</span><br /><br /><hr>Address: ${TOWER_ADDRESS} <br /> "
-              + "Community: ${TOWER_COMMUNITY} <br /> Ground Elev: ${GROUND_ELEV} ${HEIGHT_ELEV_UNITS}<br /> Tower Ht: ${TOWER_HEIGHT} ${HEIGHT_ELEV_UNITS} <br />"
-              + "Comments: ${COMMENTS} <br />" + content);
+              + "${TOWER_COMMUNITY:checkNull} ${GROUND_ELEV:checkNull} ${HEIGHT_ELEV_UNITS:checkNull} ${TOWER_HEIGHT:checkNull} ${HEIGHT_ELEV_UNITS:checkNull}"
+              + "Comments: ${COMMENTS} <br /> ${SOURCE_OF_DATA:checkNull}");// + content);
               feature.setInfoTemplate(template);
             } else if (result.layerName === 'centerlines') {
               var template = new esri.InfoTemplate("",
               "<span class=\"sectionhead\">Layer: Street Centerlines</span><br /><br /><hr>Name: ${STREET_ALL} <br />"
-              + "Maintenance: ${MAINTENANCE} <br /> Length: ${SHAPE_Length:NumberFormat} feet <br />");
+              + "Maintenance: ${MAINTENANCE} <br /> Length: ${SHAPE.len:NumberFormat} feet <br />");
               feature.setInfoTemplate(template);
             } else if (result.layerName === 'Election_Districts'){
               var template = new esri.InfoTemplate("",
@@ -523,11 +574,11 @@
             else if (result.layerName === 'Garrett.DBO.TaxParcel'){
               var template = new esri.InfoTemplate("",
               "<span class=\"sectionhead\">Layer: Parcels</span><br /><br /><hr>Address: ${ADDRESS} <br />"
-              + "City: ${CITY} <br /> Owner: ${OWNNAME1} ${OWNNAME2} <br /> Tax Id: ${ACCTID} <br /><hr><span class=\"sectionhead\">Deed Reference</span><br />"
-              + "Liber: ${DR1LIBER} <br /> Folio: ${DR1FOLIO} <br /><hr> Subdivision: ${SUBDIVSN} <br /> Plat: ${PLAT} <br /> Block: ${BLOCK} <br /> Grid: ${GRID} <br />"
-              + "Map: ${MAP} <br /> Parcel: ${PARCEL} <br /> Lot: ${LOT} <br /> Area: ${ACRES} Acres <br /><hr><span class=\"sectionhead\">Plat Reference</span><br />"
-              + "Liber: ${PLTLIBER} <br /> Folio: ${PLTFOLIO} <br /><hr>"
-              + "Year Built: ${YRBLT_CAMA} <br /> SDAT Link: <a href=\"${SDAT_URL}\" target=\"_blank\">LINK</a> <br />"); 
+              + "City: ${CITY} <br /> Owner: ${OWNNAME1} ${OWNNAME2:checkNull} <br /> Tax Id: ${ACCTID} <br /><hr><span class=\"sectionhead\">Deed Reference</span><br />"
+              + "Liber: ${DR1LIBER} <br /> Folio: ${DR1FOLIO} <br /><hr> ${SUBDIVSN:checkNull} ${PLAT:checkNull} ${BLOCK:checkNull} Grid: ${GRID} <br />"
+              + "Map: ${MAP} <br /> Parcel: ${PARCEL} <br /> Lot: ${LOT} <br /> Area: ${ACRES} Acres <br />"
+              + "${PLTLIBER:checkNull} ${PLTFOLIO:checkNull} <hr>"
+              + "Year Built: ${YRBLT_CAMA} <br /> ${SDAT_URL:checkNull}"); 
               map.infoWindow.resize(250, 500);
               feature.setInfoTemplate(template);
             }

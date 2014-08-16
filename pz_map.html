@@ -119,7 +119,6 @@
         // or not when that is unwanted (like when clicking "Clear Selection")
         var doZoom = 1;
         
-        
         registry.byId("search").on("click", doFind);
         registry.byId("search2").on("click", doFind);
         
@@ -323,7 +322,8 @@
         
         /////////////////////////////////////////////////////////////////////////////////////
         // SEARCH FEATURE
-        var whichSearch;
+        
+        var whichSearch; // for searching roads and parcels. Used to determine which search is being run.
         function doFind() {
           //Set the search text to the value in the box
           if (this.id == 'search') {

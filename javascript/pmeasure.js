@@ -39,11 +39,18 @@ require([
 
     // You may wish to change the id to map or mapDiv (if that is the map you are using
     map = new Map("map", { 
-      basemap: "streets",
+      // basemap: "streets",
       center: [-79.23, 39.51],
+      spatialReference: new esri.SpatialReference(102685),
       zoom: 12
     });
     
+    // THIS IS THE PROBLEM AREA
+    console.log(xMin, yMin, xMax, yMax);
+    var passedExtent = new esri.geometry.Extent(xMin, yMin, xMax, yMax,
+        new esri.SpatialReference({wkid:102685}) ); // ({wkid:102685}) );    102100    2248   NOTHING WORKING
+    map.setExtent(passedExtent);
+
      //add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
     var basemapGallery = new BasemapGallery({
       showArcGISBasemaps: true,
@@ -58,8 +65,8 @@ require([
       // "english" is the default, which displays miles
       // use "metric" for kilometers
       scalebarUnit: "english"
-    });            
-    
+    }); 
+
     var mdImagelayer = new esri.layers.ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer");
     
     var mdImageBasemap = new esri.dijit.Basemap({

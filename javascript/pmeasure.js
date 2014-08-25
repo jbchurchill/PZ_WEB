@@ -10,6 +10,7 @@ require([
     "esri/config",
     "esri/sniff",
     "esri/map",
+    "esri/dijit/Scalebar",
     "esri/SnappingManager",
     "esri/dijit/Measurement",
     "esri/layers/FeatureLayer",
@@ -25,7 +26,7 @@ require([
     "dojo/domReady!"
   ], function(
     dom, Color, keys, parser, ArcGISDynamicMapServiceLayer, ImageParameters, BasemapGallery,
-    esriConfig, has, Map, SnappingManager, Measurement, FeatureLayer, SimpleRenderer, GeometryService, SimpleLineSymbol, SimpleFillSymbol
+    esriConfig, has, Map, Scalebar, SnappingManager, Measurement, FeatureLayer, SimpleRenderer, GeometryService, SimpleLineSymbol, SimpleFillSymbol
   ) {
     parser.parse();
     //This sample may require a proxy page to handle communications with the ArcGIS Server services. You will need to  
@@ -48,6 +49,16 @@ require([
       showArcGISBasemaps: true,
       map: map
     }, "basemapGallery");
+    
+    var scalebar = new Scalebar({
+      map: map,
+      attachTo: "bottom-right",
+      scalebarStyle: "line",
+      // "dual" displays both miles and kilmometers
+      // "english" is the default, which displays miles
+      // use "metric" for kilometers
+      scalebarUnit: "english"
+    });            
     
     var mdImagelayer = new esri.layers.ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer");
     

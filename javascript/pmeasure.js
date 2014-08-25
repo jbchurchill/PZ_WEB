@@ -10,12 +10,17 @@ require([
     "esri/config",
     "esri/sniff",
     "esri/map",
+    "esri/SpatialReference",
+    "esri/geometry/Extent",
+    "esri/geometry/Geometry",
+    "esri/tasks/GeometryService",
     "esri/dijit/Scalebar",
     "esri/SnappingManager",
     "esri/dijit/Measurement",
     "esri/layers/FeatureLayer",
     "esri/renderers/SimpleRenderer",
     "esri/tasks/GeometryService",
+    "esri/tasks/ProjectParameters",
     "esri/symbols/SimpleLineSymbol",
     "esri/symbols/SimpleFillSymbol",
     "esri/dijit/Scalebar",
@@ -26,7 +31,7 @@ require([
     "dojo/domReady!"
   ], function(
     dom, Color, keys, parser, ArcGISDynamicMapServiceLayer, ImageParameters, BasemapGallery,
-    esriConfig, has, Map, Scalebar, SnappingManager, Measurement, FeatureLayer, SimpleRenderer, GeometryService, SimpleLineSymbol, SimpleFillSymbol
+    esriConfig, has, Map, SpatialReference, Extent, Geometry, GeometryService, Scalebar, SnappingManager, Measurement, FeatureLayer, SimpleRenderer, GeometryService, ProjectParameters, SimpleLineSymbol, SimpleFillSymbol
   ) {
     parser.parse();
     //This sample may require a proxy page to handle communications with the ArcGIS Server services. You will need to  
@@ -37,25 +42,67 @@ require([
     //This service is for development and testing purposes only. We recommend that you create your own geometry service for use within your applications
     esriConfig.defaults.geometryService = new GeometryService("http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
 
+
+    // NEW FOR PHP
+    var avgX = ((Number(xMin) + Number(xMax)) / 2);
+    var avgY = ((Number(yMin) + Number(yMax)) / 2);
+
+    console.log(xMin, yMin, xMax, yMax);
+    console.log(avgX, avgY);
+    var passedExtent = new esri.geometry.Extent(Number(xMin), Number(yMin), Number(xMax), Number(yMax), new esri.SpatialReference({wkid:102685}) );
+    var projectParams = new esri.tasks.ProjectParameters();
+    projectParams.geometries = passedExtent;
+    projectParams.outSR = new esri.SpatialReference({wkid:102100}); // map.spatialReference;  ummmmm map not defined yet
+    // projectParams.spatialReference = new esri.SpatialReference({wkid:2248}); // map.spatialReference;
+    
+    // var defer = esri.config.defaults.geometryService.project(projectParams);
+    // dojo.when(defer, function (projectedGeometry) {
+    //   if (projectedGeometry.length > 0) {
+    //     map.setExtent(projectedGeometry[0]);
+    //   }
+    // });
+    
+    
+    
     // You may wish to change the id to map or mapDiv (if that is the map you are using
     map = new Map("map", { 
-      // basemap: "streets",
-      center: [-79.23, 39.51],
-      spatialReference: new esri.SpatialReference(102685),
+      basemap: "streets",
+      center: [-79.23, 39.51], // center: [avgX, avgY], // center: [-79.23, 39.51],
+      // extent: passedExtent,
+      // spatialReference: new esri.SpatialReference({wkid:102685}),
+      // spatialReference: new esri.SpatialReference(102100), // (102685),
       zoom: 12
     });
     
     // THIS IS THE PROBLEM AREA
-    console.log(xMin, yMin, xMax, yMax);
-    var passedExtent = new esri.geometry.Extent(xMin, yMin, xMax, yMax,
-        new esri.SpatialReference({wkid:102685}) ); // ({wkid:102685}) );    102100    2248   NOTHING WORKING
-    map.setExtent(passedExtent);
+    // map.setExtent(passedExtent);
 
      //add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
     var basemapGallery = new BasemapGallery({
       showArcGISBasemaps: true,
       map: map
     }, "basemapGallery");
+
+    // spatRef = new esri.SpatialReference({"wkid":2248});
+    spatRef = new esri.SpatialReference({wkid:2248}); // THIS DOES NOT WORK EITHER
+    // spatRef = new SpatialReference(102685);
+    // window.app = {};
+    // var passedExtent = new esri.geometry.Extent({"xmin": Number(xMin), "ymin": Number(yMin), "xmax": Number(xMax), "ymax": Number(yMax), "spatialReference":spatRef}); // "SpatialReference":{"wkid":2248}});
+    var passedExtent = new esri.geometry.Extent({"xmin": Number(xMin), "ymin": Number(yMin), "xmax": Number(xMax), "ymax": Number(yMax), "spatialReference":spatRef}); // "SpatialReference":{"wkid":2248}});
+    // window.app.bounds = new Extent({"xmin":Number(xMin),"ymin":Number(yMin),"xmax":Number(xMax),"ymax":Number(yMax),"spatialReference":{"wkid":102685}});
+        // new esri.SpatialReference({wkid:102685}) ); // ({wkid:102685}) );    102100    2248   NOTHING WORKING
+        // new esri.SpatialReference);
+    var projectParams = new ProjectParameters();
+    projectParams.geometries = passedExtent;
+    projectParams.outSR = map.spatialReference;
+    //  projectParams.spatialReference = map.spatialReference;
+    
+    var defer = esri.config.defaults.geometryService.project(projectParams);
+    dojo.when(defer, function (projectedGeometry) {
+      if (projectedGeometry.length > 0) {
+        map.setExtent(projectedGeometry[0]);
+      }
+    });
     
     var scalebar = new Scalebar({
       map: map,

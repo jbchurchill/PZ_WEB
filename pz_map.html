@@ -53,6 +53,12 @@
         top: 20px;
         left: 74px;
       }
+      .esriScalebar {
+        padding: 10px 40px;
+      }
+      .esriScalebarLine {
+        background-color: white;
+      }
     </style>
     
     
@@ -75,6 +81,7 @@
     
     require([
       "esri/map", 
+      "esri/dijit/Scalebar",
       "esri/dijit/BasemapGallery", 
       "esri/dijit/Popup", 
       "esri/layers/ArcGISDynamicMapServiceLayer", 
@@ -110,7 +117,7 @@
       "dijit/form/RadioButton",
       "esri/dijit/Geocoder", 
       "dojo/domReady!"
-      ], function(Map, BasemapGallery, Popup, ArcGISDynamicMapServiceLayer, ImageParameters, Query, Draw, IdentifyTask, FindTask, FindParameters, FeatureLayer, IdentifyResult, IdentifyParameters, InfoWindow, 
+      ], function(Map, Scalebar, BasemapGallery, Popup, ArcGISDynamicMapServiceLayer, ImageParameters, Query, Draw, IdentifyTask, FindTask, FindParameters, FeatureLayer, IdentifyResult, IdentifyParameters, InfoWindow, 
         SimpleFillSymbol, SimpleLineSymbol, InfoTemplate, arrayUtil, connect, DataGrid, ExpandoPane, ItemFileReadStore, Color, on, dom, query, registry, parser, BorderContainer, ContentPane, AccordionContainer, TitlePane, Button, RadioButton, Geocoder) {
           
         parser.parse();
@@ -145,7 +152,18 @@
         findParams.outSpatialReference = map.spatialReference;
         console.log("find sr: ", findParams.outSpatialReference);
         // initSelectToolbar;
-        });                  
+        });
+        
+        var scalebar = new Scalebar({
+          map: map,
+          attachTo: "bottom-right",
+          scalebarStyle: "line",
+          // "dual" displays both miles and kilmometers
+          // "english" is the default, which displays miles
+          // use "metric" for kilometers
+          scalebarUnit: "english"
+        });
+        
         
         map.on("load", initSelectToolbar);
         

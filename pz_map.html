@@ -58,17 +58,21 @@
       }
       .esriScalebarLine {
         background-color: white;
-      }
+      }      
     </style>
     
     
     <script src="http://js.arcgis.com/3.10/"></script>
+    <!-- <script src="javascript/php_functions.js" type="text/javascript"></script> -->
     <script>
     var findTask, findParams;
     var map, center, zoom;
     var grid, store;
     var identifyTask, identifyParams;
     var addlIdArray = [];
+    var xMin, yMin, xMax, yMax;
+    var extArray = [];
+    var passedCenter, zoomLevel;
     
     function contains(a, obj) {
       for (var i = 0; i < a.length; i++) {
@@ -84,6 +88,7 @@
       "esri/dijit/Scalebar",
       "esri/dijit/BasemapGallery", 
       "esri/dijit/Popup", 
+      "esri/geometry/webMercatorUtils",
       "esri/layers/ArcGISDynamicMapServiceLayer", 
       "esri/layers/ImageParameters", 
       "esri/tasks/query",
@@ -117,7 +122,7 @@
       "dijit/form/RadioButton",
       "esri/dijit/Geocoder", 
       "dojo/domReady!"
-      ], function(Map, Scalebar, BasemapGallery, Popup, ArcGISDynamicMapServiceLayer, ImageParameters, Query, Draw, IdentifyTask, FindTask, FindParameters, FeatureLayer, IdentifyResult, IdentifyParameters, InfoWindow, 
+      ], function(Map, Scalebar, BasemapGallery, Popup, webMercatorUtils, ArcGISDynamicMapServiceLayer, ImageParameters, Query, Draw, IdentifyTask, FindTask, FindParameters, FeatureLayer, IdentifyResult, IdentifyParameters, InfoWindow, 
         SimpleFillSymbol, SimpleLineSymbol, InfoTemplate, arrayUtil, connect, DataGrid, ExpandoPane, ItemFileReadStore, Color, on, dom, query, registry, parser, BorderContainer, ContentPane, AccordionContainer, TitlePane, Button, RadioButton, Geocoder) {
           
         parser.parse();
@@ -128,6 +133,7 @@
         
         registry.byId("search").on("click", doFind);
         registry.byId("search2").on("click", doFind);
+        registry.byId("measureButton").on("click", launchURL);
         
         var popup = new Popup({
           fillSymbol: new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255,0,0]), 2), new Color([255,255,0,0.25]))
@@ -142,6 +148,7 @@
           infoWindow: popup
         });
         
+        
         findTask = new FindTask("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
         map.on("load", function () {
         //Create the find parameters
@@ -151,9 +158,10 @@
         findParams.searchFields = ["RDNAMELOCAL", "PARCEL"]; // "ACCTID", "MAINTENANCE", "FRADDL_P", "TOADDL_P", "FRADDR_P", "TOADDR_P"];
         findParams.outSpatialReference = map.spatialReference;
         console.log("find sr: ", findParams.outSpatialReference);
-        // initSelectToolbar;
-        });
+        });                  
         
+        map.on("load", initSelectToolbar);
+
         var scalebar = new Scalebar({
           map: map,
           attachTo: "bottom-right",
@@ -162,10 +170,7 @@
           // "english" is the default, which displays miles
           // use "metric" for kilometers
           scalebarUnit: "english"
-        });
-        
-        
-        map.on("load", initSelectToolbar);
+        });        
         
          //add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
         var basemapGallery = new BasemapGallery({
@@ -276,9 +281,23 @@
           doZoom = 0;
           showResults("");
         });
-
+        
+        // runs when Measure Button is clicked (see the second line inside of the "initSelectToolbar" fx and the getExtent fx below)
+        function launchURL () {        
+          var url = "measure.php?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
+          window.open(url,'_blank');
+        }  
+        
+        function getExtent (extent) {
+          var center=webMercatorUtils.webMercatorToGeographic(map.extent.getCenter());
+          passedX = parseFloat(center.x.toFixed(5));
+          passedY = parseFloat(center.y.toFixed(5));
+          zoomLevel = map.getLevel();
+        }
+        
         function initSelectToolbar (event) {
           setupSelections();
+          dojo.connect(map, "onExtentChange", getExtent);
           
           selectionToolbar = new Draw(event.map);
           var selectQuery = new Query();
@@ -538,6 +557,7 @@
           return content;
         }
         
+        
         deferred.addCallback(function(response) {
           // response is an array of identify result objects    
           // Let's return an array of features.
@@ -626,6 +646,7 @@
         data-dojo-props="region: 'top'">
       <button id="selectPointsButton" data-dojo-type="dijit/form/Button">Select Points/Polys</button>
       <button id="clearSelectionButton" data-dojo-type="dijit/form/Button">Clear Selection</button>
+      <button id="measureButton" data-dojo-type="dijit/form/Button">Measure</button>
       <div class="selType">
           <input type="radio" id="rectangle" data-dojo-type="dijit/form/RadioButton" name="selectType"  checked="true">Rectangle<br />
           <input type="radio" id="polygon" data-dojo-type="dijit/form/RadioButton" name="selectType">Polygon<br />

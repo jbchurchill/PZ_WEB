@@ -63,6 +63,7 @@
     
     
     <script src="http://js.arcgis.com/3.10/"></script>
+    <script src="javascript/php_functions.js" type="text/javascript"></script>
     <script>
     var findTask, findParams;
     var map, center, zoom;
@@ -284,11 +285,19 @@
         // on(dom.byId("measureButton"), "click", function() {
         function launchURL () {
           console.log("measure button clicked");
-          var url = "http://gis.garrettcounty.org/arcgis/measure.php?ext=" + extArray;
+          // var url = "http://gis.garrettcounty.org/arcgis/measure.php?ext=" + extArray;
+          // TESTING
+          // var url = "measure.php?ext=" + extArray;
+          // var url = "measure.php?" + urlencode("xMin=" + xMin + "&yMin=" + yMin + "&xMax=" + xMax + "&yMax=" + yMax);
+          var url = "measure.php?" + "xMin=" + xMin + "&yMin=" + yMin + "&xMax=" + xMax + "&yMax=" + yMax;
           window.open(url,'_blank');
         }  
         //});
         function getExtent (extent) {
+          // xMin = "\"" + extent.xmin + "\"";
+          // yMin = "\"" + extent.ymin + "\"";
+          // xMax = "\"" + extent.xmax + "\"";
+          // yMax = "\"" + extent.ymax + "\"";
           xMin = extent.xmin;
           yMin = extent.ymin;
           xMax = extent.xmax;

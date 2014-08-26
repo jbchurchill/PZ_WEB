@@ -1,3 +1,18 @@
+<?php
+  if (isset($_GET['xMin'])) {
+    $xMin = trim(stripslashes($_GET[xMin]));
+  }
+  if (isset($_GET['yMin'])) {
+    $yMin = trim(stripslashes($_GET[yMin]));
+  }
+  if (isset($_GET['xMax'])) {
+    $xMax = trim(stripslashes($_GET[xMax]));
+  }
+  if (isset($_GET['yMax'])) {
+    $yMax = trim(stripslashes($_GET[yMax]));
+  }
+  // $passedExtent = trim(stripslashes($_GET['ext']));
+?>
 <!DOCTYPE html>
 <html> 
   <head>
@@ -62,13 +77,14 @@
   
   <body class="claro">
   <?php
-    $passedExtent = array("-8819410.666559163","4792613.494165327","-8813596.67509507","4794481.424044095");
+    // $passedExtent = array("-8813759.700944385", "4792406.875323275", "-8812306.203078521", "4793063.756035045");
+    // $passedExtent = array("-8819410.666559163","4792613.494165327","-8813596.67509507","4794481.424044095");
   ?>
   <script>
-    var xMin = '<?php echo $passedExtent[0]; ?>';
-    var yMin = '<?php echo $passedExtent[1]; ?>';
-    var xMax = '<?php echo $passedExtent[2]; ?>';
-    var yMax = '<?php echo $passedExtent[3]; ?>';
+    var xMin = Number('<?php echo $xMin; ?>'); // '<?php echo $passedExtent[0]; ?>';
+    var yMin = Number('<?php echo $yMin; ?>'); // '<?php echo $passedExtent[1]; ?>';
+    var xMax = Number('<?php echo $xMax; ?>'); // '<?php echo $passedExtent[2]; ?>';
+    var yMax = Number('<?php echo $yMax; ?>'); // '<?php echo $passedExtent[3]; ?>';
   </script>
     <div id="mainWindow" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'headline',gutters:false"
     style="width:100%; height:100%;">

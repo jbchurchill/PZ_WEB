@@ -19,20 +19,19 @@ require([
     "esri/dijit/Measurement",
     "esri/layers/FeatureLayer",
     "esri/renderers/SimpleRenderer",
-    "esri/tasks/GeometryService",
     "esri/tasks/ProjectParameters",
     "esri/symbols/SimpleLineSymbol",
     "esri/symbols/SimpleFillSymbol",
-    "esri/dijit/Scalebar",
     "dijit/layout/BorderContainer",
     "dijit/layout/ContentPane",
     "dijit/TitlePane",
-    "dijit/form/CheckBox", 
-    "dojo/when", 
+    "esri/dijit/Geocoder",
+    "dojo/when",
     "dojo/domReady!"
   ], function(
     dom, Color, keys, parser, ArcGISDynamicMapServiceLayer, ImageParameters, BasemapGallery,
-    esriConfig, has, Map, SpatialReference, Extent, Geometry, GeometryService, Scalebar, SnappingManager, Measurement, FeatureLayer, SimpleRenderer, GeometryService, ProjectParameters, SimpleLineSymbol, SimpleFillSymbol, when
+    esriConfig, has, Map, SpatialReference, Extent, Geometry, GeometryService, Scalebar, SnappingManager, Measurement, FeatureLayer, SimpleRenderer, ProjectParameters, 
+    SimpleLineSymbol, SimpleFillSymbol, BorderContainer, ContentPane, TitlePane, Geocoder, when
   ) {
     parser.parse();
     //This sample may require a proxy page to handle communications with the ArcGIS Server services. You will need to  
@@ -120,4 +119,12 @@ require([
       map: map
     }, dom.byId("measurementDiv"));
     measurement.startup();
+    
+    // Add Geocoder  
+    var geocoder = new Geocoder({
+      map: map 
+    }, "geosearch");
+    geocoder.startup();
+    // End Geocoder
+    
   });

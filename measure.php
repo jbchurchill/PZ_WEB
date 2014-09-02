@@ -65,6 +65,13 @@
         border-bottom: none;
         border-left: none;
       }
+      #geosearch {
+        display: block;
+        position: absolute;
+        z-index: 2;
+        top: 20px;
+        left: 74px;
+      }      
       .esriScalebar {
         padding: 10px 40px;
       }
@@ -86,6 +93,7 @@
     <div id="mainWindow" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'headline',gutters:false"
     style="width:100%; height:100%;">
       <div id="map" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+        <div id="geosearch"></div>
         <div style="position:absolute; right:20px; top:10px; z-Index:999;">
         
           <div data-dojo-type="dijit/TitlePane" 

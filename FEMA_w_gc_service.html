@@ -17,24 +17,41 @@
         overflow: hidden;
         font-family: "Trebuchet MS";
       }
+      #geosearch {
+        display: block;
+        position: absolute;
+        z-index: 2;
+        top: 20px;
+        left: 74px;
+      }      
+      .esriScalebar {
+        padding: 10px 40px;
+      }
+      .esriScalebarLine {
+        background-color: white;
+      }            
     </style>
     <script src="http://js.arcgis.com/3.10/"></script>
     <script>
       var map, zoom, center;
 
-      require(["esri/map", 
-      "esri/dijit/Popup", 
-      "esri/layers/FeatureLayer", 
-      "esri/layers/ArcGISDynamicMapServiceLayer", 
-      "esri/layers/ImageParameters", 
-      "esri/symbols/SimpleFillSymbol", 
-      "esri/symbols/SimpleLineSymbol", 
-      "esri/Color", 
-      "esri/tasks/IdentifyTask", 
-      "esri/tasks/IdentifyParameters", 
+      require(["esri/map",
+      "esri/dijit/Scalebar",
+      "esri/dijit/Popup",
+      "dijit/layout/BorderContainer", 
+      "dijit/layout/ContentPane", 
+      "esri/layers/FeatureLayer",
+      "esri/layers/ArcGISDynamicMapServiceLayer",
+      "esri/layers/ImageParameters",
+      "esri/symbols/SimpleFillSymbol",
+      "esri/symbols/SimpleLineSymbol",
+      "esri/Color",
+      "esri/tasks/IdentifyTask",
+      "esri/tasks/IdentifyParameters",
       "esri/InfoTemplate",
+      "esri/dijit/Geocoder",
       "dojo/domReady!"
-      ], function(Map, Popup, FeatureLayer, ArcGISDynamicMapServiceLayer, ImageParameters, SimpleFillSymbol, SimpleLineSymbol, Color, IdentifyTask, IdentifyParameters, InfoTemplate) {
+      ], function(Map, Scalebar, Popup, BorderContainer, ContentPane, FeatureLayer, ArcGISDynamicMapServiceLayer, ImageParameters, SimpleFillSymbol, SimpleLineSymbol, Color, IdentifyTask, IdentifyParameters, InfoTemplate, Geocoder) {
         
         
         var popup = new Popup({
@@ -51,6 +68,16 @@
           zoom: zoom,
           infoWindow: popup
         });
+        
+          scalebar = new Scalebar({
+            map: map,
+            attachTo: "bottom-right",
+            scalebarStyle: "line",
+            // "dual" displays both miles and kilmometers
+            // "english" is the default, which displays miles
+            // use "metric" for kilometers
+            scalebarUnit: "english"
+          });
         
         
         map.on("click", executeIdentifyTask);
@@ -85,8 +112,10 @@
         
         // var landBaseLayer = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
         var layerFEMA = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/FEMA/Flood_Hazard/MapServer/", 
-          {"imageParameters": imageParameters, opacity:.55}); // , opacity:.55}); // NEW
-        map.addLayer(layerFEMA);        
+          {"imageParameters": imageParameters, opacity: 0.45}); // , opacity:.55}); // NEW
+        map.addLayer(layerFEMA);
+        
+        layerFEMA[2].setOpacity(0.1);
         
       function executeIdentifyTask(evt) {
         identifyParams = new IdentifyParameters();
@@ -157,6 +186,12 @@
         map.infoWindow.show(evt.mapPoint);
         
       }; // end of function executeIdentifyTask
+      // Add Geocoder  
+      geocoder = new Geocoder({
+        map: map
+      }, "geosearch");
+      geocoder.startup();
+      // End Geocoder
         
         
       });
@@ -164,6 +199,11 @@
   </head>
 
   <body>
-    <div id="mapDiv"></div>
+    <div id="mainWindow" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'headline',gutters:false"
+        style="width:100%; height:100%;">
+      <div id="mapDiv" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+        <div id="geosearch"></div>
+      </div><!-- mapDiv -->  
+    </div><!-- mainWindow -->
   </body>
 </html>

@@ -113,6 +113,48 @@
             // use "metric" for kilometers
             scalebarUnit: "english"
           });
+
+        // checkNull infoTemplate Formatting Function
+        checkNull = function(value, key, data){
+          function determineVal(val, strKey, addBreak){
+            if (val == "Null"){
+              content = "";
+            } else {
+              if (addBreak) {
+                if (strKey == "SDAT Link: <a href=\"") {
+                  val += "\" target=\"_blank\">LINK</a>";
+                }
+                val += "<br />";
+              }
+              content = strKey + val;
+            }
+          }
+          
+          switch(key){
+            case "SUBDIVSN":
+              determineVal(value, "Subdivision: ", true);
+              break;
+            case "PLAT":
+              determineVal(value, "Plat: ", true);
+              break;
+            case "BLOCK":
+              determineVal(value, "Block: ", true);    
+              break;
+            case "PLTLIBER":
+              determineVal(value, "<hr><span class=\"sectionhead\">Plat Reference</span><br />Liber: ", true)  ;
+              break;
+            case "PLTFOLIO":
+              determineVal(value, "Folio: ", true);
+              break;
+            case "OWNNAME2":
+              determineVal(value, " ", false);
+              break;
+            case "SDAT_URL":
+              determineVal(value, "SDAT Link: <a href=\"", true);
+              break;
+          }
+          return content;
+        }
         
         
         map.on("click", executeIdentifyTask);
@@ -120,13 +162,13 @@
         var flzTemplate = new esri.InfoTemplate("", "<span class=\"sectionhead\">Layer: FEMA Flood Hazard Zones </span><br /><br /><hr>Flood Zone: ${FLD_ZONE} <br/>");
         var parcelTemplate = new esri.InfoTemplate("", 
               "<span class=\"sectionhead\">Layer: Parcels</span><br /><br /><hr>Address: ${ADDRESS} <br />"
-              + "City: ${CITY} <br /> Owner: ${OWNNAME1} ${OWNNAME2} <br /> Tax Id: ${ACCTID} <br /><hr><span class=\"sectionhead\">Deed Reference</span><br />"
-              + "Liber: ${DR1LIBER} <br /> Folio: ${DR1FOLIO} <br /><hr> Subdivision: ${SUBDIVSN} <br /> Plat: ${PLAT} <br /> Block: ${BLOCK} <br /> Grid: ${GRID} <br />"
-              + "Map: ${MAP} <br /> Parcel: ${PARCEL} <br /> Lot: ${LOT} <br /> Area: ${ACRES} Acres <br /><hr><span class=\"sectionhead\">Plat Reference</span><br />"
-              + "Liber: ${PLTLIBER} <br /> Folio: ${PLTFOLIO} <br /><hr>"
-              + "Year Built: ${YRBLT_CAMA} <br /> SDAT Link: <a href=\"${SDAT_URL}\" target=\"_blank\">LINK</a> <br />");
+              + "City: ${CITY} <br /> Owner: ${OWNNAME1} ${OWNNAME2:checkNull} <br /> Tax Id: ${ACCTID} <br /><hr><span class=\"sectionhead\">Deed Reference</span><br />"
+              + "Liber: ${DR1LIBER} <br /> Folio: ${DR1FOLIO} <br /><hr> ${SUBDIVSN:checkNull} ${PLAT:checkNull} ${BLOCK:checkNull} Grid: ${GRID} <br />"
+              + "Map: ${MAP} <br /> Parcel: ${PARCEL} <br /> Lot: ${LOT} <br /> Area: ${ACRES} Acres <br />"
+              + "${PLTLIBER:checkNull} ${PLTFOLIO:checkNull} <hr>"
+              + "Year Built: ${YRBLT_CAMA} <br /> ${SDAT_URL:checkNull}");
               
-        var addrTemplate = new esri.InfoTemplate("", 
+        var addrTemplate = new esri.InfoTemplate("Address Info", 
               "<span class=\"sectionhead\">Layer: Address Points</span><br /><br /><hr>Address: ${ADDRESS} <br /><br /> City: ${CITY} <br /> Zip: ${ZIP_CODE} <br /> ESN: ${ESN} <br /> Community: ${COMMUNITY} <br /> Map: ${MAP} <br /> Parcel: ${PARCEL} <br />"
               + "Lot: ${LOT} <br /> Tract: ${TRACT} <br /> LU: ${LU} <br /> Key date: ${KEYDATE} <br /> Rental: ${RENTAL} <br />"
               + "Rental Co.: ${RENTAL_CO} <br /> Tax Account: ${TAX_ACCOUNT_ID} <br /> Owner: ${OWNER_FIRST_NAME} ${OWNER_LAST_NAME} <br />");
@@ -147,7 +189,7 @@
         
         // var landBaseLayer = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
         var layerFEMA = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/FEMA/Flood_Hazard/MapServer/", 
-          {"imageParameters": imageParameters, opacity: 0.55});
+          {"imageParameters": imageParameters, opacity: 0.75});
         
         map.addLayer(layerFEMA);
 

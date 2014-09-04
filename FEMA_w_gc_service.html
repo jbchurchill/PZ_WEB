@@ -4,13 +4,23 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
     <title>Simple Map</title>
+    <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/dojo/dijit/themes/claro/claro.css">
     <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/esri/css/esri.css">
+
     <style>
       html, body, #mapDiv {
         height: 100%;
         width: 100%;
         margin: 0;
-        padding: 0;
+        padding:0px;
+      }
+      #mapDiv {
+        border:solid 2px #808775;
+        -moz-border-radius:4px;
+        -webkit-border-radius:4px;
+        border-radius:4px;
+        margin:5px;
+        padding:0px;
       }
       body {
         background-color: #FFF;
@@ -23,7 +33,28 @@
         z-index: 2;
         top: 20px;
         left: 74px;
-      }      
+      }
+      #basemapGallery{
+        width:240px;
+      }
+      .claro .dijitTitlePaneTitle {
+        background: #fff;
+        font-weight:600;
+        border: none;
+        border-bottom:solid 1px #29201A;
+        border-top:solid 1px #29201A;
+      }
+      .claro .dijitTitlePaneTitleHover {
+        background:#eee;
+      }
+      .claro .dijitTitlePaneTitleActive {
+        background:#808775;
+      }
+      .claro .dijitTitlePaneContentOuter {
+        border-right: none;
+        border-bottom: none;
+        border-left: none;
+      }
       .esriScalebar {
         padding: 10px 40px;
       }
@@ -38,10 +69,13 @@
       require(["esri/map",
       "esri/dijit/Scalebar",
       "esri/dijit/Popup",
+      "esri/dijit/BasemapGallery",
       "dijit/layout/BorderContainer", 
-      "dijit/layout/ContentPane", 
+      "dijit/layout/ContentPane",
+      "dijit/TitlePane",
       "esri/layers/FeatureLayer",
       "esri/layers/ArcGISDynamicMapServiceLayer",
+      "esri/layers/ArcGISTiledMapServiceLayer",
       "esri/layers/ImageParameters",
       "esri/symbols/SimpleFillSymbol",
       "esri/symbols/SimpleLineSymbol",
@@ -50,10 +84,11 @@
       "esri/tasks/IdentifyParameters",
       "esri/InfoTemplate",
       "esri/dijit/Geocoder",
+      "dojo/parser",
       "dojo/domReady!"
-      ], function(Map, Scalebar, Popup, BorderContainer, ContentPane, FeatureLayer, ArcGISDynamicMapServiceLayer, ImageParameters, SimpleFillSymbol, SimpleLineSymbol, Color, IdentifyTask, IdentifyParameters, InfoTemplate, Geocoder) {
+      ], function(Map, Scalebar, Popup, BasemapGallery, BorderContainer, ContentPane, TitlePane, FeatureLayer, ArcGISDynamicMapServiceLayer, ArcGISTiledMapServiceLayer, ImageParameters, SimpleFillSymbol, SimpleLineSymbol, Color, IdentifyTask, IdentifyParameters, InfoTemplate, Geocoder, parser) {
         
-        
+        parser.parse();        
         var popup = new Popup({
           fillSymbol: new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255,0,0]), 2), new Color([255,255,0,0.25]))
         }, dojo.create("div"));
@@ -112,10 +147,30 @@
         
         // var landBaseLayer = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
         var layerFEMA = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/FEMA/Flood_Hazard/MapServer/", 
-          {"imageParameters": imageParameters, opacity: 0.45}); // , opacity:.55}); // NEW
-        map.addLayer(layerFEMA);
+          {"imageParameters": imageParameters, opacity: 0.55});
         
-        layerFEMA[2].setOpacity(0.1);
+        map.addLayer(layerFEMA);
+
+        var basemapGallery = new BasemapGallery({
+          showArcGISBasemaps: true,
+          map: map
+        }, "basemapGallery");
+
+        mdImagelayer = new esri.layers.ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer");
+
+        mdImageBasemap = new esri.dijit.Basemap({
+          layers: [mdImagelayer],
+          title: "MD Imagery",
+          thumbnailUrl: "http://gis.garrettcounty.org/arcgis/images/image_v2.png"
+        });
+        basemapGallery.add(mdImageBasemap);
+
+        basemapGallery.startup();
+
+        basemapGallery.on("error", function (msg) {
+          console.log("basemap gallery error:  ", msg);
+        });        
+                
         
       function executeIdentifyTask(evt) {
         identifyParams = new IdentifyParameters();
@@ -198,11 +253,22 @@
     </script>
   </head>
 
-  <body>
+  <body class="claro">
     <div id="mainWindow" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'headline',gutters:false"
         style="width:100%; height:100%;">
       <div id="mapDiv" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
         <div id="geosearch"></div>
+
+        <div id="positioning_div" style="position:absolute; right:20px; top:10px; z-Index:999;">
+          <div data-dojo-type="dijit/TitlePane" 
+               data-dojo-props="title:'Switch Basemap', closable:false,  open:false">
+            <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">
+              <div id="basemapGallery" ></div>
+            </div><!-- ContentPane 1 -->
+          </div><!-- TitlePane 1 "Switch Basemap" -->  
+        </div><!-- positioning_div -->
+
+        
       </div><!-- mapDiv -->  
     </div><!-- mainWindow -->
   </body>

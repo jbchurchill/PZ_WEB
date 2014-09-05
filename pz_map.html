@@ -569,7 +569,7 @@
             var feature = result.feature;
             feature.attributes.layerName = result.layerName;
             
-            if (result.layerName === 'addresspoints'){
+            if (result.layerName === 'addresspoints') {
               var template = new esri.InfoTemplate("Address Info", 
               "<span class=\"sectionhead\">Layer: Address Points</span><br /><br /><hr>Address: ${ADDRESS} <br /><br /> City: ${CITY} <br /> Zip: ${ZIP_CODE} <br /> ESN: ${ESN} <br /> Community: ${COMMUNITY} <br /> Map: ${MAP} <br /> Parcel: ${PARCEL} <br />"
               + "Lot: ${LOT} <br /> Tract: ${TRACT} <br /> LU: ${LU} <br /> Key date: ${KEYDATE} <br /> Rental: ${RENTAL} <br />"
@@ -579,7 +579,7 @@
               var template = new esri.InfoTemplate("",
               "<span class=\"sectionhead\">Layer: Critical Facilities </span><br /><br /><hr>Land Use: ${LU} <br /> Address: ${ADDRESS} ${ROADNAME} <br /> Last Name: ${LASTNAME} <br /> ");
               feature.setInfoTemplate(template);
-            } else if (result.layerName === 'Gas_Wells'){
+            } else if (result.layerName === 'Gas_Wells') {
               var template = new esri.InfoTemplate("",
               "<span class=\"sectionhead\">Layer: Gas Wells</span><br /><br /><hr>Well Number: ${OBJECTID} <br />");
               feature.setInfoTemplate(template);
@@ -594,23 +594,27 @@
               "<span class=\"sectionhead\">Layer: Street Centerlines</span><br /><br /><hr>Name: ${STREET_ALL} <br />"
               + "Maintenance: ${MAINTENANCE} <br /> Length: ${SHAPE.len:NumberFormat} feet <br />");
               feature.setInfoTemplate(template);
-            } else if (result.layerName === 'Election_Districts'){
+            } else if (result.layerName === 'Election_Districts') {
               var template = new esri.InfoTemplate("",
               "<span class=\"sectionhead\">Layer: Election Districts</span><br /><br /><hr>Election District: ${Dist_Numb} <br /> "
               + "Commissioner District: ${Comm_Dist} <br />");
               feature.setInfoTemplate(template);
-            } else if (result.layerName === 'Zip Codes'){
+            } else if (result.layerName === 'Zip Codes') {
               var template = new esri.InfoTemplate("",
               "<span class=\"sectionhead\">Layer: Zip Codes</span><br /><br /><hr>Zip Code: ${ZIPNAME} <br />"
               + "Zip Code: ${ZIPCODE1} <br />");
               feature.setInfoTemplate(template);
-            } else if (result.layerName === 'Wind_Turbines'){
+            } else if (result.layerName === 'Wind_Turbines') {
               var template = new esri.InfoTemplate("",
               "<span class=\"sectionhead\">Layer: Wind Turbines</span><br /><br /><hr>Identifier: ${Identifier} <br />"
               + "Owner: ${Owner} <br />");
               feature.setInfoTemplate(template);
-            } else if(result.layerName === 'County_Zoning_Layer'){
+            } else if (result.layerName === 'County_Zoning_Layer') {
               var template = new esri.InfoTemplate("Zoning Info", "<span class=\"sectionhead\">Layer: County Zoning Layer </span><br /><br /><hr>${GENZONE} <br/> Land Use Code: ${FLU}");
+              feature.setInfoTemplate(template);
+            }
+            else if (result.layerName === 'Tax Map Grid') {
+              var template = new esri.InfoTemplate("Tax Map Info", "<span class=\"sectionhead\">Layer: Tax Map Grid </span><br /><br /><hr>Map ID: ${MAPID} <br />Tax Map: ${TAXMAP}")
               feature.setInfoTemplate(template);
             }
             else if (result.layerName === 'Garrett.DBO.TaxParcel'){

@@ -114,7 +114,9 @@
       "esri/Color",
       "dojo/on",
       "dojo/dom", 
-      "dojo/query", 
+      "dojo/query",
+      "dojo/store/Memory",
+      "dijit/form/ComboBox",
       "dijit/registry",
       "dojo/parser", 
       "dijit/layout/BorderContainer", 
@@ -126,7 +128,7 @@
       "esri/dijit/Geocoder", 
       "dojo/domReady!"
       ], function(Map, Scalebar, BasemapGallery, Popup, webMercatorUtils, ArcGISDynamicMapServiceLayer, ImageParameters, Query, Draw, IdentifyTask, FindTask, FindParameters, FeatureLayer, IdentifyResult, IdentifyParameters, InfoWindow, 
-        SimpleFillSymbol, SimpleLineSymbol, InfoTemplate, arrayUtil, connect, DataGrid, ExpandoPane, ItemFileReadStore, Color, on, dom, query, registry, parser, BorderContainer, ContentPane, AccordionContainer, TitlePane, Button, RadioButton, Geocoder) {
+        SimpleFillSymbol, SimpleLineSymbol, InfoTemplate, arrayUtil, connect, DataGrid, ExpandoPane, ItemFileReadStore, Color, on, dom, query, Memory, ComboBox, registry, parser, BorderContainer, ContentPane, AccordionContainer, TitlePane, Button, RadioButton, Geocoder) {
           
         parser.parse();
         
@@ -284,10 +286,37 @@
           doZoom = 0;
           showResults("");
         });
+
+        // LAUNCH MAP
+        var mapLaunchStore = new Memory({
+          data: [
+            {name:"Measurement", id:"MSMT", baseURL: "measure.php"},
+            {name:"FEMA Flood Hazard", id:"FEMA", baseURL: "FEMA_map.html"}
+          ]
+        });
+        var comboBox = new ComboBox({
+          id: "mapSelect",
+          name: "map",
+          value: "Measurement",
+          store: mapLaunchStore,
+          searchAttr: "name"
+        }, "mapSelect").startup();        
         
         // runs when Measure Button is clicked (see the second line inside of the "initSelectToolbar" fx and the getExtent fx below)
-        function launchURL () {        
-          var url = "measure.php?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
+        function launchURL () {
+          var selectedMap = dijit.byId('mapSelect').get('value');
+          var baseURL;
+          switch (selectedMap) {
+          case "Measurement":
+            baseURL = "measure.php";
+            break;
+          case "FEMA Flood Hazard":
+            baseURL = "FEMA_map.html";
+            break;
+          }
+          console.log(baseURL);
+          // var url = "measure.php?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
+          var url = baseURL + "?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
           window.open(url,'_blank');
         }  
         
@@ -406,12 +435,15 @@
           }
 
           //Create data store and bind to grid.
-          store = new ItemFileReadStore({
+          var store = new ItemFileReadStore({
             data : data
           });
           var grid = registry.byId(whichSearch);
-          grid.setStore(store);
-          grid.on("rowclick", onRowClickHandler);
+          if (!whichSearch == "") {
+            grid.setStore(store);
+            grid.on("rowclick", onRowClickHandler);
+          }
+          
 
           //Zoom back to the initial map extent
           if (doZoom == 1) {
@@ -655,6 +687,10 @@
       <button id="selectPointsButton" data-dojo-type="dijit/form/Button">Select Points/Polys</button>
       <button id="clearSelectionButton" data-dojo-type="dijit/form/Button">Clear Selection</button>
       <button id="measureButton" data-dojo-type="dijit/form/Button">Measure</button>
+      
+      <input id="mapSelect">
+      <!--<p><button onClick="alert(dijit.byId('mapSelect').get('value'))">Get value</button></p>-->
+      
       <div class="selType">
           <input type="radio" id="rectangle" data-dojo-type="dijit/form/RadioButton" name="selectType"  checked="true">Rectangle<br />
           <input type="radio" id="polygon" data-dojo-type="dijit/form/RadioButton" name="selectType">Polygon<br />

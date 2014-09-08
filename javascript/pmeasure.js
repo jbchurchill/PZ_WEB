@@ -70,7 +70,7 @@ require([
   
   function startTrackingExtent() {
     dojo.connect(map, "onExtentChange", getExtent);
-  }  
+  }
   // console.log(passedCenter);
   // console.log(zoomLevel);
 

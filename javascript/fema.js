@@ -1,29 +1,54 @@
 var map, zoom, center, require, dojo, scalebar, checkNull, content;
 var passedCenter, passedX, passedY, zoomLevel;
 require(["esri/map",
-      "esri/dijit/Scalebar",
-      "esri/dijit/Popup",
-      "esri/dijit/BasemapGallery",
-      "dojo/store/Memory",
-      "dijit/form/ComboBox",
-      "dijit/registry",
-      "dijit/layout/BorderContainer",
-      "dijit/layout/ContentPane",
-      "dijit/TitlePane",
-      "esri/layers/FeatureLayer",
-      "esri/layers/ArcGISDynamicMapServiceLayer",
-      "esri/layers/ArcGISTiledMapServiceLayer",
-      "esri/layers/ImageParameters",
-      "esri/symbols/SimpleFillSymbol",
-      "esri/symbols/SimpleLineSymbol",
-      "esri/Color",
-      "esri/tasks/IdentifyTask",
-      "esri/tasks/IdentifyParameters",
-      "esri/InfoTemplate",
-      "esri/dijit/Geocoder",
-      "dojo/parser",
-      "dojo/domReady!"
-      ], function (Map, Scalebar, Popup, BasemapGallery, Memory, ComboBox, registry, BorderContainer, ContentPane, TitlePane, FeatureLayer, ArcGISDynamicMapServiceLayer, ArcGISTiledMapServiceLayer, ImageParameters, SimpleFillSymbol, SimpleLineSymbol, Color, IdentifyTask, IdentifyParameters, InfoTemplate, Geocoder, parser) {
+  "esri/dijit/Scalebar",
+  "esri/dijit/Popup",
+  "esri/dijit/BasemapGallery",
+  "dojo/store/Memory",
+  "dijit/form/ComboBox",
+  "dijit/registry",
+  "dijit/layout/BorderContainer",
+  "dijit/layout/ContentPane",
+  "dijit/TitlePane",
+  "esri/layers/FeatureLayer",
+  "esri/layers/ArcGISDynamicMapServiceLayer",
+  "esri/layers/ArcGISTiledMapServiceLayer",
+  "esri/layers/ImageParameters",
+  "esri/geometry/webMercatorUtils",
+  "esri/symbols/SimpleFillSymbol",
+  "esri/symbols/SimpleLineSymbol",
+  "esri/Color",
+  "esri/tasks/IdentifyTask",
+  "esri/tasks/IdentifyParameters",
+  "esri/InfoTemplate",
+  "esri/dijit/Geocoder",
+  "dojo/parser",
+  "dojo/domReady!"
+], function (
+  Map,
+  Scalebar,
+  Popup,
+  BasemapGallery,
+  Memory,
+  ComboBox,
+  registry,
+  BorderContainer,
+  ContentPane,
+  TitlePane,
+  FeatureLayer,
+  ArcGISDynamicMapServiceLayer,
+  ArcGISTiledMapServiceLayer,
+  ImageParameters,
+  webMercatorUtils,
+  SimpleFillSymbol,
+  SimpleLineSymbol,
+  Color,
+  IdentifyTask,
+  IdentifyParameters,
+  InfoTemplate,
+  Geocoder,
+  parser
+  ) {
   parser.parse();
   var popup = new Popup({
     fillSymbol: new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255, 0, 0]), 2), new Color([255, 255, 0, 0.25]))
@@ -33,6 +58,10 @@ require(["esri/map",
   // zoom = 10;
   passedCenter = [passedX, passedY];
   registry.byId("launchButton").on("click", launchURL);
+
+  function startTrackingExtent() {
+    dojo.connect(map, "onExtentChange", getExtent);
+  }
 
   map = new Map("mapDiv", {
     basemap: "streets",
@@ -52,6 +81,7 @@ require(["esri/map",
   });
 
   // LAUNCH MAP
+  map.on("load", startTrackingExtent);
   var mapLaunchStore = new Memory({
     data: [
       {name:"Measurement", id:"MSMT", baseURL: "measure.php"},

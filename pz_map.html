@@ -138,7 +138,7 @@
         
         registry.byId("search").on("click", doFind);
         registry.byId("search2").on("click", doFind);
-        registry.byId("measureButton").on("click", launchURL);
+        registry.byId("launchButton").on("click", launchURL);
         
         var popup = new Popup({
           fillSymbol: new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255,0,0]), 2), new Color([255,255,0,0.25]))
@@ -686,7 +686,7 @@
         data-dojo-props="region: 'top'">
       <button id="selectPointsButton" data-dojo-type="dijit/form/Button">Select Points/Polys</button>
       <button id="clearSelectionButton" data-dojo-type="dijit/form/Button">Clear Selection</button>
-      <button id="measureButton" data-dojo-type="dijit/form/Button">Measure</button>
+      <button id="launchButton" data-dojo-type="dijit/form/Button">Launch</button>
       
       <input id="mapSelect">
       <!--<p><button onClick="alert(dijit.byId('mapSelect').get('value'))">Get value</button></p>-->
@@ -700,7 +700,7 @@
           <input type="radio" id="polys" data-dojo-type="dijit/form/RadioButton" name="geomType" />Parcels<br />
       </div>
       <span style="font-size: 0.8em; float:right; text-align:center">
-      Click the triangle at the lower right corner<br /> to search roads or parcels.
+      Launch a new map from the pulldown menu.<br />Click the triangle at the lower right corner<br /> to search roads or parcels.
       </span>
       </div><!-- #cp CONTENT PANE -->
       <!-- onclick="runTest();"  -->

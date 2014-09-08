@@ -50,7 +50,7 @@ require(["esri/map",
     // use "metric" for kilometers
     scalebarUnit: "english"
   });
-  
+
   // LAUNCH MAP
   var mapLaunchStore = new Memory({
     data: [

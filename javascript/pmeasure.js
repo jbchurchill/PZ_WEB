@@ -15,10 +15,14 @@ require([
   "esri/dijit/Scalebar",
   "esri/SnappingManager",
   "esri/dijit/Measurement",
+  "esri/geometry/webMercatorUtils",
   "esri/layers/FeatureLayer",
   "esri/renderers/SimpleRenderer",
   "esri/symbols/SimpleLineSymbol",
   "esri/symbols/SimpleFillSymbol",
+  "dojo/store/Memory",
+  "dijit/form/ComboBox",
+  "dijit/registry",
   "dijit/layout/BorderContainer",
   "dijit/layout/ContentPane",
   "dijit/TitlePane",
@@ -39,10 +43,14 @@ require([
   Scalebar,
   SnappingManager,
   Measurement,
+  webMercatorUtils,
   FeatureLayer,
   SimpleRenderer,
   SimpleLineSymbol,
   SimpleFillSymbol,
+  Memory,
+  ComboBox,
+  registry,
   BorderContainer,
   ContentPane,
   TitlePane,
@@ -58,8 +66,13 @@ require([
   esriConfig.defaults.geometryService = new GeometryService("http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
 
   passedCenter = [passedX, passedY];
-  console.log(passedCenter);
-  console.log(zoomLevel);
+  registry.byId("launchButton").on("click", launchURL);
+  
+  function startTrackingExtent() {
+    dojo.connect(map, "onExtentChange", getExtent);
+  }  
+  // console.log(passedCenter);
+  // console.log(zoomLevel);
 
   // You may wish to change the id to map or mapDiv (if that is the map you are using
   map = new Map("map", {
@@ -85,6 +98,48 @@ require([
     // use "metric" for kilometers
     scalebarUnit: "english"
   });
+
+  // LAUNCH MAP
+  map.on("load", startTrackingExtent);
+  var mapLaunchStore = new Memory({
+    data: [
+      {name:"FEMA Flood Hazard", id:"FEMA", baseURL: "FEMA_map.php"},
+      {name:"Planning and Zoning", id:"PZMAP", baseURL: "pz_map.html"}
+    ]
+  });
+  var comboBox = new ComboBox({
+    id: "mapSelect",
+    name: "map",
+    value: "FEMA Flood Hazard",
+    store: mapLaunchStore,
+    searchAttr: "name"
+  }, "mapSelect").startup();        
+  
+  // runs when Measure Button is clicked (see the second line inside of the "initSelectToolbar" fx and the getExtent fx below)
+  function launchURL () {
+    var selectedMap = dijit.byId('mapSelect').get('value');
+    var baseURL;
+    switch (selectedMap) {
+    case "FEMA Flood Hazard":
+      baseURL = "FEMA_map.php";
+      break;
+    case "Planning and Zoning":
+      baseURL = "pz_map.html";
+      break;
+    }
+    console.log(baseURL);
+    // var url = "measure.php?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
+    var url = baseURL + "?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
+    window.open(url,'_blank');
+  }  
+  
+  function getExtent (extent) {
+    var center=webMercatorUtils.webMercatorToGeographic(map.extent.getCenter());
+    passedX = parseFloat(center.x.toFixed(5));
+    passedY = parseFloat(center.y.toFixed(5));
+    zoomLevel = map.getLevel();
+    console.log("Zoom: " + zoomLevel + ";  XY: " + passedX + ", " + passedY);
+  }
 
   mdImagelayer = new esri.layers.ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer");
 

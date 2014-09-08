@@ -1,9 +1,12 @@
 var map, zoom, center, require, dojo, scalebar, checkNull, content;
-
+var passedCenter, passedX, passedY, zoomLevel;
 require(["esri/map",
-     "esri/dijit/Scalebar",
-     "esri/dijit/Popup",
+      "esri/dijit/Scalebar",
+      "esri/dijit/Popup",
       "esri/dijit/BasemapGallery",
+      "dojo/store/Memory",
+      "dijit/form/ComboBox",
+      "dijit/registry",
       "dijit/layout/BorderContainer",
       "dijit/layout/ContentPane",
       "dijit/TitlePane",
@@ -20,20 +23,21 @@ require(["esri/map",
       "esri/dijit/Geocoder",
       "dojo/parser",
       "dojo/domReady!"
-      ], function (Map, Scalebar, Popup, BasemapGallery, BorderContainer, ContentPane, TitlePane, FeatureLayer, ArcGISDynamicMapServiceLayer, ArcGISTiledMapServiceLayer, ImageParameters, SimpleFillSymbol, SimpleLineSymbol, Color, IdentifyTask, IdentifyParameters, InfoTemplate, Geocoder, parser) {
+      ], function (Map, Scalebar, Popup, BasemapGallery, Memory, ComboBox, registry, BorderContainer, ContentPane, TitlePane, FeatureLayer, ArcGISDynamicMapServiceLayer, ArcGISTiledMapServiceLayer, ImageParameters, SimpleFillSymbol, SimpleLineSymbol, Color, IdentifyTask, IdentifyParameters, InfoTemplate, Geocoder, parser) {
   parser.parse();
   var popup = new Popup({
     fillSymbol: new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255, 0, 0]), 2), new Color([255, 255, 0, 0.25]))
   }, dojo.create("div"));
 
-  center = [-79.2, 39.5];
-  zoom = 10;
-
+  // center = [-79.2, 39.5];
+  // zoom = 10;
+  passedCenter = [passedX, passedY];
+  registry.byId("launchButton").on("click", launchURL);
 
   map = new Map("mapDiv", {
     basemap: "streets",
-    center: center,
-    zoom: zoom,
+    center: passedCenter, // center,
+    zoom: zoomLevel, // zoom,
     infoWindow: popup
   });
 
@@ -46,6 +50,46 @@ require(["esri/map",
     // use "metric" for kilometers
     scalebarUnit: "english"
   });
+  
+  // LAUNCH MAP
+  var mapLaunchStore = new Memory({
+    data: [
+      {name:"Measurement", id:"MSMT", baseURL: "measure.php"},
+      {name:"Planning and Zoning", id:"PZMAP", baseURL: "pz_map.html"}
+    ]
+  });
+  var comboBox = new ComboBox({
+    id: "mapSelect",
+    name: "map",
+    value: "Measurement",
+    store: mapLaunchStore,
+    searchAttr: "name"
+  }, "mapSelect").startup();        
+  
+  // runs when Measure Button is clicked (see the second line inside of the "initSelectToolbar" fx and the getExtent fx below)
+  function launchURL () {
+    var selectedMap = dijit.byId('mapSelect').get('value');
+    var baseURL;
+    switch (selectedMap) {
+    case "Measurement":
+      baseURL = "measure.php";
+      break;
+    case "Planning and Zoning":
+      baseURL = "pz_map.html";
+      break;
+    }
+    console.log(baseURL);
+    // var url = "measure.php?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
+    var url = baseURL + "?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
+    window.open(url,'_blank');
+  }  
+  
+  function getExtent (extent) {
+    var center=webMercatorUtils.webMercatorToGeographic(map.extent.getCenter());
+    passedX = parseFloat(center.x.toFixed(5));
+    passedY = parseFloat(center.y.toFixed(5));
+    zoomLevel = map.getLevel();
+  }
 
   // checkNull infoTemplate Formatting Function
   checkNull = function (value, key, data) {

@@ -80,7 +80,7 @@
       }            
     </style>
     <script type="text/javascript" src="http://js.arcgis.com/3.10/"></script>
-    <script type="text/javascript" src="javascript/fema.js"></script>
+    <script type="text/javascript" src="javascript/fema.yui.js"></script>
   </head>
 
   <body class="claro">

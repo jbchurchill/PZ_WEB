@@ -104,7 +104,7 @@ require([
   var mapLaunchStore = new Memory({
     data: [
       {name:"FEMA Flood Hazard", id:"FEMA", baseURL: "FEMA_map.php"},
-      {name:"Planning and Zoning", id:"PZMAP", baseURL: "pz_map.html"}
+      {name:"Planning and Zoning", id:"PZMAP", baseURL: "pz_map.php"}
     ]
   });
   var comboBox = new ComboBox({
@@ -124,10 +124,9 @@ require([
       baseURL = "FEMA_map.php";
       break;
     case "Planning and Zoning":
-      baseURL = "pz_map.html";
+      baseURL = "pz_map.php";
       break;
     }
-    console.log(baseURL);
     // var url = "measure.php?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
     var url = baseURL + "?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
     window.open(url,'_blank');

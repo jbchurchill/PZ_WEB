@@ -114,6 +114,7 @@
           <input type="radio" id="polys" data-dojo-type="dijit/form/RadioButton" name="geomType" />Parcels<br />
       </div>
       <span style="font-size: 0.8em; float:right; text-align:center">
+      <a href="../help.html">Help ?</a> &#045; &nbsp;&nbsp;
       Launch a new map from the pulldown menu.<br />Click the triangle at the lower right corner<br /> to search roads or parcels.
       </span>
       </div><!-- #cp CONTENT PANE -->

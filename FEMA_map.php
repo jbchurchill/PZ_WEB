@@ -117,12 +117,13 @@
             </div><!-- ContentPane 2 -->            
           </div><!-- TitlePane 1 "Switch Basemap" -->  
           <div data-dojo-type="dijit/TitlePane" 
-             data-dojo-props="title:'Launch a New Map', closable:false,  open:false">
+             data-dojo-props="title:'Navigation', closable:false,  open:false">
             <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">
               <button id="launchButton" data-dojo-type="dijit/form/Button">Launch</button>
-              <input id="mapSelect">
+              <input id="mapSelect"><br />
+              <a href="../help.html">Help ?</a>
             </div><!-- ContentPane 3 -->
-          </div><!-- TitlePane Launch a New Map -->
+          </div><!-- TitlePane Navigation -->
           
         </div><!-- positioning_div -->
         

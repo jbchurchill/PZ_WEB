@@ -113,7 +113,10 @@
             <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">
               <button id="launchButton" data-dojo-type="dijit/form/Button">Launch</button>
               <input id="mapSelect"><br />
-              <a href="../help.html">Help ?</a>
+              <ul>
+                <li><a href="../help.html">Help ?</a></li>
+                <li><a href="../">Home</a></li>
+              </ul>
             </div><!-- ContentPane 3 -->
           </div><!-- TitlePane Navigation -->          
         </div><!-- positioning div -->

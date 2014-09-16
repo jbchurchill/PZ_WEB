@@ -1,0 +1,19 @@
+SE Posts
+http://gis.stackexchange.com/questions/12407/how-to-identify-layers-from-multiple-arcgis-server-instances
+
+http://gis.stackexchange.com/questions/49275/popup-from-multiple-services
+
+GeoNet
+https://geonet.esri.com/thread/29404
+
+OTHER
+http://jsfiddle.net/blordcastillo/mULcz/
+
+
+DOJO
+http://livedocs.dojotoolkit.org/dojo/DeferredList
+http://dojotoolkit.org/reference-guide/1.9/dojo/promise/all.html
+
+
+The service
+http://gis.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer

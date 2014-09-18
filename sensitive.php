@@ -80,7 +80,7 @@
       }            
     </style>
     <script type="text/javascript" src="http://js.arcgis.com/3.10/"></script>
-    <script type="text/javascript" src="javascript/sensitive_only.js"></script>
+    <script type="text/javascript" src="javascript/sensitive.js"></script>
   </head>
 
   <body class="claro">

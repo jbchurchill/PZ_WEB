@@ -225,6 +225,15 @@ require(["esri/map",
     case "SDAT_URL":
       determineVal(value, "SDAT Link: <a href=\"", true);
       break;
+    case "DR1LIBER":
+      determineVal(value, "<hr><span class=\"sectionhead\">Deed Reference</span><br />Liber: ", true);
+      break;
+    case "DR1FOLIO":
+      determineVal(value, "Folio: ", true);
+      break;
+    case "CITY":
+      determineVal(value, "City: ", true);
+      break;
     }
     return content;
   }
@@ -235,8 +244,8 @@ require(["esri/map",
   var flzTemplate = new esri.InfoTemplate("", "<span class=\"sectionhead\">Layer: FEMA Flood Hazard Zones </span><br /><br /><hr>Flood Zone: ${FLD_ZONE} <br/>");
   var parcelTemplate = new esri.InfoTemplate("", 
         "<span class=\"sectionhead\">Layer: Parcels</span><br /><br /><hr>Address: ${ADDRESS} <br />"
-        + "City: ${CITY} <br /> Owner: ${OWNNAME1} ${OWNNAME2:checkNull} <br /> Tax Id: ${ACCTID} <br /><hr><span class=\"sectionhead\">Deed Reference</span><br />"
-        + "Liber: ${DR1LIBER} <br /> Folio: ${DR1FOLIO} <br /><hr> ${SUBDIVSN:checkNull} ${PLAT:checkNull} ${BLOCK:checkNull} Grid: ${GRID} <br />"
+        + "${CITY:checkNull} Owner: ${OWNNAME1} ${OWNNAME2:checkNull} <br /> Tax Id: ${ACCTID} <br />"
+        + "${DR1LIBER:checkNull} ${DR1FOLIO:checkNull} <hr> ${SUBDIVSN:checkNull} ${PLAT:checkNull} ${BLOCK:checkNull} Grid: ${GRID} <br />"
         + "Map: ${MAP} <br /> Parcel: ${PARCEL} <br /> Lot: ${LOT} <br /> Area: ${ACRES} Acres <br />"
         + "${PLTLIBER:checkNull} ${PLTFOLIO:checkNull} <hr>"
         + "Year Built: ${YRBLT_CAMA} <br /> ${SDAT_URL:checkNull}");
@@ -247,13 +256,15 @@ require(["esri/map",
               + "Rental Co.: ${RENTAL_CO} <br /> Tax Account: ${TAX_ACCOUNT_ID} <br /> Owner: ${OWNER_FIRST_NAME} ${OWNER_LAST_NAME} <br />");
   var streetTemplate = new esri.InfoTemplate("",
              "<span class=\"sectionhead\">Layer: Street Centerlines</span><br /><br /><hr>Name: ${STREET_ALL} <br />"
-              + "Maintenance: ${MAINTENANCE} <br /> Length: ${SHAPE_Length:NumberFormat} feet <br />");
+              + "Maintenance: ${MAINTENANCE} <br /> Length: ${SHAPE.len:NumberFormat(places:1)} feet <br />");
 
   var pstreamTemplate = new esri.InfoTemplate("",
             "<span class=\"sectionhead\">Layer: Perennial Streams</span><br /><br />");
 
-  var swpaTemplate = new esri.InfoTemplate("Sensitive Area Info",
-            "<span class=\"sectionhead\">Layer: Source Water Protection Areas</span><br /><br />");
+  var swpaTemplate = new esri.InfoTemplate("Source Water Info",
+            "<span class=\"sectionhead\">Layer: Source Water Protection Areas</span><br /><br />"
+            + "Water System: ${WHPAs_Me_2} <br /> Geology: ${WHPAs_Me_6} <br /> Project Info: ${WHPAs_M_11} <br /> Location: ${WHPAs_M_12} <br />"
+            + "Source: ${CWS_SRC_NA} <br /> Completion Date: ${CWS_COMP_D} <br /> Aquifer: ${CWS_AQUIFE} <br />");
 
   var growthAreasTemplate = new esri.InfoTemplate("Growth Areas Info",
             "<span class=\"sectionhead\">Layer: Growth Areas</span><br /><br />");
@@ -408,7 +419,7 @@ require(["esri/map",
             if (result.layerName === 'addresspoints'){
               feature.setInfoTemplate(addrTemplate);
             } 
-            else if (result.layerName === 'Garrett.DBO.TaxParcel'){
+            else if (result.layerName === 'Parcels'){
               feature.setInfoTemplate(parcelTemplate);
             }
             else if (result.layerName === 'centerlines') {

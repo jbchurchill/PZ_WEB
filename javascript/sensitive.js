@@ -55,21 +55,31 @@ require(["esri/map",
 
   // runs when Measure Button is clicked (see the second line inside of the "initSelectToolbar" fx and the getExtent fx below)
   function launchURL () {
-    var selectedMap = dijit.byId('mapSelect').get('value'), baseURL;
+    var selectedMap = dijit.byId('mapSelect').get('value'), baseURL, url, winTarget;
     switch (selectedMap) {
     case "Measurement":
       baseURL = "measure.php";
+      winTarget = '_blank';
       break;
     case "Planning and Zoning":
       baseURL = "pz_map.php";
+      winTarget = '_blank';
+      break;
+    case "Flood Hazard":
+      baseURL = "FEMA_map.php";
+      winTarget = '_blank';
+      break;
+    case "Sensitive Areas":
+      baseURL = "sensitive.php";
+      winTarget = '_self';
       break;
     }
     // var url = "measure.php?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
-    var url = baseURL + "?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
-    window.open(url,'_blank');
+    url = baseURL + "?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
+    window.open(url, winTarget);
   }
 
-  function getExtent () {
+  function getExtent() {
     var center=webMercatorUtils.webMercatorToGeographic(map.extent.getCenter());
     passedX = parseFloat(center.x.toFixed(5));
     passedY = parseFloat(center.y.toFixed(5));
@@ -106,8 +116,9 @@ require(["esri/map",
   map.on("load", startTrackingExtent);
   var mapLaunchStore = new Memory({
     data: [
-      {name:"Measurement", id:"MSMT", baseURL: "measure.php"},
-      {name:"Planning and Zoning", id:"PZMAP", baseURL: "pz_map.php"}
+      {name: "Flood Hazard", id: "FEMA", baseURL: "FEMA_map.php"},
+      {name: "Measurement", id: "MSMT", baseURL: "measure.php"},
+      {name: "Planning and Zoning", id: "PZMAP", baseURL: "pz_map.php"}
     ]
   });
   var comboBox = new ComboBox({

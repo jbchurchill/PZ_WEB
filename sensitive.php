@@ -100,7 +100,20 @@
             <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">
               <div id="basemapGallery" ></div>
             </div><!-- ContentPane 1 -->
-          </div><!-- TitlePane 1 "Switch Basemap" -->  
+          </div><!-- TitlePane 1 "Switch Basemap" -->
+          <div data-dojo-type="dijit/TitlePane" 
+               data-dojo-props="title:'Sensitive Areas Legend', closable:false,  open:false">
+            <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">
+              <div id="Sensitive_Areas_Legend" >
+                <img src="images/SensitiveAreasLegend.jpg" /><br />
+                <p>
+                  The Protected Species areas are created from buffers of known protected species. 
+                  These do not indicate presence or absence of any species at any location on the map.
+                  They are simply intended as a guide to the possible presence or absence of a State or Federally protected species.
+                </p>
+              </div>
+            </div><!-- ContentPane 2 -->            
+          </div><!-- TitlePane 1 "Switch Basemap" -->            
           <div data-dojo-type="dijit/TitlePane" 
              data-dojo-props="title:'Navigation', closable:false,  open:false">
             <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">

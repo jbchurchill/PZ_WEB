@@ -1,5 +1,6 @@
-var map, zoom, center, require, dojo, dijit, esri, scalebar, checkNull, formatProtectedSpecies, formatFLU, content, console;
-var saParameters, mdImageLayer, mdImageBasemap, geocoder;
+var map, zoom, center, require, dojo, dijit, esri, scalebar, checkNull, formatProtectedSpecies, formatFLU, content, console, window;
+var saParameters, mdImageLayer, mdImageBasemap, geocoder, mapLaunchStore, comboBox;
+var parcelTemplate, addrTemplate, streetTemplate, pstreamTemplate, swpaTemplate, growthAreasTemplate, protectedSpeciesTemplate, SA_fLayer, basemapGallery;
 var passedCenter, passedX, passedY, zoomLevel;
 require(["esri/map",
   "esri/dijit/Scalebar",
@@ -24,7 +25,7 @@ require(["esri/map",
   "esri/dijit/Geocoder",
   "dojo/parser",
   "dojo/domReady!"
-], function (
+  ], function (
   Map,
   Scalebar,
   Popup,
@@ -47,14 +48,14 @@ require(["esri/map",
   InfoTemplate,
   Geocoder,
   parser
-  ) {
+) {
   parser.parse();
   var popup = new Popup({
     fillSymbol: new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255, 0, 0]), 2), new Color([255, 255, 0, 0.25]))
   }, dojo.create("div"));
 
   // runs when Measure Button is clicked (see the second line inside of the "initSelectToolbar" fx and the getExtent fx below)
-  function launchURL () {
+  function launchURL() {
     var selectedMap = dijit.byId('mapSelect').get('value'), baseURL, url, winTarget;
     switch (selectedMap) {
     case "Measurement":
@@ -80,12 +81,12 @@ require(["esri/map",
   }
 
   function getExtent() {
-    var center=webMercatorUtils.webMercatorToGeographic(map.extent.getCenter());
+    var center = webMercatorUtils.webMercatorToGeographic(map.extent.getCenter());
     passedX = parseFloat(center.x.toFixed(5));
     passedY = parseFloat(center.y.toFixed(5));
     zoomLevel = map.getLevel();
   }
-  
+
   // center = [-79.2, 39.5];
   // zoom = 10;
   passedCenter = [passedX, passedY];
@@ -114,17 +115,18 @@ require(["esri/map",
 
   // LAUNCH MAP
   map.on("load", startTrackingExtent);
-  var mapLaunchStore = new Memory({
+  mapLaunchStore = new Memory({
     data: [
       {name: "Flood Hazard", id: "FEMA", baseURL: "FEMA_map.php"},
       {name: "Measurement", id: "MSMT", baseURL: "measure.php"},
-      {name: "Planning and Zoning", id: "PZMAP", baseURL: "pz_map.php"}
+      {name: "Planning and Zoning", id: "PZMAP", baseURL: "pz_map.php"},
+      {name: "Sensitive Areas", id: "SENSI", baseURL: "sensitive.php"}
     ]
   });
-  var comboBox = new ComboBox({
+  comboBox = new ComboBox({
     id: "mapSelect",
     name: "map",
-    value: "Measurement",
+    value: "Sensitive Areas",
     store: mapLaunchStore,
     searchAttr: "name"
   }, "mapSelect").startup();
@@ -226,11 +228,11 @@ require(["esri/map",
       content = value + " &#045; General Commercial";
     } else if (key == "FLU" && value == "SR") {
       content = value + " &#045; Suburban Residential";
-    }  
+    }
     return content;
   };
 
-  var parcelTemplate = new InfoTemplate("", 
+  parcelTemplate = new InfoTemplate("",
         "<span class=\"sectionhead\">Layer: Parcels</span><br /><br /><hr>Address: ${ADDRESS} <br />"
         + "${CITY:checkNull} Owner: ${OWNNAME1} ${OWNNAME2:checkNull} <br /> Tax Id: ${ACCTID} <br />"
         + "${DR1LIBER:checkNull} ${DR1FOLIO:checkNull} <hr> ${SUBDIVSN:checkNull} ${PLAT:checkNull} ${BLOCK:checkNull} Grid: ${GRID} <br />"
@@ -238,126 +240,118 @@ require(["esri/map",
         + "${PLTLIBER:checkNull} ${PLTFOLIO:checkNull} <hr>"
         + "Year Built: ${YRBLT_CAMA} <br /> ${SDAT_URL:checkNull}");
 
-  var addrTemplate = new InfoTemplate("Address Info", 
+  addrTemplate = new InfoTemplate("Address Info",
               "<span class=\"sectionhead\">Layer: Address Points</span><br /><br /><hr>Address: ${ADDRESS} <br /><br /> City: ${CITY} <br /> Zip: ${ZIP_CODE} <br /> ESN: ${ESN} <br /> Community: ${COMMUNITY} <br /> Map: ${MAP} <br /> Parcel: ${PARCEL} <br />"
               + "Lot: ${LOT} <br /> Tract: ${TRACT} <br /> LU: ${LU} <br /> Key date: ${KEYDATE} <br /> Rental: ${RENTAL} <br />"
               + "Rental Co.: ${RENTAL_CO} <br /> Tax Account: ${TAX_ACCOUNT_ID} <br /> Owner: ${OWNER_FIRST_NAME} ${OWNER_LAST_NAME} <br />");
-  var streetTemplate = new InfoTemplate("",
+  streetTemplate = new InfoTemplate("",
              "<span class=\"sectionhead\">Layer: Street Centerlines</span><br /><br /><hr>Name: ${STREET_ALL} <br />"
               + "Maintenance: ${MAINTENANCE} <br /> Length: ${SHAPE.len:NumberFormat(places:1)} feet <br />");
 
-  var pstreamTemplate = new InfoTemplate("",
+  pstreamTemplate = new InfoTemplate("",
             "<span class=\"sectionhead\">Layer: Perennial Streams</span><br /><br />");
 
-  var swpaTemplate = new InfoTemplate("Source Water Info",
+  swpaTemplate = new InfoTemplate("Source Water Info",
             "<span class=\"sectionhead\">Layer: Source Water Protection Areas</span><br /><br />"
             + "Water System: ${WHPAs_Me_2} <br /> Geology: ${WHPAs_Me_6} <br /> Project Info: ${WHPAs_M_11} <br /> Location: ${WHPAs_M_12} <br />"
             + "Source: ${CWS_SRC_NA} <br /> Completion Date: ${CWS_COMP_D} <br /> Aquifer: ${CWS_AQUIFE} <br />");
 
-  var growthAreasTemplate = new InfoTemplate("Growth Areas Info",
+  growthAreasTemplate = new InfoTemplate("Growth Areas Info",
             "<span class=\"sectionhead\">Layer: Growth Areas</span><br /><br />"
             + "Land Use: ${GENZONE} <br /> Acreage: ${ACRES:NumberFormat(places:2)} <br /> Zoning: ${FLU:formatFLU}");
-            
-  var protectedSpeciesTemplate = new InfoTemplate("Protected Species Info",
+
+  protectedSpeciesTemplate = new InfoTemplate("Protected Species Info",
             "<span class=\"sectionhead\">Layer: Protected Species</span><br /><br />"
             + "${GROUP:formatProtectedSpecies}");
 
+  saParameters = new ImageParameters();
+  saParameters.layerIds = [0, 1, 2, 3, 4, 5, 6, 7];
+  saParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
 
-        saParameters = new ImageParameters();
-        saParameters.layerIds = [0, 1, 2, 3, 4, 5, 6, 7];
-        saParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
+  SA_fLayer = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer", // {
+    {"imageParameters": saParameters, opacity: 0.75});
 
-        var SA_fLayer = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer", // {
-          {"imageParameters": saParameters, opacity: 0.75});
+  map.addLayer(SA_fLayer);
 
-        map.addLayer(SA_fLayer);
+  basemapGallery = new BasemapGallery({
+    showArcGISBasemaps: true,
+    map: map
+  }, "basemapGallery");
 
-        var basemapGallery = new BasemapGallery({
-          showArcGISBasemaps: true,
-          map: map
-        }, "basemapGallery");
+  mdImageLayer = new ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer");
 
-        mdImageLayer = new ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer");
+  mdImageBasemap = new esri.dijit.Basemap({
+    layers: [mdImageLayer],
+    title: "MD Imagery",
+    thumbnailUrl: "http://gis.garrettcounty.org/arcgis/images/image_v2.png"
+  });
+  basemapGallery.add(mdImageBasemap);
 
-        mdImageBasemap = new esri.dijit.Basemap({
-          layers: [mdImageLayer],
-          title: "MD Imagery",
-          thumbnailUrl: "http://gis.garrettcounty.org/arcgis/images/image_v2.png"
-        });
-        basemapGallery.add(mdImageBasemap);
+  basemapGallery.startup();
 
-        basemapGallery.startup();
+  basemapGallery.on("error", function (msg) {
+    console.log("basemap gallery error:  ", msg);
+  });
 
-        basemapGallery.on("error", function (msg) {
-          console.log("basemap gallery error:  ", msg);
-        });        
+  function executeIdentifyTask(evt) {
+    var deferred, myLayerIds, identifyParams, task = new IdentifyTask("http://gis.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer");
+    myLayerIds = [0, 1, 2, 3, 4, 5, 6, 7];
 
-      function executeIdentifyTask(evt) {
+    identifyParams = new IdentifyParameters();
+    identifyParams.tolerance = 3;
+    identifyParams.returnGeometry = true;
+    identifyParams.layerOption = IdentifyParameters.LAYER_OPTION_VISIBLE; // .LAYER_OPTION_ALL; 
+    identifyParams.layerIds = myLayerIds;
+    // setting LAYER_OPTION_VISIBLE was an important change, eliminating attempts to identify layers not within scale range.
+    identifyParams.width  = map.width;
+    identifyParams.height = map.height;
+    identifyParams.geometry = evt.mapPoint;
+    identifyParams.mapExtent = map.extent;
+    identifyParams.tolerance = 3;
+    identifyParams.SpatialReference = 102100;
 
-        var myLayerIds, identifyParams, task = new IdentifyTask("http://gis.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer");
-        myLayerIds = [0, 1, 2, 3, 4, 5, 6, 7];
+    // NEW TESTING
+    deferred = task.execute(identifyParams);
 
-        identifyParams = new IdentifyParameters();
-        identifyParams.tolerance = 3;
-        identifyParams.returnGeometry = true;
-        identifyParams.layerOption = IdentifyParameters.LAYER_OPTION_VISIBLE; // .LAYER_OPTION_ALL; 
-        identifyParams.layerIds = myLayerIds;
-        // setting LAYER_OPTION_VISIBLE was an important change, eliminating attempts to identify layers not within scale range.
-        identifyParams.width  = map.width;
-        identifyParams.height = map.height;
-        identifyParams.geometry = evt.mapPoint;
-        identifyParams.mapExtent = map.extent;
-        identifyParams.tolerance = 3;
-        identifyParams.SpatialReference = 102100;        
+    deferred.addCallback(function (response) {
 
-        // NEW TESTING
-        var deferred = task.execute(identifyParams);
+      // response is an array of identify result objects    
+      // Let's return an array of features.
+      return dojo.map(response, function (result) {
+        var feature = result.feature;
 
-        deferred.addCallback(function(response) {
+        if (result.layerName === 'addresspoints') {
+          feature.setInfoTemplate(addrTemplate);
+        } else if (result.layerName === 'Parcels') {
+          feature.setInfoTemplate(parcelTemplate);
+        } else if (result.layerName === 'centerlines') {
+          feature.setInfoTemplate(streetTemplate);
+        } else if (result.layerName === 'GrowthAreas') {
+          feature.setInfoTemplate(growthAreasTemplate);
+        } else if (result.layerName === 'Source Water Protection Areas') {
+          feature.setInfoTemplate(swpaTemplate);
+        } else if (result.layerName === 'Protected Species') {
+          feature.setInfoTemplate(protectedSpeciesTemplate);
+        }
 
-          // response is an array of identify result objects    
-          // Let's return an array of features.
-          return dojo.map(response, function(result) {
-            var feature = result.feature;
+        return feature;
 
-            if (result.layerName === 'addresspoints'){
-              feature.setInfoTemplate(addrTemplate);
-            } 
-            else if (result.layerName === 'Parcels'){
-              feature.setInfoTemplate(parcelTemplate);
-            }
-            else if (result.layerName === 'centerlines') {
-              feature.setInfoTemplate(streetTemplate);
-            }
-            else if (result.layerName === 'GrowthAreas') {
-              feature.setInfoTemplate(growthAreasTemplate);
-            }
-            else if (result.layerName === 'Source Water Protection Areas') {
-              feature.setInfoTemplate(swpaTemplate);
-            }
-            else if (result.layerName === 'Protected Species') {
-              feature.setInfoTemplate(protectedSpeciesTemplate);
-            }
+      }, function (error) {console.log("Error: " + error); });
 
-            return feature;   
+    }); // end of deferred callback function
 
-          }, function(error) {console.log("Error: " + error);});
+    map.infoWindow.show(evt.mapPoint);
+    map.infoWindow.setFeatures([ deferred ]);
 
-        }); // end of deferred callback function
+  } // end of function executeIdentifyTask
 
-        map.infoWindow.show(evt.mapPoint);
-        map.infoWindow.setFeatures([ deferred ]);
+  map.on("click", executeIdentifyTask);
 
-      } // end of function executeIdentifyTask
+  // Add Geocoder  
+  geocoder = new Geocoder({
+    map: map
+  }, "geosearch");
+  geocoder.startup();
+  // End Geocoder
 
-      map.on("click", executeIdentifyTask);
-
-      // Add Geocoder  
-      geocoder = new Geocoder({
-        map: map
-      }, "geosearch");
-      geocoder.startup();
-      // End Geocoder
-
-
-    });
+});

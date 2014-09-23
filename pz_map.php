@@ -84,7 +84,7 @@
     
     <script src="http://js.arcgis.com/3.10/"></script>
     <!-- <script src="javascript/php_functions.js" type="text/javascript"></script> -->
-    <script src="javascript/allpz.yui.js" type="text/javascript"></script>
+    <script src="javascript/allpz.js" type="text/javascript"></script>
   </head>
 
   <body class="claro">
@@ -100,11 +100,6 @@
         data-dojo-props="region: 'top'">
       <button id="selectPointsButton" data-dojo-type="dijit/form/Button">Select Points/Polys</button>
       <button id="clearSelectionButton" data-dojo-type="dijit/form/Button">Clear Selection</button>
-      <button id="launchButton" data-dojo-type="dijit/form/Button">Launch</button>
-      
-      <input id="mapSelect">
-      <!--<p><button onClick="alert(dijit.byId('mapSelect').get('value'))">Get value</button></p>-->
-      
       <div class="selType">
           <input type="radio" id="rectangle" data-dojo-type="dijit/form/RadioButton" name="selectType"  checked="true">Rectangle<br />
           <input type="radio" id="polygon" data-dojo-type="dijit/form/RadioButton" name="selectType">Polygon<br />
@@ -114,8 +109,7 @@
           <input type="radio" id="polys" data-dojo-type="dijit/form/RadioButton" name="geomType" />Parcels<br />
       </div>
       <span style="font-size: 0.8em; float:right; text-align:center">
-      <a href="../help.html">Help ?</a> &#045; &nbsp;&nbsp;
-      Launch a new map from the pulldown menu.<br />Click the triangle at the lower right corner<br /> to search roads or parcels.
+      Click the triangle at the lower right corner<br /> to search roads or parcels.
       </span>
       </div><!-- #cp CONTENT PANE -->
       <!-- onclick="runTest();"  -->
@@ -137,12 +131,14 @@
               <div id="addLayers" >
                 <h3>Additional Layers : </h3>
                 <span id="layer_list">
-                  <input type='checkbox' class='list_item' id='layer2CheckBox' value=2 />Gas Wells&nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/GAS_WELLS.png" /><br/>
+                  <!--<input type='checkbox' class='list_item' id='layer2CheckBox' value=2 />Gas Wells&nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/GAS_WELLS.png" /><br/>-->
                   <input type='checkbox' class='list_item' id='layer3CheckBox' value=3 />Wind Turbines&nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/Wind_Turbines.png" height="10" width="10" /><br/>
                   <input type='checkbox' class='list_item' id='layer7CheckBox' value=7 />Zip Codes&nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/zip_codes.png" height="16" width="16" /><br />
                   <input type='checkbox' class='list_item' id='layer9CheckBox' value=9 />Tax Map&nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/tax_map.png" height="16" width="16" /><br />
                   <input type='checkbox' class='list_item' id='layer10CheckBox' value=10 />Zoning&nbsp;&nbsp;(See legend below)<br />
                   <input type='checkbox' class='list_item' id='layer11CheckBox' value=11 />Election Districts&nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/Election_Districts.png" height="16" width="16" /><br />
+                  <input type='checkbox' class='list_item' id='layer12CheckBox' value=12 />Town Boundaries&nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/tax_map.png" height="16" width="16" /><br />
+                  <input type='checkbox' class='list_item' id='layer13CheckBox' value=13 />County Boundary&nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/CountyBoundary.jpg" height="16" width="16" /><br />
                 </span><hr /><br />
                 <div id="ZoningLegend">
                   <img src="http://gis.garrettcounty.org/arcgis/images/Zoning.PNG" /><br/>
@@ -161,7 +157,7 @@
                         <li>6A &#045; Roads &amp; Highways Facilities &nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/airport.png" height="16" width="16" /></li>
                         <li>7 &#045; Nursing Homes &nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/nursing_home.png" height="16" width="16" /></li>
                         <li>8 &#045; Communications Towers &nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/communications_tower.png" height="16" width="16" /></li>
-                        <li>9 &#045; Fire &amp; Rescue Facilities &nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/fire_rescue.png" height="16" width="16" /></li>
+                        <li>9 &#045; Fire &amp; Rescue Facilities &nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/CountyBoundary.jpg" height="16" width="16" /></li>
                       </ul>
                     </li>
                     <li>Addresses&nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/AddressPoints.png" /></li>
@@ -173,6 +169,23 @@
               </div><!-- addLayers -->
             </div><!-- Content Pane - Additional Layers -->
           </div><!-- Title Pane - Additional Layers -->
+          <div data-dojo-type="dijit/TitlePane" 
+             data-dojo-props="title:'Navigation', closable:false,  open:false">
+            <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">
+              <button id="launchButton" data-dojo-type="dijit/form/Button">Launch</button>
+              <input id="mapSelect"><br />
+              <ul>
+                <li><a href="../help.html">Help ?</a></li>
+                <li><a href="../">Home</a></li>
+              </ul>
+              <p>
+                By default, the Launch Button will reload this page in the same window, updating the extent in the address bar. 
+                This works well for copying and pasting a link to a specific location on this map.
+                Choose a different map to launch the current extent in a new window or tab (depending on your browser preferences).
+                The different maps have different uses (see the <a href="../help.html">Help &amp; Documentation</a> for more information).
+              </p>
+            </div><!-- ContentPane 3 -->
+          </div><!-- TitlePane Navigation -->          
         </div><!-- unnamed div -->
       </div><!-- mapDiv -->
       

@@ -117,10 +117,11 @@ function executeIdentifyTask(evt) {
         template = new esri.InfoTemplate("",
         "<span class=\"sectionhead\">Layer: Critical Facilities </span><br /><br /><hr>Land Use: ${LU} <br /> Address: ${ADDRESS} ${ROADNAME} <br /> Last Name: ${LASTNAME} <br /> ");
         feature.setInfoTemplate(template);
-      } else if (result.layerName === 'Gas_Wells') {
+      /* } else if (result.layerName === 'Gas_Wells') {
         template = new esri.InfoTemplate("",
         "<span class=\"sectionhead\">Layer: Gas Wells</span><br /><br /><hr>Well Number: ${OBJECTID} <br />");
         feature.setInfoTemplate(template);
+      */
       } else if (result.layerName === 'celltowers') {
         template = new esri.InfoTemplate("",
         "<span class=\"sectionhead\">Layer: Cell Towers</span><br /><br /><hr>Address: ${TOWER_ADDRESS} <br /> "
@@ -130,7 +131,7 @@ function executeIdentifyTask(evt) {
       } else if (result.layerName === 'centerlines') {
         template = new esri.InfoTemplate("",
         "<span class=\"sectionhead\">Layer: Street Centerlines</span><br /><br /><hr>Name: ${STREET_ALL} <br />"
-        + "Maintenance: ${MAINTENANCE} <br /> Length: ${SHAPE.len:NumberFormat} feet <br />");
+        + "Maintenance: ${MAINTENANCE} <br /> Length: ${SHAPE.len:NumberFormat(places:1)} feet <br />");
         feature.setInfoTemplate(template);
       } else if (result.layerName === 'Election_Districts') {
         template = new esri.InfoTemplate("",
@@ -150,20 +151,26 @@ function executeIdentifyTask(evt) {
       } else if (result.layerName === 'County_Zoning_Layer') {
         template = new esri.InfoTemplate("Zoning Info", "<span class=\"sectionhead\">Layer: County Zoning Layer </span><br /><br /><hr>${GENZONE} <br/> Land Use Code: ${FLU}");
         feature.setInfoTemplate(template);
-      }
-      else if (result.layerName === 'Tax Map Grid') {
+      } else if (result.layerName === 'Tax Map Grid') {
         template = new esri.InfoTemplate("Tax Map Info", "<span class=\"sectionhead\">Layer: Tax Map Grid </span><br /><br /><hr>Map ID: ${MAPID} <br />Tax Map: ${TAXMAP}")
         feature.setInfoTemplate(template);
-      }
-      else if (result.layerName === 'Garrett.DBO.TaxParcel'){
+      } else if (result.layerName === 'Garrett.DBO.TaxParcel') {
         template = new esri.InfoTemplate("",
         "<span class=\"sectionhead\">Layer: Parcels</span><br /><br /><hr>Address: ${ADDRESS} <br />"
         + "City: ${CITY} <br /> Owner: ${OWNNAME1} ${OWNNAME2:checkNull} <br /> Tax Id: ${ACCTID} <br /><hr><span class=\"sectionhead\">Deed Reference</span><br />"
         + "Liber: ${DR1LIBER} <br /> Folio: ${DR1FOLIO} <br /><hr> ${SUBDIVSN:checkNull} ${PLAT:checkNull} ${BLOCK:checkNull} Grid: ${GRID} <br />"
-        + "Map: ${MAP} <br /> Parcel: ${PARCEL} <br /> Lot: ${LOT} <br /> Area: ${ACRES} Acres <br />"
+        + "Map: ${MAP} <br /> Parcel: ${PARCEL} <br /> Lot: ${LOT} <br /> Area: ${ACRES:NumberFormat(places:2)} Acres <br />"
         + "${PLTLIBER:checkNull} ${PLTFOLIO:checkNull} <hr>"
         + "Year Built: ${YRBLT_CAMA} <br /> ${SDAT_URL:checkNull}"); 
         map.infoWindow.resize(250, 500);
+        feature.setInfoTemplate(template);
+      } else if (result.layerName === 'Town Boundary') {
+        template = new esri.InfoTemplate("",
+        "<span class=\"sectionhead\">Layer: Town Boundary</span><br /><br /><hr>Community: ${COMMUNITY_NAME} <br />");
+        feature.setInfoTemplate(template);
+      } else if (result.layerName === 'County Boundary') {
+        template = new esri.InfoTemplate("",
+        "<span class=\"sectionhead\">Layer: County Boundary</span><br /><br /><hr>Yes! That location is in Garrett County.<br />");
         feature.setInfoTemplate(template);
       }
       return feature;
@@ -453,36 +460,47 @@ require([
   var mapLaunchStore, comboBox;
   mapLaunchStore = new Memory({
     data: [
+      {name: "Flood Hazard", id: "FEMA", baseURL: "FEMA_map.php"},
       {name: "Measurement", id: "MSMT", baseURL: "measure.php"},
-      {name: "FEMA Flood Hazard", id: "FEMA", baseURL: "FEMA_map.php"}
+      {name: "Planning and Zoning", id: "PZMAP", baseURL: "pz_map.php"},
+      {name: "Sensitive Areas", id: "SENSI", baseURL: "sensitive.php"}
     ]
   });
   comboBox = new ComboBox({
     id: "mapSelect",
     name: "map",
-    value: "Measurement",
+    value: "Planning and Zoning",
     store: mapLaunchStore,
     searchAttr: "name"
   }, "mapSelect").startup();
 
   // runs when Measure Button is clicked (see the second line inside of the "initSelectToolbar" fx and the getExtent fx below)
 
-  function launchURL() {
-    var selectedMap, baseURL, url;
-    selectedMap = dijit.byId('mapSelect').get('value');
+  function launchURL () {
+    var selectedMap = dijit.byId('mapSelect').get('value'), baseURL, url, winTarget;
     switch (selectedMap) {
     case "Measurement":
+      winTarget = '_blank';
       baseURL = "measure.php";
       break;
-    case "FEMA Flood Hazard":
+    case "Planning and Zoning":
+      baseURL = "pz_map.php";
+      winTarget = '_self';
+      break;
+    case "Flood Hazard":
       baseURL = "FEMA_map.php";
+      winTarget = '_blank';
+      break;
+    case "Sensitive Areas":
+      baseURL = "sensitive.php";
+      winTarget = '_blank';
       break;
     }
-
     // var url = "measure.php?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
-    url = baseURL + "?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
-    window.open(url, '_blank');
+    var url = baseURL + "?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel; //  + "&bMap=" + bMap;
+    window.open(url, winTarget);
   }
+
   registry.byId("launchButton").on("click", launchURL);
 
   function getExtent(extent) {
@@ -608,11 +626,13 @@ require([
 
   // TURN LAYERS ON AND OFF
   on(dom.byId("layer10CheckBox"), "change", updateLayerVisibility);
-  on(dom.byId("layer2CheckBox"), "change", updateLayerVisibility);
+  // on(dom.byId("layer2CheckBox"), "change", updateLayerVisibility);
   on(dom.byId("layer3CheckBox"), "change", updateLayerVisibility);
   on(dom.byId("layer7CheckBox"), "change", updateLayerVisibility);
   on(dom.byId("layer9CheckBox"), "change", updateLayerVisibility);
   on(dom.byId("layer11CheckBox"), "change", updateLayerVisibility);
+  on(dom.byId("layer12CheckBox"), "change", updateLayerVisibility);
+  on(dom.byId("layer13CheckBox"), "change", updateLayerVisibility);
 
   function updateLayerVisibility() {
     var i;

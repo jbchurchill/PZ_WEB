@@ -1,5 +1,5 @@
 var map, console, require;
-var passedCenter, passedX, passedY, zoomLevel;
+var passedCenter, passedX, passedY, zoomLevel, bMap, bMapName;
 require([
   "dojo/dom",
   "esri/Color",
@@ -72,8 +72,8 @@ require([
   esriConfig.defaults.io.alwaysUseProxy = false;
   //This service is for development and testing purposes only. We recommend that you create your own geometry service for use within your applications
   esriConfig.defaults.geometryService = new GeometryService("http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
-  // runs when Measure Button is clicked (see the second line inside of the "initSelectToolbar" fx and the getExtent fx below)
 
+    // runs when Measure Button is clicked (see the second line inside of the "initSelectToolbar" fx and the getExtent fx below)
   function launchURL () {
     var selectedMap = dijit.byId('mapSelect').get('value'), baseURL, url, winTarget;
     switch (selectedMap) {
@@ -95,22 +95,22 @@ require([
       break;
     }
     // var url = "measure.php?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
-    var url = baseURL + "?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel; //  + "&bMap=" + bMap;
+    var url = baseURL + "?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel + "&bMap=" + bMap;
     window.open(url, winTarget);
-  }
+  }  
 
-  passedCenter = [passedX, passedY];
-  registry.byId("launchButton").on("click", launchURL);
-  
-  function startTrackingExtent() {
-    dojo.connect(map, "onExtentChange", getExtent);
+  switch (bMap) {
+  case "basemap_0":
+    bMapName = "MD Imagery";
+    break;
+  case "basemap_9":
+     bMapName = "streets";
+     break;
   }
-  // console.log(passedCenter);
-  // console.log(zoomLevel);
 
   // You may wish to change the id to map or mapDiv (if that is the map you are using
   map = new Map("map", {
-    basemap: "streets",
+    basemap: bMap, // "streets",
     center: passedCenter, // [-79.2, 39.5]
     zoom: zoomLevel // 12
   });
@@ -120,6 +120,38 @@ require([
     showArcGISBasemaps: true,
     map: map
   }, "basemapGallery");
+
+  //if (typeof(bMap) === 'object') {
+  //  basemapGallery.select(bMap);
+  //  console.log("bMap is an object");
+  //}
+
+  function getUpdatedBasemap () {
+    // if (typeof(basemapGallery.getSelected()) === 'object') {
+    console.log("getUpdatedBasemap fx ran");
+    myBaseMap = basemapGallery.getSelected();
+    bMap = myBaseMap.title;
+    
+    // }
+  }
+
+  function getExtent () {
+    var myBaseMap, center=webMercatorUtils.webMercatorToGeographic(map.extent.getCenter());
+    passedX = parseFloat(center.x.toFixed(5));
+    passedY = parseFloat(center.y.toFixed(5));
+    zoomLevel = map.getLevel();
+    console.log("Zoom: " + zoomLevel + ";  XY: " + passedX + ", " + passedY + ", " + bMap);
+  }
+
+  passedCenter = [passedX, passedY];
+  registry.byId("launchButton").on("click", launchURL);
+
+  function startTrackingExtent() {
+    dojo.connect(map, "onExtentChange", getExtent);
+    dojo.connect(map, "selection-change", getUpdatedBasemap);
+  }
+  // console.log(passedCenter);
+  // console.log(zoomLevel);
 
   scalebar = new Scalebar({
     map: map,
@@ -133,7 +165,7 @@ require([
 
   // LAUNCH MAP
   map.on("load", startTrackingExtent);
-  var mapLaunchStore = new Memory({
+  mapLaunchStore = new Memory({
     data: [
       {name: "Flood Hazard", id: "FEMA", baseURL: "FEMA_map.php"},
       {name: "Measurement", id: "MSMT", baseURL: "measure.php"},
@@ -141,7 +173,7 @@ require([
       {name: "Sensitive Areas", id: "SENSI", baseURL: "sensitive.php"}
     ]
   });
-  var comboBox = new ComboBox({
+  comboBox = new ComboBox({
     id: "mapSelect",
     name: "map",
     value: "Measurement",
@@ -149,18 +181,11 @@ require([
     searchAttr: "name"
   }, "mapSelect").startup();        
   
-  
-  function getExtent (extent) {
-    var center=webMercatorUtils.webMercatorToGeographic(map.extent.getCenter());
-    passedX = parseFloat(center.x.toFixed(5));
-    passedY = parseFloat(center.y.toFixed(5));
-    zoomLevel = map.getLevel();
-    console.log("Zoom: " + zoomLevel + ";  XY: " + passedX + ", " + passedY);
-  }
 
-  mdImagelayer = new esri.layers.ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer");
 
-  mdImageBasemap = new esri.dijit.Basemap({
+  mdImagelayer = new ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer");
+
+  mdImageBasemap = new Basemap({
     layers: [mdImagelayer],
     title: "MD Imagery",
     thumbnailUrl: "http://gis.garrettcounty.org/arcgis/images/image_v2.png"
@@ -176,7 +201,7 @@ require([
 
   sfs = new SimpleFillSymbol(
     "solid",
-    new SimpleLineSymbol("solid", new Color([195, 176, 23]), 2),
+    new SimpleLineSymbol("solid", new Color([145, 105, 135]), 2), // ([195, 176, 23]), 2),
     null
   );
 

@@ -14,6 +14,10 @@
   } else {
     $zoom = 10;
   }
+  if (isset($_GET['bMap'])) {
+  } else {
+    $bmap = "streets";
+  }
 ?>
 <!DOCTYPE html>
 <html> 
@@ -89,6 +93,7 @@
     var passedX = '<?php echo $px; ?>';
     var passedY = '<?php echo $py; ?>';
     var zoomLevel = '<?php echo $zoom; ?>';
+    var bMap = '<?php echo $bmap; ?>';
   </script>
     <div id="mainWindow" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'headline',gutters:false"
     style="width:100%; height:100%;">
@@ -117,6 +122,12 @@
                 <li><a href="../help.html">Help ?</a></li>
                 <li><a href="../">Home</a></li>
               </ul>
+              <p>
+                By default, the Launch Button will reload this page in the same window, updating the extent in the address bar. 
+                This works well for copying and pasting a link to a specific location on this map.
+                Choose a different map to launch the current extent in a new window or tab (depending on your browser preferences).
+                The different maps have different uses (see the <a href="../help.html">Help &amp; Documentation</a> for more information).
+              </p>
             </div><!-- ContentPane 3 -->
           </div><!-- TitlePane Navigation -->          
         </div><!-- positioning div -->

@@ -1,5 +1,5 @@
 var map, console, require;
-var passedCenter, passedX, passedY, zoomLevel, bMap, bMapName;
+var passedCenter, passedX, passedY, zoomLevel, bMap, bMapName, myBaseMap;
 require([
   "dojo/dom",
   "esri/Color",
@@ -98,7 +98,7 @@ require([
     var url = baseURL + "?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel + "&bMap=" + bMap;
     window.open(url, winTarget);
   }  
-
+  /*
   switch (bMap) {
   case "basemap_0":
     bMapName = "MD Imagery";
@@ -107,6 +107,9 @@ require([
      bMapName = "streets";
      break;
   }
+  */
+  passedCenter = [passedX, passedY];
+  registry.byId("launchButton").on("click", launchURL);
 
   // You may wish to change the id to map or mapDiv (if that is the map you are using
   map = new Map("map", {
@@ -126,6 +129,11 @@ require([
   //  console.log("bMap is an object");
   //}
 
+  basemapGallery.on("selection-change",function(){
+    myBaseMap = basemapGallery.getSelected(); 
+    console.log(myBaseMap.title + ", ID: " + myBaseMap.id);
+  });
+/*
   function getUpdatedBasemap () {
     // if (typeof(basemapGallery.getSelected()) === 'object') {
     console.log("getUpdatedBasemap fx ran");
@@ -134,24 +142,19 @@ require([
     
     // }
   }
-
+*/
   function getExtent () {
-    var myBaseMap, center=webMercatorUtils.webMercatorToGeographic(map.extent.getCenter());
+    var center = webMercatorUtils.webMercatorToGeographic(map.extent.getCenter());
     passedX = parseFloat(center.x.toFixed(5));
     passedY = parseFloat(center.y.toFixed(5));
     zoomLevel = map.getLevel();
     console.log("Zoom: " + zoomLevel + ";  XY: " + passedX + ", " + passedY + ", " + bMap);
   }
 
-  passedCenter = [passedX, passedY];
-  registry.byId("launchButton").on("click", launchURL);
 
   function startTrackingExtent() {
     dojo.connect(map, "onExtentChange", getExtent);
-    dojo.connect(map, "selection-change", getUpdatedBasemap);
   }
-  // console.log(passedCenter);
-  // console.log(zoomLevel);
 
   scalebar = new Scalebar({
     map: map,

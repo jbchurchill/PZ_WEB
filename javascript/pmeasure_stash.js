@@ -1,5 +1,5 @@
 var map, console, require;
-var passedCenter, passedX, passedY, zoomLevel, bMap, bMapName, myBaseMap;
+var passedCenter, passedX, passedY, zoomLevel, bMap, bMapName, myBaseMap, twlBaseMap;
 require([
   "dojo/dom",
   "esri/Color",
@@ -9,6 +9,7 @@ require([
   "esri/layers/ArcGISTiledMapServiceLayer",
   "esri/layers/ImageParameters",
   "esri/dijit/BasemapGallery",
+  "esri/dijit/BasemapLayer",
   "esri/config",
   "esri/sniff",
   "esri/map",
@@ -39,6 +40,7 @@ require([
   ArcGISTiledMapServiceLayer,
   ImageParameters,
   BasemapGallery,
+  BasemapLayer,
   esriConfig,
   has,
   Map,
@@ -118,7 +120,7 @@ require([
     break;
   case "basemap_5":
     // bMapName = "Terrain with Labels";
-    bMapName = "World Terrain Base";
+    bMapName = "terrain";
     break;
   case "basemap_6":
     bMapName = "topo";
@@ -136,19 +138,51 @@ require([
 
   passedCenter = [passedX, passedY];
   registry.byId("launchButton").on("click", launchURL);
-
+  
+  mdImagelayer = new ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer");
+  if (bMapName === "terrain") {
+    map = new Map("map", {
+      basemap: new Basemap({id: 'terrain',
+                  layers: [new BasemapLayer({url: 'http://services.arcgisonline.com/arcgis/rest/services/World_Terrain_Base/MapServer'}),
+                    new BasemapLayer({url: 'http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Reference_Overlay/MapServer'})
+                  ]
+            }), 
+      center: passedCenter, // [-79.2, 39.5]
+      zoom: zoomLevel // 12
+    });
+  } else if (bMapName === "MD Imagery") {  
+    map = new Map("map", {
+      basemap: new Basemap({id: 'MD Imagery', layers: [mdImagelayer]}), 
+      center: passedCenter, // [-79.2, 39.5]
+      zoom: zoomLevel // 12
+    });
+  } else {
   // You may wish to change the id to map or mapDiv (if that is the map you are using
-  map = new Map("map", {
-    basemap: bMapName, // "hybrid", // bMapName, // "streets",
-    center: passedCenter, // [-79.2, 39.5]
-    zoom: zoomLevel // 12
-  });
+    map = new Map("map", {
+      basemap: bMapName, // "hybrid", // bMapName, // "streets",
+      center: passedCenter, // [-79.2, 39.5]
+      zoom: zoomLevel // 12
+    });
+  };
 
   //add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
   basemapGallery = new BasemapGallery({
     showArcGISBasemaps: true,
     map: map
   }, "basemapGallery");
+/*
+  esriConfig.defaults.map.basemaps["Terrain with Labels"] = {
+    baseMapLayers: [
+      {
+        url: "http://services.arcgisonline.com/arcgis/rest/services/World_Terrain_Base/MapServer"
+      }, 
+      {
+        url: "http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Reference_Overlay/MapServer"
+      } 
+    ],
+    title: "Terrain Basemap"
+  };
+*/  
 
   //if (typeof(bMap) === 'object') {
   //  basemapGallery.select(bMap);
@@ -214,14 +248,22 @@ require([
   
 
 
-  mdImagelayer = new ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer");
-
+  // mdImagelayer = new ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer");
+  basemapGallery.remove("basemap_5");
   mdImageBasemap = new Basemap({
     layers: [mdImagelayer],
     title: "MD Imagery",
     thumbnailUrl: "http://gis.garrettcounty.org/arcgis/images/image_v2.png"
   });
+  /*
+  twlBaseMap = new Basemap({id: 'terrain', 
+    layers: [new BasemapLayer({url: 'http://services.arcgisonline.com/arcgis/rest/services/World_Terrain_Base/MapServer'}),
+    new BasemapLayer({url: 'http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Reference_Overlay/MapServer'})],
+    thumbnailUrl: "http://www.arcgis.com/sharing/rest/content/items/aab054ab883c4a4094c72e949566ad40/info/thumbnail/tempTerrain_with_labels_ne_usa.png"
+  });
+  */
   basemapGallery.add(mdImageBasemap);
+  // basemapGallery.add(twlBaseMap); // // // NOT NECESSARY
 
   basemapGallery.startup();
 

@@ -1,4 +1,4 @@
-var map, console, require;
+var map, console, require, dojo, dijit;
 var passedCenter, passedX, passedY, zoomLevel, bMap, bMapName, myBaseMap, twlBaseMap;
 require([
   "dojo/dom",
@@ -96,12 +96,11 @@ require([
       winTarget = '_blank';
       break;
     }
-    // var url = "measure.php?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
-    var url = baseURL + "?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel + "&bMap=" + bMap;
+    url = baseURL + "?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel + "&bMap=" + bMap;
     window.open(url, winTarget);
   }  
   // streets,satellite,hybrid,topo,gray,oceans,national-geographic,osm 
-  console.log("BMAP variable is ... " + bMap);
+
   switch (bMap) {
   case "basemap_0":
     bMapName = "MD Imagery";
@@ -119,7 +118,6 @@ require([
     bMapName = "gray";
     break;
   case "basemap_5":
-    // bMapName = "Terrain with Labels";
     bMapName = "terrain";
     break;
   case "basemap_6":
@@ -132,13 +130,17 @@ require([
     bMapName = "hybrid";
     break;    
   case "basemap_9":
-     bMapName = "satellite";
-     break;
+    bMapName = "satellite";
+    break;
+  default: // use streets as the default
+    bMapName = "streets";
+    bMap = "basemap_7";
+    break;
   }
 
   passedCenter = [passedX, passedY];
   registry.byId("launchButton").on("click", launchURL);
-  
+  // Custom BaseMaps
   mdImagelayer = new ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer");
   if (bMapName === "terrain") {
     map = new Map("map", {
@@ -156,55 +158,26 @@ require([
       center: passedCenter, // [-79.2, 39.5]
       zoom: zoomLevel // 12
     });
-  } else {
-  // You may wish to change the id to map or mapDiv (if that is the map you are using
+  } else { // basemap is one of the ones that works (i.e. not MD Imagery or Terrain with Labels). 
     map = new Map("map", {
-      basemap: bMapName, // "hybrid", // bMapName, // "streets",
+      basemap: bMapName,
       center: passedCenter, // [-79.2, 39.5]
       zoom: zoomLevel // 12
     });
-  };
-
+  }
+  console.log("Current bMap: " + bMap);
   //add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
   basemapGallery = new BasemapGallery({
     showArcGISBasemaps: true,
     map: map
   }, "basemapGallery");
-/*
-  esriConfig.defaults.map.basemaps["Terrain with Labels"] = {
-    baseMapLayers: [
-      {
-        url: "http://services.arcgisonline.com/arcgis/rest/services/World_Terrain_Base/MapServer"
-      }, 
-      {
-        url: "http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Reference_Overlay/MapServer"
-      } 
-    ],
-    title: "Terrain Basemap"
-  };
-*/  
-
-  //if (typeof(bMap) === 'object') {
-  //  basemapGallery.select(bMap);
-  //  console.log("bMap is an object");
-  //}
 
   basemapGallery.on("selection-change",function(){
     myBaseMap = basemapGallery.getSelected(); 
-    console.log(myBaseMap.title + ", ID: " + myBaseMap.id);
-    bMap = myBaseMap.id
-    // basemapGallery.select(bMap);
+    // console.log(myBaseMap.title + ", ID: " + myBaseMap.id);
+    bMap = myBaseMap.id;
   });
-/*
-  function getUpdatedBasemap () {
-    // if (typeof(basemapGallery.getSelected()) === 'object') {
-    console.log("getUpdatedBasemap fx ran");
-    myBaseMap = basemapGallery.getSelected();
-    bMap = myBaseMap.title;
-    
-    // }
-  }
-*/
+
   function getExtent () {
     var center = webMercatorUtils.webMercatorToGeographic(map.extent.getCenter());
     passedX = parseFloat(center.x.toFixed(5));
@@ -212,7 +185,6 @@ require([
     zoomLevel = map.getLevel();
     console.log("Zoom: " + zoomLevel + ";  XY: " + passedX + ", " + passedY + ", " + bMap);
   }
-
 
   function startTrackingExtent() {
     dojo.connect(map, "onExtentChange", getExtent);
@@ -245,32 +217,21 @@ require([
     store: mapLaunchStore,
     searchAttr: "name"
   }, "mapSelect").startup();        
-  
-
 
   // mdImagelayer = new ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer");
-  basemapGallery.remove("basemap_5");
+  // basemapGallery.remove("basemap_5");
   mdImageBasemap = new Basemap({
     layers: [mdImagelayer],
     title: "MD Imagery",
     thumbnailUrl: "http://gis.garrettcounty.org/arcgis/images/image_v2.png"
   });
-  /*
-  twlBaseMap = new Basemap({id: 'terrain', 
-    layers: [new BasemapLayer({url: 'http://services.arcgisonline.com/arcgis/rest/services/World_Terrain_Base/MapServer'}),
-    new BasemapLayer({url: 'http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Reference_Overlay/MapServer'})],
-    thumbnailUrl: "http://www.arcgis.com/sharing/rest/content/items/aab054ab883c4a4094c72e949566ad40/info/thumbnail/tempTerrain_with_labels_ne_usa.png"
-  });
-  */
-  basemapGallery.add(mdImageBasemap);
-  // basemapGallery.add(twlBaseMap); // // // NOT NECESSARY
 
+  basemapGallery.add(mdImageBasemap);
   basemapGallery.startup();
 
   basemapGallery.on("error", function (msg) {
     console.log("basemap gallery error:  ", msg);
   });
-
 
   sfs = new SimpleFillSymbol(
     "solid",

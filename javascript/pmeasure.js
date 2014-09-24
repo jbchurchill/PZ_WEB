@@ -1,5 +1,5 @@
-var map, console, require;
-var passedCenter, passedX, passedY, zoomLevel;
+var map, console, require, dojo, dijit;
+var passedCenter, passedX, passedY, zoomLevel, bMap, bMapName, myBaseMap, twlBaseMap;
 require([
   "dojo/dom",
   "esri/Color",
@@ -9,6 +9,7 @@ require([
   "esri/layers/ArcGISTiledMapServiceLayer",
   "esri/layers/ImageParameters",
   "esri/dijit/BasemapGallery",
+  "esri/dijit/BasemapLayer",
   "esri/config",
   "esri/sniff",
   "esri/map",
@@ -39,6 +40,7 @@ require([
   ArcGISTiledMapServiceLayer,
   ImageParameters,
   BasemapGallery,
+  BasemapLayer,
   esriConfig,
   has,
   Map,
@@ -72,8 +74,8 @@ require([
   esriConfig.defaults.io.alwaysUseProxy = false;
   //This service is for development and testing purposes only. We recommend that you create your own geometry service for use within your applications
   esriConfig.defaults.geometryService = new GeometryService("http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
-  // runs when Measure Button is clicked (see the second line inside of the "initSelectToolbar" fx and the getExtent fx below)
 
+    // runs when Measure Button is clicked (see the second line inside of the "initSelectToolbar" fx and the getExtent fx below)
   function launchURL () {
     var selectedMap = dijit.byId('mapSelect').get('value'), baseURL, url, winTarget;
     switch (selectedMap) {
@@ -94,32 +96,99 @@ require([
       winTarget = '_blank';
       break;
     }
-    // var url = "measure.php?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
-    var url = baseURL + "?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel; //  + "&bMap=" + bMap;
+    url = baseURL + "?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel + "&bMap=" + bMap;
     window.open(url, winTarget);
+  }  
+  // streets,satellite,hybrid,topo,gray,oceans,national-geographic,osm 
+
+  switch (bMap) {
+  case "basemap_0":
+    bMapName = "MD Imagery";
+    break;
+  case "basemap_1":
+    bMapName = "osm";
+    break;
+  case "basemap_2":
+    bMapName = "oceans";
+    break;
+  case "basemap_3":
+    bMapName = "national-geographic";
+    break;
+  case "basemap_4":
+    bMapName = "gray";
+    break;
+  case "basemap_5":
+    bMapName = "terrain";
+    break;
+  case "basemap_6":
+    bMapName = "topo";
+    break;
+  case "basemap_7":
+    bMapName = "streets";
+    break;
+  case "basemap_8":
+    bMapName = "hybrid";
+    break;    
+  case "basemap_9":
+    bMapName = "satellite";
+    break;
+  default: // use streets as the default
+    bMapName = "streets";
+    bMap = "basemap_7";
+    break;
   }
 
   passedCenter = [passedX, passedY];
   registry.byId("launchButton").on("click", launchURL);
-  
-  function startTrackingExtent() {
-    dojo.connect(map, "onExtentChange", getExtent);
+  // Custom BaseMaps
+  mdImagelayer = new ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer");
+  if (bMapName === "terrain") {
+    map = new Map("map", {
+      basemap: new Basemap({id: 'terrain',
+                  layers: [new BasemapLayer({url: 'http://services.arcgisonline.com/arcgis/rest/services/World_Terrain_Base/MapServer'}),
+                    new BasemapLayer({url: 'http://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Reference_Overlay/MapServer'})
+                  ]
+            }), 
+      center: passedCenter, // [-79.2, 39.5]
+      zoom: zoomLevel // 12
+    });
+  } else if (bMapName === "MD Imagery") {  
+    map = new Map("map", {
+      basemap: new Basemap({id: 'MD Imagery', layers: [mdImagelayer]}), 
+      center: passedCenter, // [-79.2, 39.5]
+      zoom: zoomLevel // 12
+    });
+  } else { // basemap is one of the ones that works (i.e. not MD Imagery or Terrain with Labels). 
+    map = new Map("map", {
+      basemap: bMapName,
+      center: passedCenter, // [-79.2, 39.5]
+      zoom: zoomLevel // 12
+    });
   }
-  // console.log(passedCenter);
-  // console.log(zoomLevel);
-
-  // You may wish to change the id to map or mapDiv (if that is the map you are using
-  map = new Map("map", {
-    basemap: "streets",
-    center: passedCenter, // [-79.2, 39.5]
-    zoom: zoomLevel // 12
-  });
-
+  console.log("Current bMap: " + bMap);
   //add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
   basemapGallery = new BasemapGallery({
     showArcGISBasemaps: true,
     map: map
   }, "basemapGallery");
+
+  basemapGallery.on("selection-change",function(){
+    myBaseMap = basemapGallery.getSelected(); 
+    // console.log(myBaseMap.title + ", ID: " + myBaseMap.id);
+    bMap = myBaseMap.id;
+  });
+
+  function getExtent () {
+    var center = webMercatorUtils.webMercatorToGeographic(map.extent.getCenter());
+    passedX = parseFloat(center.x.toFixed(5));
+    passedY = parseFloat(center.y.toFixed(5));
+    zoomLevel = map.getLevel();
+    console.log("Zoom: " + zoomLevel + ";  XY: " + passedX + ", " + passedY + ", " + bMap);
+  }
+
+  function startTrackingExtent() {
+    dojo.connect(map, "onExtentChange", getExtent);
+  }
 
   scalebar = new Scalebar({
     map: map,
@@ -133,7 +202,7 @@ require([
 
   // LAUNCH MAP
   map.on("load", startTrackingExtent);
-  var mapLaunchStore = new Memory({
+  mapLaunchStore = new Memory({
     data: [
       {name: "Flood Hazard", id: "FEMA", baseURL: "FEMA_map.php"},
       {name: "Measurement", id: "MSMT", baseURL: "measure.php"},
@@ -141,42 +210,32 @@ require([
       {name: "Sensitive Areas", id: "SENSI", baseURL: "sensitive.php"}
     ]
   });
-  var comboBox = new ComboBox({
+  comboBox = new ComboBox({
     id: "mapSelect",
     name: "map",
     value: "Measurement",
     store: mapLaunchStore,
     searchAttr: "name"
   }, "mapSelect").startup();        
-  
-  
-  function getExtent (extent) {
-    var center=webMercatorUtils.webMercatorToGeographic(map.extent.getCenter());
-    passedX = parseFloat(center.x.toFixed(5));
-    passedY = parseFloat(center.y.toFixed(5));
-    zoomLevel = map.getLevel();
-    console.log("Zoom: " + zoomLevel + ";  XY: " + passedX + ", " + passedY);
-  }
 
-  mdImagelayer = new esri.layers.ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer");
-
-  mdImageBasemap = new esri.dijit.Basemap({
+  // mdImagelayer = new ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer");
+  // basemapGallery.remove("basemap_5");
+  mdImageBasemap = new Basemap({
     layers: [mdImagelayer],
     title: "MD Imagery",
     thumbnailUrl: "http://gis.garrettcounty.org/arcgis/images/image_v2.png"
   });
-  basemapGallery.add(mdImageBasemap);
 
+  basemapGallery.add(mdImageBasemap);
   basemapGallery.startup();
 
   basemapGallery.on("error", function (msg) {
     console.log("basemap gallery error:  ", msg);
   });
 
-
   sfs = new SimpleFillSymbol(
     "solid",
-    new SimpleLineSymbol("solid", new Color([195, 176, 23]), 2),
+    new SimpleLineSymbol("solid", new Color([145, 105, 135]), 2), // ([195, 176, 23]), 2),
     null
   );
 

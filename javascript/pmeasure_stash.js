@@ -98,22 +98,48 @@ require([
     var url = baseURL + "?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel + "&bMap=" + bMap;
     window.open(url, winTarget);
   }  
-  /*
+  // streets,satellite,hybrid,topo,gray,oceans,national-geographic,osm 
+  console.log("BMAP variable is ... " + bMap);
   switch (bMap) {
   case "basemap_0":
     bMapName = "MD Imagery";
     break;
+  case "basemap_1":
+    bMapName = "osm";
+    break;
+  case "basemap_2":
+    bMapName = "oceans";
+    break;
+  case "basemap_3":
+    bMapName = "national-geographic";
+    break;
+  case "basemap_4":
+    bMapName = "gray";
+    break;
+  case "basemap_5":
+    // bMapName = "Terrain with Labels";
+    bMapName = "World Terrain Base";
+    break;
+  case "basemap_6":
+    bMapName = "topo";
+    break;
+  case "basemap_7":
+    bMapName = "streets";
+    break;
+  case "basemap_8":
+    bMapName = "hybrid";
+    break;    
   case "basemap_9":
-     bMapName = "streets";
+     bMapName = "satellite";
      break;
   }
-  */
+
   passedCenter = [passedX, passedY];
   registry.byId("launchButton").on("click", launchURL);
 
   // You may wish to change the id to map or mapDiv (if that is the map you are using
   map = new Map("map", {
-    basemap: bMap, // "streets",
+    basemap: bMapName, // "hybrid", // bMapName, // "streets",
     center: passedCenter, // [-79.2, 39.5]
     zoom: zoomLevel // 12
   });
@@ -132,6 +158,8 @@ require([
   basemapGallery.on("selection-change",function(){
     myBaseMap = basemapGallery.getSelected(); 
     console.log(myBaseMap.title + ", ID: " + myBaseMap.id);
+    bMap = myBaseMap.id
+    // basemapGallery.select(bMap);
   });
 /*
   function getUpdatedBasemap () {

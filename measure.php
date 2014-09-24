@@ -15,8 +15,9 @@
     $zoom = 10;
   }
   if (isset($_GET['bMap'])) {
+    $bmap = trim(stripslashes($_GET['bMap']));
   } else {
-    $bmap = "streets";
+    $bmap = "basemap_7";
   }
 ?>
 <!DOCTYPE html>

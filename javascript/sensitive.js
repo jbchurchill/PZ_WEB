@@ -232,7 +232,7 @@ require(["esri/map",
     return content;
   };
 
-  parcelTemplate = new InfoTemplate("",
+  parcelTemplate = new InfoTemplate("Parcel Info",
         "<span class=\"sectionhead\">Layer: Parcels</span><br /><br /><hr>Address: ${ADDRESS} <br />"
         + "${CITY:checkNull} Owner: ${OWNNAME1} ${OWNNAME2:checkNull} <br /> Tax Id: ${ACCTID} <br />"
         + "${DR1LIBER:checkNull} ${DR1FOLIO:checkNull} <hr> ${SUBDIVSN:checkNull} ${PLAT:checkNull} ${BLOCK:checkNull} Grid: ${GRID} <br />"
@@ -244,12 +244,13 @@ require(["esri/map",
               "<span class=\"sectionhead\">Layer: Address Points</span><br /><br /><hr>Address: ${ADDRESS} <br /><br /> City: ${CITY} <br /> Zip: ${ZIP_CODE} <br /> ESN: ${ESN} <br /> Community: ${COMMUNITY} <br /> Map: ${MAP} <br /> Parcel: ${PARCEL} <br />"
               + "Lot: ${LOT} <br /> Tract: ${TRACT} <br /> LU: ${LU} <br /> Key date: ${KEYDATE} <br /> Rental: ${RENTAL} <br />"
               + "Rental Co.: ${RENTAL_CO} <br /> Tax Account: ${TAX_ACCOUNT_ID} <br /> Owner: ${OWNER_FIRST_NAME} ${OWNER_LAST_NAME} <br />");
-  streetTemplate = new InfoTemplate("",
+  streetTemplate = new InfoTemplate("Street Info",
              "<span class=\"sectionhead\">Layer: Street Centerlines</span><br /><br /><hr>Name: ${STREET_ALL} <br />"
               + "Maintenance: ${MAINTENANCE} <br /> Length: ${SHAPE.len:NumberFormat(places:1)} feet <br />");
 
-  pstreamTemplate = new InfoTemplate("",
-            "<span class=\"sectionhead\">Layer: Perennial Streams</span><br /><br />");
+  pstreamTemplate = new InfoTemplate("Stream Info",
+            "<span class=\"sectionhead\">Layer: Perennial Streams</span><br /><br /><hr>"
+            + "Stream Segment Length: ${SHAPE_Leng:NumberFormat(places:1)} feet");
 
   swpaTemplate = new InfoTemplate("Source Water Info",
             "<span class=\"sectionhead\">Layer: Source Water Protection Areas</span><br /><br />"
@@ -261,8 +262,13 @@ require(["esri/map",
             + "Land Use: ${GENZONE} <br /> Acreage: ${ACRES:NumberFormat(places:2)} <br /> Zoning: ${FLU:formatFLU}");
 
   protectedSpeciesTemplate = new InfoTemplate("Protected Species Info",
-            "<span class=\"sectionhead\">Layer: Protected Species</span><br /><br />"
+            "<span class=\"sectionhead\">Layer: Protected Species</span><br /><br /><hr>"
             + "${GROUP:formatProtectedSpecies}");
+
+  dclTemplate = new InfoTemplate("Deep Creek Lake",
+            "<span class=\"sectionhead\">Layer: Deep Creek Lake</span><br /><br /><hr>"
+            + "Estimated Acreage: ${Acreage:NumberFormat(places:0)}");
+          
 
   saParameters = new ImageParameters();
   saParameters.layerIds = [0, 1, 2, 3, 4, 5, 6, 7];
@@ -332,6 +338,10 @@ require(["esri/map",
           feature.setInfoTemplate(swpaTemplate);
         } else if (result.layerName === 'Protected Species') {
           feature.setInfoTemplate(protectedSpeciesTemplate);
+        } else if (result.layerName === 'Perennial Streams') {
+          feature.setInfoTemplate(pstreamTemplate);
+        } else if (result.layerName === 'Deep Creek Lake') {
+          feature.setInfoTemplate(dclTemplate);
         }
 
         return feature;

@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
@@ -85,7 +85,7 @@
       require([
         "esri/map", "esri/toolbars/draw", "esri/dijit/Print",
         "esri/layers/ArcGISTiledMapServiceLayer", "esri/layers/ArcGISDynamicMapServiceLayer",
-        "esri/layers/LayerDrawingOptions",
+        "esri/layers/LayerDrawingOptions", "esri/layers/ImageParameters",
         "esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", 
         "esri/symbols/SimpleFillSymbol", "esri/graphic", "esri/InfoTemplate",
         "esri/renderers/ClassBreaksRenderer",
@@ -98,7 +98,7 @@
       ], function(
         Map, Draw, Print,
         ArcGISTiledMapServiceLayer, ArcGISDynamicMapServiceLayer,
-        LayerDrawingOptions,
+        LayerDrawingOptions, ImageParameters,
         SimpleMarkerSymbol, SimpleLineSymbol,
         SimpleFillSymbol, Graphic, InfoTemplate,
         ClassBreaksRenderer,
@@ -127,20 +127,35 @@
         }, dom.byId("printButton"));
         app.printer.startup();
 
-        var url = "http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer";
-        var tiledLayer = new ArcGISTiledMapServiceLayer(url, { "id": "Ocean" });
+        // var url = "http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer";
+        var url = "http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer";
+        var tiledLayer = new ArcGISTiledMapServiceLayer(url, { "id": "MD Imagery" });
         app.map.addLayer(tiledLayer);
-
+        /*
         var layer = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer", {
           // id: "County Population",
           opacity: 0.5
         });
+        // console.log("Undefined is so a function");
+        app.map.addLayer(layer);
+        */
+        
+        saParameters = new ImageParameters();
+        saParameters.layerIds = [0, 1, 2, 3, 4, 5, 6, 7];
+        saParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
+      
+        SA_fLayer = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer", // {
+          {"imageParameters": saParameters, opacity: 0.75, id: "Sensitive Areas"});
+      
+        // app.map.addLayer(SA_fLayer);
+        
         /*
         layer.setVisibleLayers([3]);
         var layerDefs = [];
         layerDefs[3] = "state_name = 'Louisiana'";
         layer.setLayerDefinitions(layerDefs);
         */
+        /*
         var renderer = new ClassBreaksRenderer(null, "pop2000");
         var outline = new SimpleLineSymbol("solid", new Color([0,0,0,0.5]), 1);
         var colors = [
@@ -161,11 +176,14 @@
         // optionsArray index corresponds to layer index in the map service
         var optionsArray = [];
         optionsArray[3] = drawingOptions;
-        layer.setLayerDrawingOptions(optionsArray);
-        app.map.addLayer(layer);
+        SA_fLayer.setLayerDrawingOptions(optionsArray);
+        */
+        
+        app.map.addLayer(SA_fLayer);
+        // app.map.addLayer(layer);
 
         // create a check box for each map layer
-        arrayUtils.forEach(["County Population", "Ocean"], function(id) {
+        arrayUtils.forEach(["Sensitive Areas", "MD Imagery"], function(id) {
           new CheckBox({
             id: "cb_" + id,
             name: "cb_" + id,

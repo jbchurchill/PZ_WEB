@@ -86,6 +86,7 @@
         "esri/map", "esri/toolbars/draw", "esri/dijit/Print",
         "esri/layers/ArcGISTiledMapServiceLayer", "esri/layers/ArcGISDynamicMapServiceLayer",
         "esri/layers/LayerDrawingOptions", "esri/layers/ImageParameters",
+        "esri/tasks/PrintTemplate",
         "esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", 
         "esri/symbols/SimpleFillSymbol", "esri/graphic", "esri/InfoTemplate",
         "esri/renderers/ClassBreaksRenderer",
@@ -99,6 +100,7 @@
         Map, Draw, Print,
         ArcGISTiledMapServiceLayer, ArcGISDynamicMapServiceLayer,
         LayerDrawingOptions, ImageParameters,
+        PrintTemplate,
         SimpleMarkerSymbol, SimpleLineSymbol,
         SimpleFillSymbol, Graphic, InfoTemplate,
         ClassBreaksRenderer,
@@ -119,10 +121,55 @@
           app.toolbar = new Draw(app.map);
           app.toolbar.on("draw-end", addToMap);
         });
-
+        
+        /*
+        var PDFprintTemplate = new PrintTemplate({
+          format: "pdf",
+          label: "PDF Map",
+          options:  { 
+            legendLayers: [],
+            scaleBarUnit: "Miles",
+            titleText: "PDF IMAGE"
+          }
+        });
+        */
+        
+          var printTitle = "Fred the Map";
+          var layouts = [{
+            name: "Letter ANSI A Landscape", 
+            label: "Landscape (PDF)", 
+            format: "pdf", 
+            options: { 
+              legendLayers: [], // empty array means no legend
+              scalebarUnit: "Miles",
+              titleText: printTitle + ", Landscape PDF" 
+            }
+          }, {
+            name: "Letter ANSI A Portrait", 
+            label: "Portrait (Image)", 
+            format: "jpg", 
+            options:  { 
+              legendLayers: [],
+              scaleBarUnit: "Miles",
+              titleText: printTitle + ", Portrait JPG"
+            }
+          }];
+          
+          // create the print templates
+          var templates = arrayUtils.map(layouts, function(lo) {
+            var t = new PrintTemplate();
+            t.layout = lo.name;
+            t.label = lo.label;
+            t.format = lo.format;
+            t.layoutOptions = lo.options;
+            return t;
+          });        
+        
+        
         // print dijit
         app.printer = new Print({
           map: app.map,
+          templates: templates,
           url: "http://gis.garrettcounty.org:6080/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
         }, dom.byId("printButton"));
         app.printer.startup();
@@ -139,14 +186,19 @@
         // console.log("Undefined is so a function");
         app.map.addLayer(layer);
         */
-        
+        var saParameters, pzParameters;
         saParameters = new ImageParameters();
-        saParameters.layerIds = [0, 1, 2, 3, 4, 5, 6, 7];
+        saParameters.layerIds = [1, 4, 5, 6, 7]; // [0, 1, 2, 3, 4, 5, 6, 7];
         saParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
+        pzParameters = new ImageParameters();
+        pzParameters.layerIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+        pzParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
       
         SA_fLayer = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer", // {
           {"imageParameters": saParameters, opacity: 0.75, id: "Sensitive Areas"});
       
+        PZ_fLayer = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
+          {"imageParameters": pzParameters, opacity: 0.75, id: "Planning and Zoning"});
         // app.map.addLayer(SA_fLayer);
         
         /*
@@ -180,10 +232,11 @@
         */
         
         app.map.addLayer(SA_fLayer);
+        app.map.addLayer(PZ_fLayer);
         // app.map.addLayer(layer);
 
         // create a check box for each map layer
-        arrayUtils.forEach(["Sensitive Areas", "MD Imagery"], function(id) {
+        arrayUtils.forEach(["Sensitive Areas", "Planning and Zoning", "MD Imagery"], function(id) {
           new CheckBox({
             id: "cb_" + id,
             name: "cb_" + id,
@@ -276,6 +329,9 @@
       <div id="rightPane"
            data-dojo-type="dijit/layout/ContentPane"
            data-dojo-props="region:'right'">
+        <div id="mapTitle">
+          <input>
+        </div>
 
         <div id="printButton"></div>
         <hr />

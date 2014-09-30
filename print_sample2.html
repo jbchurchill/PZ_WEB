@@ -146,7 +146,12 @@
         // var myInput = registry.byId("mapTitle");
         // console.log("registry: " + typeof(registry));
         // console.log("myInput: " + typeof(myInput));
+        var myCounter = 0;
         function setupPrint () {
+          if (myCounter > 0) { // you already created the Print Widget
+            return
+          }
+          myCounter += 1;
           var printTitle;
           var myInput = registry.byId("mapTitle");
           console.log("made it here");

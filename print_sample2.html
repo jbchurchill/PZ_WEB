@@ -92,9 +92,8 @@
         "esri/renderers/ClassBreaksRenderer",
         "esri/config",
         "dojo/_base/array", "esri/Color", "dojo/parser", 
-        "dojo/query", "dojo/dom", "dojo/dom-construct", 
-        "dijit/form/CheckBox", "dijit/form/Button",
-
+        "dojo/query", "dojo/dom", "dojo/on", "dojo/dom-construct", 
+        "dijit/registry", "dijit/form/CheckBox", "dijit/form/Button",
         "dijit/layout/BorderContainer", "dijit/layout/ContentPane", "dojo/domReady!"
       ], function(
         Map, Draw, Print,
@@ -106,8 +105,8 @@
         ClassBreaksRenderer,
         esriConfig,
         arrayUtils, Color, parser, 
-        query, dom, domConstruct, 
-        CheckBox, Button
+        query, dom, on, domConstruct, 
+        registry, CheckBox, Button
       ) {
         parser.parse();
 
@@ -121,7 +120,18 @@
           app.toolbar = new Draw(app.map);
           app.toolbar.on("draw-end", addToMap);
         });
-        
+        // dojo.on.dom.byId("prepMap")
+        /*
+        console.log("it is so!");
+        map.then(function() {
+          var myInput = dom.byId("mapTitle"), printTitleValue;
+          if (myInput) {
+            printTitleValue = myInput.get("value");  
+          }
+          setupPrint(printTitleValue);
+        });
+        console.log("no it is not");
+        */
         /*
         var PDFprintTemplate = new PrintTemplate({
           format: "pdf",
@@ -133,8 +143,17 @@
           }
         });
         */
-        
-          var printTitle = "Fred the Map";
+        // var myInput = registry.byId("mapTitle");
+        // console.log("registry: " + typeof(registry));
+        // console.log("myInput: " + typeof(myInput));
+        function setupPrint () {
+          var printTitle;
+          var myInput = registry.byId("mapTitle");
+          console.log("made it here");
+          // myInput = registry.byId("mapTitle"); // must use registry
+          // console.log("but did I make it here?:" + typeof(myInput));
+          printTitle = myInput.get("value"); // in order to use get
+          console.log("PrepMap Clicked: " + printTitle)
           var layouts = [{
             name: "Letter ANSI A Landscape", 
             label: "Landscape (PDF)", 
@@ -166,14 +185,17 @@
           });        
         
         
-        // print dijit
-        app.printer = new Print({
-          map: app.map,
-          templates: templates,
-          url: "http://gis.garrettcounty.org:6080/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
-        }, dom.byId("printButton"));
-        app.printer.startup();
-
+          // print dijit
+          app.printer = new Print({
+            map: app.map,
+            templates: templates,
+            url: "http://gis.garrettcounty.org:6080/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
+          }, dom.byId("printButton"));
+          app.printer.startup();
+        } // end function setupPrint
+        
+        on(dom.byId("prepMap"), "click", setupPrint);
+        
         // var url = "http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer";
         var url = "http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer";
         var tiledLayer = new ArcGISTiledMapServiceLayer(url, { "id": "MD Imagery" });
@@ -257,6 +279,7 @@
           });
           domConstruct.place(label, dom.byId("layerToggle"));
           domConstruct.place(domConstruct.create("br"), dom.byId("layerToggle"));
+          
         });
 
         // set up symbols for the various geometry types
@@ -329,8 +352,11 @@
       <div id="rightPane"
            data-dojo-type="dijit/layout/ContentPane"
            data-dojo-props="region:'right'">
-        <div id="mapTitle">
-          <input>
+        <div id="mapTitleDiv">
+          <label>Map Title</label>
+          <input id="mapTitle" name="mapTitle" data-dojo-type="dijit/form/TextBox" type="text" value="Crap">
+          <button id="prepMap" data-dojo-type="dijit/form/Button">Prep Map</button><!--data-dojo-props="onClick: setupPrint(document.mapTitle.value)">Prep Map</button>-->
+          <!--<input type="button" value="Prep Map" id="prepMap">-->
         </div>
 
         <div id="printButton"></div>

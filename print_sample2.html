@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-    <title></title>
+    <title>Printing Map</title>
     <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/dojo/dijit/themes/nihilo/nihilo.css">
     <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/esri/css/esri.css">
     <style>
@@ -120,32 +120,6 @@
           app.toolbar = new Draw(app.map);
           app.toolbar.on("draw-end", addToMap);
         });
-        // dojo.on.dom.byId("prepMap")
-        /*
-        console.log("it is so!");
-        map.then(function() {
-          var myInput = dom.byId("mapTitle"), printTitleValue;
-          if (myInput) {
-            printTitleValue = myInput.get("value");  
-          }
-          setupPrint(printTitleValue);
-        });
-        console.log("no it is not");
-        */
-        /*
-        var PDFprintTemplate = new PrintTemplate({
-          format: "pdf",
-          label: "PDF Map",
-          options:  { 
-            legendLayers: [],
-            scaleBarUnit: "Miles",
-            titleText: "PDF IMAGE"
-          }
-        });
-        */
-        // var myInput = registry.byId("mapTitle");
-        // console.log("registry: " + typeof(registry));
-        // console.log("myInput: " + typeof(myInput));
         var myCounter = 0;
         function setupPrint () {
           if (myCounter > 0) { // you already created the Print Widget
@@ -154,9 +128,6 @@
           myCounter += 1;
           var printTitle;
           var myInput = registry.byId("mapTitle");
-          console.log("made it here");
-          // myInput = registry.byId("mapTitle"); // must use registry
-          // console.log("but did I make it here?:" + typeof(myInput));
           printTitle = myInput.get("value"); // in order to use get
           console.log("PrepMap Clicked: " + printTitle)
           var layouts = [{
@@ -201,18 +172,9 @@
         
         on(dom.byId("prepMap"), "click", setupPrint);
         
-        // var url = "http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer";
         var url = "http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer";
         var tiledLayer = new ArcGISTiledMapServiceLayer(url, { "id": "MD Imagery" });
         app.map.addLayer(tiledLayer);
-        /*
-        var layer = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer", {
-          // id: "County Population",
-          opacity: 0.5
-        });
-        // console.log("Undefined is so a function");
-        app.map.addLayer(layer);
-        */
         var saParameters, pzParameters;
         saParameters = new ImageParameters();
         saParameters.layerIds = [1, 4, 5, 6, 7]; // [0, 1, 2, 3, 4, 5, 6, 7];
@@ -226,38 +188,7 @@
       
         PZ_fLayer = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
           {"imageParameters": pzParameters, opacity: 0.75, id: "Planning and Zoning"});
-        // app.map.addLayer(SA_fLayer);
-        
-        /*
-        layer.setVisibleLayers([3]);
-        var layerDefs = [];
-        layerDefs[3] = "state_name = 'Louisiana'";
-        layer.setLayerDefinitions(layerDefs);
-        */
-        /*
-        var renderer = new ClassBreaksRenderer(null, "pop2000");
-        var outline = new SimpleLineSymbol("solid", new Color([0,0,0,0.5]), 1);
-        var colors = [
-          new Color([255,255,178,0.5]),
-          new Color([254,204,92,0.5]),
-          new Color([253,141,60,0.5]),
-          new Color([240,59,32,0.5]),
-          new Color([189,0,38,0.5])
-        ];
-        renderer.addBreak(0, 20000, new SimpleFillSymbol("solid", outline, colors[0]));
-        renderer.addBreak(20000, 50000, new SimpleFillSymbol("solid", outline, colors[1]));
-        renderer.addBreak(50000, 100000, new SimpleFillSymbol("solid", outline, colors[2]));
-        renderer.addBreak(10000, 1000000, new SimpleFillSymbol("solid", outline, colors[3]));
-        renderer.addBreak(1000000, 10000000, new SimpleFillSymbol("solid", outline, colors[4]));
-        var drawingOptions = new LayerDrawingOptions();
-        drawingOptions.renderer = renderer; 
-        // set the drawing options for the relevant layer
-        // optionsArray index corresponds to layer index in the map service
-        var optionsArray = [];
-        optionsArray[3] = drawingOptions;
-        SA_fLayer.setLayerDrawingOptions(optionsArray);
-        */
-        
+
         app.map.addLayer(SA_fLayer);
         app.map.addLayer(PZ_fLayer);
         // app.map.addLayer(layer);
@@ -359,7 +290,7 @@
            data-dojo-props="region:'right'">
         <div id="mapTitleDiv">
           <label>Map Title</label>
-          <input id="mapTitle" name="mapTitle" data-dojo-type="dijit/form/TextBox" type="text" value="Crap">
+          <input id="mapTitle" name="mapTitle" data-dojo-type="dijit/form/TextBox" type="text">
           <button id="prepMap" data-dojo-type="dijit/form/Button">Prep Map</button><!--data-dojo-props="onClick: setupPrint(document.mapTitle.value)">Prep Map</button>-->
           <!--<input type="button" value="Prep Map" id="prepMap">-->
         </div>

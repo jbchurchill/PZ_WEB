@@ -46,7 +46,7 @@
         padding: 10px;
         background-color: #fff;
         color: #421b14;
-        width: 180px;
+        width: 210px;
       }
 
       .ds { background: #000; overflow: hidden; position: absolute; z-index: 2; }
@@ -81,37 +81,69 @@
     <script src="http://js.arcgis.com/3.10/"></script>
     <script>
       var app = {};
-      app.map = null, app.toolbar = null, app.tool = null; app.symbols = null, app.printer = null;
+      app.map = null; app.toolbar = null; app.tool = null; app.symbols = null; app.printer = null;
       require([
-        "esri/map", "esri/toolbars/draw", "esri/dijit/Print",
-        "esri/layers/ArcGISTiledMapServiceLayer", "esri/layers/ArcGISDynamicMapServiceLayer",
-        "esri/layers/LayerDrawingOptions", "esri/layers/ImageParameters",
+        "esri/map",
+        "esri/toolbars/draw",
+        "esri/dijit/Print",
+        "esri/layers/ArcGISTiledMapServiceLayer",
+        "esri/layers/ArcGISDynamicMapServiceLayer",
+        "esri/layers/FeatureLayer",
+        "esri/layers/LayerDrawingOptions",
+        "esri/layers/ImageParameters",
         "esri/tasks/PrintTemplate",
-        "esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", 
-        "esri/symbols/SimpleFillSymbol", "esri/graphic", "esri/InfoTemplate",
+        "esri/symbols/SimpleMarkerSymbol",
+        "esri/symbols/SimpleLineSymbol", 
+        "esri/symbols/SimpleFillSymbol",
+        "esri/graphic",
+        "esri/InfoTemplate",
         "esri/renderers/ClassBreaksRenderer",
         "esri/config",
-        "dojo/_base/array", "esri/Color", "dojo/parser", 
-        "dojo/query", "dojo/dom", "dojo/on", "dojo/dom-construct", 
-        "dijit/registry", "dijit/form/CheckBox", "dijit/form/Button",
-        "dijit/layout/BorderContainer", "dijit/layout/ContentPane", "dojo/domReady!"
+        "dojo/_base/array",
+        "esri/Color",
+        "dojo/parser", 
+        "dojo/query",
+        "dojo/dom",
+        "dojo/on",
+        "dojo/dom-construct", 
+        "dijit/registry",
+        "dijit/form/CheckBox",
+        "dijit/form/Button",
+        "dijit/layout/BorderContainer",
+        "dijit/layout/ContentPane",
+        "dojo/domReady!"
       ], function(
-        Map, Draw, Print,
-        ArcGISTiledMapServiceLayer, ArcGISDynamicMapServiceLayer,
-        LayerDrawingOptions, ImageParameters,
+        Map,
+        Draw,
+        Print,
+        ArcGISTiledMapServiceLayer,
+        ArcGISDynamicMapServiceLayer,
+        FeatureLayer,
+        LayerDrawingOptions,
+        ImageParameters,
         PrintTemplate,
-        SimpleMarkerSymbol, SimpleLineSymbol,
-        SimpleFillSymbol, Graphic, InfoTemplate,
+        SimpleMarkerSymbol,
+        SimpleLineSymbol,
+        SimpleFillSymbol,
+        Graphic,
+        InfoTemplate,
         ClassBreaksRenderer,
         esriConfig,
-        arrayUtils, Color, parser, 
-        query, dom, on, domConstruct, 
-        registry, CheckBox, Button
+        arrayUtils,
+        Color,
+        parser, 
+        query,
+        dom,
+        on,
+        domConstruct, 
+        registry,
+        CheckBox,
+        Button
       ) {
         parser.parse();
 
         esriConfig.defaults.io.proxyUrl = "/proxy";
-        
+
         app.map = new Map("map", {
           center: [-79.2, 39.5],
           zoom: 12
@@ -120,6 +152,7 @@
           app.toolbar = new Draw(app.map);
           app.toolbar.on("draw-end", addToMap);
         });
+        var FH_fLayer, SA_fLayer, PZ_fLayer;
         var myCounter = 0;
         function setupPrint () {
           if (myCounter > 0) { // you already created the Print Widget
@@ -149,7 +182,7 @@
               titleText: printTitle + ", Portrait JPG"
             }
           }];
-          
+
           // create the print templates
           var templates = arrayUtils.map(layouts, function(lo) {
             var t = new PrintTemplate();
@@ -159,9 +192,8 @@
             t.layoutOptions = lo.options;
             return t;
           });        
-        
-        
-          // print dijit
+
+
           app.printer = new Print({
             map: app.map,
             templates: templates,
@@ -169,9 +201,9 @@
           }, dom.byId("printButton"));
           app.printer.startup();
         } // end function setupPrint
-        
+
         on(dom.byId("prepMap"), "click", setupPrint);
-        
+
         var url = "http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer";
         var tiledLayer = new ArcGISTiledMapServiceLayer(url, { "id": "MD Imagery" });
         app.map.addLayer(tiledLayer);
@@ -180,26 +212,83 @@
         saParameters.layerIds = [1, 4, 5, 6, 7]; // [0, 1, 2, 3, 4, 5, 6, 7];
         saParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
         pzParameters = new ImageParameters();
-        pzParameters.layerIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+        pzParameters.layerIds = [4, 8]; // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
         pzParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
-      
-        SA_fLayer = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer", // {
-          {"imageParameters": saParameters, opacity: 0.75, id: "Sensitive Areas"});
-      
-        PZ_fLayer = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
-          {"imageParameters": pzParameters, opacity: 0.75, id: "Planning and Zoning"});
 
-        app.map.addLayer(SA_fLayer);
+        PZ_fLayer = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
+          {"imageParameters": pzParameters, opacity: 0.75, id: "Parcels & Addresses"});
+
+        CT_fLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/5", {
+          mode: FeatureLayer.MODE_ONDEMAND,
+          id: "Cell Towers"
+        });
+
+        WT_fLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/3", {
+          mode: FeatureLayer.MODE_ONDEMAND,
+          id: "Wind Turbines"
+        });
+
+        CL_fLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/6", {
+          mode: FeatureLayer.MODE_ONDEMAND,
+          id: "Street Centerlines"
+        });
+
+        PS_fLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer/1", {
+          mode: FeatureLayer.MODE_ONDEMAND,
+          id: "Perennial Streams"
+        });
+
+        ZN_fLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/10", {
+          mode: FeatureLayer.MODE_ONDEMAND,
+          opacity: 0.3,
+          id: "Zoning"
+        });
+
+        SP_fLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer/4", {
+          mode: FeatureLayer.MODE_ONDEMAND,
+          opacity: 0.75, 
+          id: "Source Water Prot. Areas"
+        });
+
+        PR_fLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer/6", {
+          mode: FeatureLayer.MODE_ONDEMAND,
+          opacity: 0.75, 
+          id: "Protected Species"
+        });
+
+        GA_fLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer/7", {
+          mode: FeatureLayer.MODE_ONDEMAND,
+          opacity: 0.75, 
+          id: "Growth Areas"
+        });
+          // {"imageParameters": saParameters, opacity: 0.75, id: "Source Water Protection Areas"});
+
+        FH_fLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/FEMA/Flood_Hazard/MapServer/2", {
+          mode: FeatureLayer.MODE_ONDEMAND,
+          id: "Flood Hazard",
+          opacity: 0.75
+          // outFields: ["*"]
+        });
+
+
         app.map.addLayer(PZ_fLayer);
-        // app.map.addLayer(layer);
+        app.map.addLayer(CT_fLayer);
+        app.map.addLayer(WT_fLayer);
+        app.map.addLayer(CL_fLayer);
+        app.map.addLayer(PS_fLayer);
+        app.map.addLayer(ZN_fLayer);
+        app.map.addLayer(SP_fLayer);
+        app.map.addLayer(PR_fLayer);
+        app.map.addLayer(GA_fLayer);
+        app.map.addLayer(FH_fLayer);
 
         // create a check box for each map layer
-        arrayUtils.forEach(["Sensitive Areas", "Planning and Zoning", "MD Imagery"], function(id) {
+        arrayUtils.forEach(["Parcels & Addresses", "Cell Towers", "Wind Turbines", "Street Centerlines", "Perennial Streams", "Zoning", "Source Water Prot. Areas", "Protected Species", "Growth Areas", "Flood Hazard", "MD Imagery"], function(id) {
           new CheckBox({
             id: "cb_" + id,
             name: "cb_" + id,
             checked: true,
-            onChange: function(bool) {
+            onChange: function(bool) { // This is some kind of bizarre syntax
               bool ? 
                 app.map.getLayer(this.id.split("_")[1]).show() :
                 app.map.getLayer(this.id.split("_")[1]).hide();
@@ -215,7 +304,6 @@
           });
           domConstruct.place(label, dom.byId("layerToggle"));
           domConstruct.place(domConstruct.create("br"), dom.byId("layerToggle"));
-          
         });
 
         // set up symbols for the various geometry types
@@ -291,8 +379,7 @@
         <div id="mapTitleDiv">
           <label>Map Title</label>
           <input id="mapTitle" name="mapTitle" data-dojo-type="dijit/form/TextBox" type="text">
-          <button id="prepMap" data-dojo-type="dijit/form/Button">Prep Map</button><!--data-dojo-props="onClick: setupPrint(document.mapTitle.value)">Prep Map</button>-->
-          <!--<input type="button" value="Prep Map" id="prepMap">-->
+          <button id="prepMap" data-dojo-type="dijit/form/Button">Prep Map</button>
         </div>
 
         <div id="printButton"></div>

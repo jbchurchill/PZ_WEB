@@ -31,7 +31,7 @@
         padding-right: 15px;
         color: #444; 
         font-size:16pt; text-align:right;font-weight:bold;
-        height:55px;
+        height:75px;
         background: #fff;
         border-bottom: 1px solid #444;
       }
@@ -41,12 +41,17 @@
         text-align:right;
         padding-right:20px;
       }
-      #rightPane{
+      #rightPane {
         margin: 0;
         padding: 10px;
         background-color: #fff;
         color: #421b14;
         width: 210px;
+      }
+      #instxns {
+        font-size: 0.5em;
+        text-align:left;
+        margin: 0 1em 0 3em;
       }
 
       .ds { background: #000; overflow: hidden; position: absolute; z-index: 2; }
@@ -350,6 +355,8 @@
            style="margin-left: auto; margin-right: auto; text-align: center;">
         Garrett County WebMap &#045; Printable Map
         <div id="subheader">PDF or JPG</div>
+        <div id="instxns">
+          Start by turning off layers you don't want to print. Give the map a meaningful title, and then click &#8220;Prep Map&#8221;. When the map is ready to print the button will say &#8220;printout&#8221;. Click that to open the map in a new tab or window and print or save your map.</div>
       </div>
       <div id="map" class="shadow" 
            data-dojo-type="dijit/layout/ContentPane"

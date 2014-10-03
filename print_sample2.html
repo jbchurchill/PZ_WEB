@@ -175,7 +175,7 @@
           app.toolbar = new Draw(app.map);
           app.toolbar.on("draw-end", addToMap);
         });
-        var FH_fLayer, SA_fLayer, PZ_fLayer;
+        var PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer;
         var myCounter = 0;
         function setupPrint () {
           if (myCounter > 0) { // you already created the Print Widget
@@ -351,7 +351,7 @@
         }
          // Add Geocoder  
         var geocoder = new Geocoder({
-          map: app.map
+          map: app.map 
         }, "geosearch");
         geocoder.startup();
         // End Geocoder

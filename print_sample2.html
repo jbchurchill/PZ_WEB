@@ -278,17 +278,7 @@
           // outFields: ["*"]
         });
 
-
-        app.map.addLayer(PZ_fLayer);
-        app.map.addLayer(CT_fLayer);
-        app.map.addLayer(WT_fLayer);
-        app.map.addLayer(CL_fLayer);
-        app.map.addLayer(PS_fLayer);
-        app.map.addLayer(ZN_fLayer);
-        app.map.addLayer(SP_fLayer);
-        app.map.addLayer(PR_fLayer);
-        app.map.addLayer(GA_fLayer);
-        app.map.addLayer(FH_fLayer);
+        app.map.addLayers([PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer]);
 
         // create a check box for each map layer
         arrayUtils.forEach(["Parcels & Addresses", "Cell Towers", "Wind Turbines", "Street Centerlines", "Perennial Streams", "Zoning", "Source Water Prot. Areas", "Protected Species", "Growth Areas", "Flood Hazard", "MD Imagery"], function(id) {
@@ -386,13 +376,13 @@
       </div>
       <div data-dojo-type="dojox.layout.ExpandoPane" title="Printing Options"
              data-dojo-props="region:'right', design:'footer', gutters:true, liveSplitters:true, startExpanded:true, easeIn:'expoInOut', easeOut:'expoInOut', duration:600" 
-             style="width:320px;">
+             style="width:240px;">
         <div id="rightPane"
              data-dojo-type="dijit/layout/ContentPane"
              data-dojo-props="region:'right'">
           <div id="mapTitleDiv">
             <label>Map Title</label>
-            <input id="mapTitle" name="mapTitle" data-dojo-type="dijit/form/TextBox" type="text">
+            <input id="mapTitle" name="mapTitle" data-dojo-type="dijit/form/TextBox" style="width: 10.4em; margin-left: 0.2em;" type="text">
             <button id="prepMap" data-dojo-type="dijit/form/Button">Prep Map</button>
           </div>
   

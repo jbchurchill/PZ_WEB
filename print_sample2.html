@@ -5,6 +5,7 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
     <title>Printing Map</title>
     <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/dojo/dijit/themes/nihilo/nihilo.css">
+    <link rel="stylesheet" href="http://archive.dojotoolkit.org/nightly/dojotoolkit/dojox/layout/resources/ExpandoPane.css">
     <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/esri/css/esri.css">
     <style>
       html, body { 
@@ -116,6 +117,7 @@
         "dijit/form/Button",
         "dijit/layout/BorderContainer",
         "dijit/layout/ContentPane",
+        "dojox/layout/ExpandoPane",
         "dojo/domReady!"
       ], function(
         Map,
@@ -143,7 +145,8 @@
         domConstruct, 
         registry,
         CheckBox,
-        Button
+        Button,
+        ExpandoPane
       ) {
         parser.parse();
 
@@ -381,31 +384,35 @@
         </div> <!-- end drop shadow divs -->
             
       </div>
-      <div id="rightPane"
-           data-dojo-type="dijit/layout/ContentPane"
-           data-dojo-props="region:'right'">
-        <div id="mapTitleDiv">
-          <label>Map Title</label>
-          <input id="mapTitle" name="mapTitle" data-dojo-type="dijit/form/TextBox" type="text">
-          <button id="prepMap" data-dojo-type="dijit/form/Button">Prep Map</button>
+      <div data-dojo-type="dojox.layout.ExpandoPane" title="Printing Options"
+             data-dojo-props="region:'right', design:'footer', gutters:true, liveSplitters:true, startExpanded:true, easeIn:'expoInOut', easeOut:'expoInOut', duration:600" 
+             style="width:320px;">
+        <div id="rightPane"
+             data-dojo-type="dijit/layout/ContentPane"
+             data-dojo-props="region:'right'">
+          <div id="mapTitleDiv">
+            <label>Map Title</label>
+            <input id="mapTitle" name="mapTitle" data-dojo-type="dijit/form/TextBox" type="text">
+            <button id="prepMap" data-dojo-type="dijit/form/Button">Prep Map</button>
+          </div>
+  
+          <div id="printButton"></div>
+          <hr />
+          
+          <div id="drawingWrapper">
+            Add some graphics:
+            <div id="point" class="drawing">Point</div>
+            <div id="freehandpolyline" class="drawing">Freehand Polyline</div>
+            <div id="freehandpolygon" class="drawing">Freehand Polygon</div>
+            <div id="circle" class="drawing">Circle</div>
+          </div>
+          <hr />
+          <div id="layerToggle">
+            Toggle Layers: <br />
+            <!-- checkbox and labels inserted programmatically -->
+          </div>
         </div>
-
-        <div id="printButton"></div>
-        <hr />
-        
-        <div id="drawingWrapper">
-          Add some graphics:
-          <div id="point" class="drawing">Point</div>
-          <div id="freehandpolyline" class="drawing">Freehand Polyline</div>
-          <div id="freehandpolygon" class="drawing">Freehand Polygon</div>
-          <div id="circle" class="drawing">Circle</div>
-        </div>
-        <hr />
-        <div id="layerToggle">
-          Toggle Layers: <br />
-          <!-- checkbox and labels inserted programmatically -->
-        </div>
-      </div>
+      </div><!-- end of Expando Pane-->  
     </div>
   </body>
 </html>

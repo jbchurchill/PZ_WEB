@@ -54,6 +54,19 @@
         text-align:left;
         margin: 0 1em 0 3em;
       }
+      #geosearch {
+        display: block;
+        position: absolute;
+        z-index: 2;
+        top: 20px;
+        left: 74px;
+      }
+      .esriScalebar {
+        padding: 10px 40px;
+      }
+      .esriScalebarLine {
+        background-color: white;
+      }      
 
       .ds { background: #000; overflow: hidden; position: absolute; z-index: 2; }
       #ds-h div { width: 100%; }
@@ -92,6 +105,7 @@
         "esri/map",
         "esri/toolbars/draw",
         "esri/dijit/Print",
+        "esri/dijit/Geocoder",
         "esri/layers/ArcGISTiledMapServiceLayer",
         "esri/layers/ArcGISDynamicMapServiceLayer",
         "esri/layers/FeatureLayer",
@@ -123,6 +137,7 @@
         Map,
         Draw,
         Print,
+        Geocoder,
         ArcGISTiledMapServiceLayer,
         ArcGISDynamicMapServiceLayer,
         FeatureLayer,
@@ -334,7 +349,13 @@
           var graphic = new Graphic(evt.geometry, app.symbols[app.tool]);
           app.map.graphics.add(graphic);
         }
-      });
+         // Add Geocoder  
+        var geocoder = new Geocoder({
+          map: app.map
+        }, "geosearch");
+        geocoder.startup();
+        // End Geocoder
+      }); // End of require function
     </script>
   </head>
   <body class="nihilo">
@@ -354,7 +375,7 @@
       <div id="map" class="shadow" 
            data-dojo-type="dijit/layout/ContentPane"
            data-dojo-props="region:'center'">
-
+        <div id="geosearch"></div>
         <!-- drop shadow divs -->
         <div id="ds">
           <div id="ds-h">

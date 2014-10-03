@@ -1,0 +1,6 @@
+Printable Map
+
+From instxns div ...
+Start by turning off layers you don't want to print. Give the map a meaningful title, and then click “Prep Map”. 
+When the map is ready to print the button will say “printout”. Click that to open the map in a new tab or window 
+and print or save your map.

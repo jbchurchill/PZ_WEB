@@ -175,6 +175,9 @@
           app.toolbar = new Draw(app.map);
           app.toolbar.on("draw-end", addToMap);
         });
+        function clearMapGraphics () {
+          app.map.graphics.clear();
+        }
         var PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer;
         var myCounter = 0;
         function setupPrint () {
@@ -226,6 +229,7 @@
         } // end function setupPrint
 
         on(dom.byId("prepMap"), "click", setupPrint);
+        on(dom.byId("clearGraphics"), "click", clearMapGraphics);
 
         var url = "http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer";
         var tiledLayer = new ArcGISTiledMapServiceLayer(url, { "id": "MD Imagery" });
@@ -269,13 +273,13 @@
 
         SP_fLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer/4", {
           mode: FeatureLayer.MODE_ONDEMAND,
-          opacity: 0.75, 
+          opacity: 0.45, 
           id: "Source Water Prot. Areas"
         });
 
         PR_fLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer/6", {
           mode: FeatureLayer.MODE_ONDEMAND,
-          opacity: 0.75, 
+          opacity: 0.45, 
           id: "Protected Species"
         });
 
@@ -405,6 +409,7 @@
             <label>Map Title</label>
             <input id="mapTitle" name="mapTitle" data-dojo-type="dijit/form/TextBox" style="width: 10.4em; margin-left: 0.2em;" type="text">
             <button id="prepMap" data-dojo-type="dijit/form/Button">Prep Map</button>
+            <button id="clearGraphics" data-dojo-type="dijit/form/Button">Clear Graphics</button>
           </div>
   
           <div id="printButton"></div>

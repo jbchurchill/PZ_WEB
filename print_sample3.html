@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+    <title>Printing Map</title>
+    <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/dojo/dijit/themes/nihilo/nihilo.css">
+    <link rel="stylesheet" href="http://archive.dojotoolkit.org/nightly/dojotoolkit/dojox/layout/resources/ExpandoPane.css">
+    <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/esri/css/esri.css">
+    <style>
+      html, body { 
+        height: 100%; width: 100%;
+        margin: 0; padding: 0;
+      } 
+      body{
+        background-color: #fff; overflow:hidden; 
+        font-family: sans-serif;
+      } 
+      label {
+        display: inline-block;
+        padding: 5px 5px 0 5px;
+        font-weight: 400;
+        font-size: 12pt;
+      }
+      .button {
+        width: 100%;
+        margin: 3px auto;
+        text-align: center;
+      }
+      #header {
+        padding-top: 4px;
+        padding-right: 15px;
+        color: #444; 
+        font-size:16pt; text-align:right;font-weight:bold;
+        height:75px;
+        background: #fff;
+        border-bottom: 1px solid #444;
+      }
+      #subheader {
+        font-size:small;
+        color: #444;
+        text-align:right;
+        padding-right:20px;
+      }
+      #rightPane {
+        margin: 0;
+        padding: 10px;
+        background-color: #fff;
+        color: #421b14;
+        width: 210px;
+      }
+      #instxns {
+        font-size: 0.5em;
+        text-align:left;
+        margin: 0 1em 0 3em;
+      }
+      #geosearch {
+        display: block;
+        position: absolute;
+        z-index: 2;
+        top: 20px;
+        left: 74px;
+      }
+      .esriScalebar {
+        padding: 10px 40px;
+      }
+      .esriScalebarLine {
+        background-color: white;
+      }      
+
+      .ds { background: #000; overflow: hidden; position: absolute; z-index: 2; }
+      #ds-h div { width: 100%; }
+      #ds-l div, #ds-r div { height: 100%; }
+      #ds-r div { right: 0; }
+      #ds .o1 { filter: alpha(opacity=10); opacity: .1; }
+      #ds .o2 { filter: alpha(opacity=8); opacity: .08; }
+      #ds .o3 { filter: alpha(opacity=6); opacity: .06; }
+      #ds .o4 { filter: alpha(opacity=4); opacity: .04; }
+      #ds .o5 { filter: alpha(opacity=2); opacity: .02; }
+      #ds .h1 { height: 1px; }
+      #ds .h2 { height: 2px; }
+      #ds .h3 { height: 3px; }
+      #ds .h4 { height: 4px; }
+      #ds .h5 { height: 5px; }
+      #ds .v1 { width: 1px; }
+      #ds .v2 { width: 2px; }
+      #ds .v3 { width: 3px; }
+      #ds .v4 { width: 4px; }
+      #ds .v5 { width: 5px; }
+
+      /* make all dijit buttons the same width */
+      .dijitButton .dijitButtonNode, #drawingWrapper, #printButton {
+        width: 160px;
+      }
+      .esriPrint {
+        padding: 0;
+      }
+    </style>
+
+    <script src="http://js.arcgis.com/3.10/"></script>
+    <script>
+      var app = {};
+      app.map = null; app.toolbar = null; app.tool = null; app.symbols = null; app.printer = null;
+      require([
+        "esri/map",
+        "esri/toolbars/draw",
+        "esri/dijit/Print",
+        "esri/dijit/Geocoder",
+        "esri/geometry/webMercatorUtils",
+        "esri/layers/ArcGISTiledMapServiceLayer",
+        "esri/layers/ArcGISDynamicMapServiceLayer",
+        "esri/layers/FeatureLayer",
+        "esri/layers/LayerDrawingOptions",
+        "esri/layers/ImageParameters",
+        "esri/tasks/PrintTemplate",
+        "esri/symbols/SimpleMarkerSymbol",
+        "esri/symbols/SimpleLineSymbol", 
+        "esri/symbols/SimpleFillSymbol",
+        "esri/symbols/TextSymbol",
+        "esri/symbols/Font",
+        "esri/graphic",
+        "esri/InfoTemplate",
+        "esri/renderers/ClassBreaksRenderer",
+        "esri/config",
+        "dojo/_base/array",
+        "esri/Color",
+        "dojo/parser", 
+        "dojo/query",
+        "dojo/number",
+        "dojo/dom",
+        "dojo/on",
+        "dojo/dom-construct", 
+        "dijit/registry",
+        "dijit/form/CheckBox",
+        "dijit/form/Button",
+        "dijit/layout/BorderContainer",
+        "dijit/layout/ContentPane",
+        "dojox/layout/ExpandoPane",
+        "dojo/domReady!"
+      ], function(
+        Map,
+        Draw,
+        Print,
+        Geocoder,
+        webMercatorUtils,
+        ArcGISTiledMapServiceLayer,
+        ArcGISDynamicMapServiceLayer,
+        FeatureLayer,
+        LayerDrawingOptions,
+        ImageParameters,
+        PrintTemplate,
+        SimpleMarkerSymbol,
+        SimpleLineSymbol,
+        SimpleFillSymbol,
+        TextSymbol,
+        Font,
+        Graphic,
+        InfoTemplate,
+        ClassBreaksRenderer,
+        esriConfig,
+        arrayUtils,
+        Color,
+        parser, 
+        query,
+        number,
+        dom,
+        on,
+        domConstruct, 
+        registry,
+        CheckBox,
+        Button,
+        ExpandoPane
+      ) {
+        parser.parse();
+
+        esriConfig.defaults.io.proxyUrl = "/proxy";
+        var isLabel = false;
+
+        app.map = new Map("map", {
+          center: [-79.2, 39.5],
+          zoom: 12
+        });
+        app.map.on("load", function() {
+          app.toolbar = new Draw(app.map);
+          app.toolbar.on("draw-end", addToMap);
+        });
+        function clearMapGraphics () {
+          app.map.graphics.clear();
+        }
+        function addTextLabel () {
+          // ADD EVENT LISTENER FOR CLICK ON MAP TO IDENTIFY LABEL PLACEMENT.
+          // THE EVENT LISTENER WILL HAVE THE PROMPT
+          console.log("addTextLabel");
+          // app.symbols.point = new SimpleMarkerSymbol("circle", 10, new SimpleLineSymbol(), new Color([255, 0, 0, 0.75]));
+          app.toolbar = new Draw(app.map);
+          // esri.bundle.toolbars.draw.addPoint = "add a text label";
+          // app.toolbar.draw.activate("point", 
+          activateTool("label");
+          app.toolbar.on("draw-end", addToMap);
+        }
+        var PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer;
+        var myCounter = 0;
+        function setupPrint () {
+          if (myCounter > 0) { // you already created the Print Widget
+            return
+          }
+          myCounter += 1;
+          var printTitle;
+          var myInput = registry.byId("mapTitle");
+          printTitle = myInput.get("value"); // in order to use get
+          console.log("PrepMap Clicked: " + printTitle)
+          var layouts = [{
+            name: "Letter ANSI A Landscape", 
+            label: "Landscape (PDF)", 
+            format: "pdf", 
+            options: { 
+              legendLayers: [], // empty array means no legend
+              scalebarUnit: "Miles",
+              titleText: printTitle + ", Landscape PDF" 
+            }
+          }, {
+            name: "Letter ANSI A Portrait", 
+            label: "Portrait (Image)", 
+            format: "jpg", 
+            options:  { 
+              legendLayers: [],
+              scaleBarUnit: "Miles",
+              titleText: printTitle + ", Portrait JPG"
+            }
+          }];
+
+          // create the print templates
+          var templates = arrayUtils.map(layouts, function(lo) {
+            var t = new PrintTemplate();
+            t.layout = lo.name;
+            t.label = lo.label;
+            t.format = lo.format;
+            t.layoutOptions = lo.options;
+            return t;
+          });        
+
+
+          app.printer = new Print({
+            map: app.map,
+            templates: templates,
+            url: "http://gis.garrettcounty.org:6080/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
+          }, dom.byId("printButton"));
+          app.printer.startup();
+        } // end function setupPrint
+
+        on(dom.byId("prepMap"), "click", setupPrint);
+        on(dom.byId("clearGraphics"), "click", clearMapGraphics);
+        on(dom.byId("textLabel"), "click", addTextLabel);
+
+        var url = "http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer";
+        var tiledLayer = new ArcGISTiledMapServiceLayer(url, { "id": "MD Imagery" });
+        app.map.addLayer(tiledLayer);
+        var saParameters, pzParameters;
+        saParameters = new ImageParameters();
+        saParameters.layerIds = [1, 4, 5, 6, 7]; // [0, 1, 2, 3, 4, 5, 6, 7];
+        saParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
+        pzParameters = new ImageParameters();
+        pzParameters.layerIds = [4, 8]; // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+        pzParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
+
+        PZ_fLayer = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
+          {"imageParameters": pzParameters, opacity: 0.75, id: "Parcels & Addresses"});
+
+        CT_fLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/5", {
+          mode: FeatureLayer.MODE_ONDEMAND,
+          id: "Cell Towers"
+        });
+
+        WT_fLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/3", {
+          mode: FeatureLayer.MODE_ONDEMAND,
+          id: "Wind Turbines"
+        });
+
+        CL_fLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/6", {
+          mode: FeatureLayer.MODE_ONDEMAND,
+          id: "Street Centerlines"
+        });
+
+        PS_fLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer/1", {
+          mode: FeatureLayer.MODE_ONDEMAND,
+          id: "Perennial Streams"
+        });
+
+        ZN_fLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/10", {
+          mode: FeatureLayer.MODE_ONDEMAND,
+          opacity: 0.3,
+          id: "Zoning"
+        });
+
+        SP_fLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer/4", {
+          mode: FeatureLayer.MODE_ONDEMAND,
+          opacity: 0.45, 
+          id: "Source Water Prot. Areas"
+        });
+
+        PR_fLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer/6", {
+          mode: FeatureLayer.MODE_ONDEMAND,
+          opacity: 0.45, 
+          id: "Protected Species"
+        });
+
+        GA_fLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer/7", {
+          mode: FeatureLayer.MODE_ONDEMAND,
+          opacity: 0.75, 
+          id: "Growth Areas"
+        });
+          // {"imageParameters": saParameters, opacity: 0.75, id: "Source Water Protection Areas"});
+
+        FH_fLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/FEMA/Flood_Hazard/MapServer/2", {
+          mode: FeatureLayer.MODE_ONDEMAND,
+          id: "Flood Hazard",
+          opacity: 0.75
+          // outFields: ["*"]
+        });
+
+        app.map.addLayers([PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer]);
+
+        // create a check box for each map layer
+        arrayUtils.forEach(["Parcels & Addresses", "Cell Towers", "Wind Turbines", "Street Centerlines", "Perennial Streams", "Zoning", "Source Water Prot. Areas", "Protected Species", "Growth Areas", "Flood Hazard", "MD Imagery"], function(id) {
+          new CheckBox({
+            id: "cb_" + id,
+            name: "cb_" + id,
+            checked: true,
+            onChange: function(bool) { // This is some kind of bizarre syntax
+              bool ? 
+                app.map.getLayer(this.id.split("_")[1]).show() :
+                app.map.getLayer(this.id.split("_")[1]).hide();
+            }
+          }, domConstruct.create("input", { 
+            id: "lyr_" + id 
+          })).placeAt(dom.byId("layerToggle"));
+
+          // create a label for the check box
+          var label = domConstruct.create('label', { 
+            "for": "cb_" + id,
+            "innerHTML": id
+          });
+          domConstruct.place(label, dom.byId("layerToggle"));
+          domConstruct.place(domConstruct.create("br"), dom.byId("layerToggle"));
+        });
+
+        // set up symbols for the various geometry types
+        app.symbols = {};
+        app.symbols.point = new SimpleMarkerSymbol("square", 10, new SimpleLineSymbol(), new Color([0, 255, 0, 0.75]));
+        app.symbols.polyline = new SimpleLineSymbol("solid", new Color([255, 128, 0]), 2);
+        app.symbols.polygon = new SimpleFillSymbol().setColor(new Color([255,255,0,0.25]));
+        app.symbols.circle = new SimpleFillSymbol().setColor(new Color([0, 0, 180, 0.25]));
+        // app.symbols.labelpoint = new SimpleMarkerSymbol("circle", 10, new SimpleLineSymbol(), new Color([255, 0, 0, 0.75]));
+
+        // find the divs for buttons
+        query(".drawing").forEach(function(btn) {
+          var button = new Button({
+            label: btn.innerHTML,
+            onClick: function() {
+              activateTool(this.id);
+            }
+          }, btn);
+        });
+
+        function activateTool(type) {
+          console.log(type);
+          if (type === "label") {
+            app.symbols.point = new SimpleMarkerSymbol("circle", 10, new SimpleLineSymbol(), new Color([255, 0, 0, 0.75]));
+            type = "point";
+            esri.bundle.toolbars.draw.addPoint = "Add a text label";
+            isLabel = true;
+          } else {
+            app.symbols.point = new SimpleMarkerSymbol("square", 10, new SimpleLineSymbol(), new Color([0, 255, 0, 0.75]));
+            esri.bundle.toolbars.draw.addPoint = "Click to add a point";
+            isLabel = false;
+          }
+          app.tool = type.replace("freehand", "");
+          app.toolbar.activate(type);
+          app.map.hideZoomSlider();
+        }
+
+        function addToMap(evt) {
+          var labelText;
+          var font = new Font("20px", Font.STYLE_NORMAL, Font.VARIANT_NORMAL, Font.WEIGHT_BOLDER);
+          app.toolbar.deactivate();
+          app.map.showZoomSlider();
+          
+          // var graphic = new Graphic(evt.geometry, app.symbols[app.tool]);
+          // app.map.graphics.add(graphic);
+          // console.log(isLabel);
+          if (isLabel) {
+            labelText = prompt("Enter a Text Label", "");
+            var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
+          //display mouse coordinates
+          // dom.byId("info").innerHTML = mp.x.toFixed(3) + ", " + mp.y.toFixed(3);
+            // console.log(number.format(evt.geometry.x) + ", " + number.format(evt.geometry.y));
+            console.log(mp.x.toFixed(5) + ", " + mp.y.toFixed(5));
+            var textSymbol = new TextSymbol(
+              // "X: " + number.format(labelPoint.x) + ", Y: " + number.format(labelPoint.y),
+              "X: " + number.format(evt.geometry.x) + ", Y: " + number.format(evt.geometry.y)  + "\n" + labelText,
+              font, new Color([0, 0, 0]));
+            var graphic = new Graphic(evt.geometry, textSymbol);
+            var graphic2 = new Graphic(evt.geometry, app.symbols[app.tool]);
+            // graphic.setSymbol(app.symbols.point);
+            app.map.graphics.add(graphic);
+            app.map.graphics.add(graphic2);
+          } else {
+            var graphic = new Graphic(evt.geometry, app.symbols[app.tool]);
+            app.map.graphics.add(graphic);
+          }
+        }
+         // Add Geocoder  
+        var geocoder = new Geocoder({
+          map: app.map 
+        }, "geosearch");
+        geocoder.startup();
+        // End Geocoder
+      }); // End of require function
+    </script>
+  </head>
+  <body class="nihilo">
+    <div id="mainWindow" 
+         data-dojo-type="dijit/layout/BorderContainer" 
+         data-dojo-props="design:'headline',gutters:false"
+         style="width: 100%; height: 100%; margin: 0;">
+      <div id="header" 
+           data-dojo-type="dijit/layout/ContentPane"
+           data-dojo-props="region:'top'"
+           style="margin-left: auto; margin-right: auto; text-align: center;">
+        Garrett County WebMap &#045; Printable Map
+        <div id="subheader">PDF or JPG</div>
+        <div id="instxns">
+          Start by turning off layers you don't want to print. Give the map a meaningful title, and then click &#8220;Prep Map&#8221;. When the map is ready to print the button will say &#8220;printout&#8221;. Click that to open the map in a new tab or window and print or save your map.</div>
+      </div>
+      <div id="map" class="shadow" 
+           data-dojo-type="dijit/layout/ContentPane"
+           data-dojo-props="region:'center'">
+        <div id="geosearch"></div>
+        <!-- drop shadow divs -->
+        <div id="ds">
+          <div id="ds-h">
+            <div class="ds h1 o1"></div>
+            <div class="ds h2 o2"></div>
+            <div class="ds h3 o3"></div>
+            <div class="ds h4 o4"></div>
+            <div class="ds h5 o5"></div>
+          </div>
+          <div id="ds-r">
+            <div class="ds v1 o1"></div>
+            <div class="ds v2 o2"></div>
+            <div class="ds v3 o3"></div>
+            <div class="ds v4 o4"></div>
+            <div class="ds v5 o5"></div>
+          </div>
+        </div> <!-- end drop shadow divs -->
+            
+      </div>
+      <div data-dojo-type="dojox.layout.ExpandoPane" title="Printing Options"
+             data-dojo-props="region:'right', design:'footer', gutters:true, liveSplitters:true, startExpanded:true, easeIn:'expoInOut', easeOut:'expoInOut', duration:600" 
+             style="width:240px;">
+        <div id="rightPane"
+             data-dojo-type="dijit/layout/ContentPane"
+             data-dojo-props="region:'right'">
+          <div id="mapTitleDiv">
+            <label>Map Title</label>
+            <input id="mapTitle" name="mapTitle" data-dojo-type="dijit/form/TextBox" style="width: 10.4em; margin-left: 0.2em;" type="text">
+            <button id="prepMap" data-dojo-type="dijit/form/Button">Prep Map</button>
+            <button id="clearGraphics" data-dojo-type="dijit/form/Button">Clear Graphics</button>
+          </div>
+  
+          <div id="printButton"></div>
+          <hr />
+          
+          <div id="drawingWrapper">
+            Add some graphics:
+            <div id="point" class="drawing">Point</div>
+            <div id="freehandpolyline" class="drawing">Freehand Polyline</div>
+            <div id="freehandpolygon" class="drawing">Freehand Polygon</div>
+            <div id="circle" class="drawing">Circle</div>
+          </div>
+          <button  id="textLabel" data-dojo-type="dijit/form/Button">Text Label</button>
+          <hr />
+          <div id="layerToggle">
+            Toggle Layers: <br />
+            <!-- checkbox and labels inserted programmatically -->
+          </div>
+        </div>
+      </div><!-- end of Expando Pane-->  
+    </div>
+  </body>
+</html>

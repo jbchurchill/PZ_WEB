@@ -115,6 +115,8 @@
         "esri/symbols/SimpleMarkerSymbol",
         "esri/symbols/SimpleLineSymbol", 
         "esri/symbols/SimpleFillSymbol",
+        "esri/symbols/TextSymbol",
+        "esri/symbols/Font",
         "esri/graphic",
         "esri/InfoTemplate",
         "esri/renderers/ClassBreaksRenderer",
@@ -123,6 +125,7 @@
         "esri/Color",
         "dojo/parser", 
         "dojo/query",
+        "dojo/number",
         "dojo/dom",
         "dojo/on",
         "dojo/dom-construct", 
@@ -147,6 +150,8 @@
         SimpleMarkerSymbol,
         SimpleLineSymbol,
         SimpleFillSymbol,
+        TextSymbol,
+        Font,
         Graphic,
         InfoTemplate,
         ClassBreaksRenderer,
@@ -155,6 +160,7 @@
         Color,
         parser, 
         query,
+        number,
         dom,
         on,
         domConstruct, 
@@ -166,6 +172,7 @@
         parser.parse();
 
         esriConfig.defaults.io.proxyUrl = "/proxy";
+        var isLabel = false;
 
         app.map = new Map("map", {
           center: [-79.2, 39.5],
@@ -177,6 +184,17 @@
         });
         function clearMapGraphics () {
           app.map.graphics.clear();
+        }
+        function addTextLabel () {
+          // ADD EVENT LISTENER FOR CLICK ON MAP TO IDENTIFY LABEL PLACEMENT.
+          // THE EVENT LISTENER WILL HAVE THE PROMPT
+          console.log("addTextLabel");
+          // app.symbols.point = new SimpleMarkerSymbol("circle", 10, new SimpleLineSymbol(), new Color([255, 0, 0, 0.75]));
+          app.toolbar = new Draw(app.map);
+          // esri.bundle.toolbars.draw.addPoint = "add a text label";
+          // app.toolbar.draw.activate("point", 
+          activateTool("label");
+          app.toolbar.on("draw-end", addToMap);
         }
         var PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer;
         var myCounter = 0;
@@ -230,6 +248,7 @@
 
         on(dom.byId("prepMap"), "click", setupPrint);
         on(dom.byId("clearGraphics"), "click", clearMapGraphics);
+        on(dom.byId("textLabel"), "click", addTextLabel);
 
         var url = "http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer";
         var tiledLayer = new ArcGISTiledMapServiceLayer(url, { "id": "MD Imagery" });
@@ -328,7 +347,8 @@
         app.symbols.point = new SimpleMarkerSymbol("square", 10, new SimpleLineSymbol(), new Color([0, 255, 0, 0.75]));
         app.symbols.polyline = new SimpleLineSymbol("solid", new Color([255, 128, 0]), 2);
         app.symbols.polygon = new SimpleFillSymbol().setColor(new Color([255,255,0,0.25]));
-        app.symbols.circle = new SimpleFillSymbol().setColor(new Color([0, 0, 180, 0.25]))
+        app.symbols.circle = new SimpleFillSymbol().setColor(new Color([0, 0, 180, 0.25]));
+        // app.symbols.labelpoint = new SimpleMarkerSymbol("circle", 10, new SimpleLineSymbol(), new Color([255, 0, 0, 0.75]));
 
         // find the divs for buttons
         query(".drawing").forEach(function(btn) {
@@ -341,17 +361,47 @@
         });
 
         function activateTool(type) {
+          console.log(type);
+          if (type === "label") {
+            app.symbols.point = new SimpleMarkerSymbol("circle", 10, new SimpleLineSymbol(), new Color([255, 0, 0, 0.75]));
+            type = "point";
+            esri.bundle.toolbars.draw.addPoint = "Add a text label";
+            isLabel = true;
+          } else {
+            app.symbols.point = new SimpleMarkerSymbol("square", 10, new SimpleLineSymbol(), new Color([0, 255, 0, 0.75]));
+            esri.bundle.toolbars.draw.addPoint = "Click to add a point";
+            isLabel = false;
+          }
           app.tool = type.replace("freehand", "");
           app.toolbar.activate(type);
           app.map.hideZoomSlider();
         }
 
         function addToMap(evt) {
+          var labelText;
+          var font = new Font("20px", Font.STYLE_NORMAL, Font.VARIANT_NORMAL, Font.WEIGHT_BOLDER);
           app.toolbar.deactivate();
           app.map.showZoomSlider();
           
-          var graphic = new Graphic(evt.geometry, app.symbols[app.tool]);
-          app.map.graphics.add(graphic);
+          // var graphic = new Graphic(evt.geometry, app.symbols[app.tool]);
+          // app.map.graphics.add(graphic);
+          // console.log(isLabel);
+          if (isLabel) {
+            labelText = prompt("Enter a Text Label", "");
+            console.log(number.format(evt.geometry.x) + ", " + number.format(evt.geometry.y));
+            var textSymbol = new TextSymbol(
+              // "X: " + number.format(labelPoint.x) + ", Y: " + number.format(labelPoint.y),
+              "X: " + number.format(evt.geometry.x) + ", Y: " + number.format(evt.geometry.y)  + "\n" + labelText,
+              font, new Color([0, 0, 0]));
+            var graphic = new Graphic(evt.geometry, textSymbol);
+            var graphic2 = new Graphic(evt.geometry, app.symbols[app.tool]);
+            // graphic.setSymbol(app.symbols.point);
+            app.map.graphics.add(graphic);
+            app.map.graphics.add(graphic2);
+          } else {
+            var graphic = new Graphic(evt.geometry, app.symbols[app.tool]);
+            app.map.graphics.add(graphic);
+          }
         }
          // Add Geocoder  
         var geocoder = new Geocoder({
@@ -422,6 +472,7 @@
             <div id="freehandpolygon" class="drawing">Freehand Polygon</div>
             <div id="circle" class="drawing">Circle</div>
           </div>
+          <button  id="textLabel" data-dojo-type="dijit/form/Button">Text Label</button>
           <hr />
           <div id="layerToggle">
             Toggle Layers: <br />

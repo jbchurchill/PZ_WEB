@@ -366,9 +366,11 @@
             type = "point";
             esri.bundle.toolbars.draw.addPoint = "Add a text label";
             isLabel = true;
-          } else {
+          } else if (type === "point") {
             app.symbols.point = new SimpleMarkerSymbol("square", 10, new SimpleLineSymbol(), new Color([0, 255, 0, 0.75]));
             esri.bundle.toolbars.draw.addPoint = "Click to add a point";
+            isLabel = false;
+          } else {
             isLabel = false;
           }
           app.tool = type.replace("freehand", "");

@@ -100,6 +100,7 @@
     <script src="http://js.arcgis.com/3.10/"></script>
     <script>
       var app = {};
+      var mpArray;
       app.map = null; app.toolbar = null; app.tool = null; app.symbols = null; app.printer = null;
       require([
         "esri/map",
@@ -183,26 +184,34 @@
         app.map.on("load", function() {
           app.toolbar = new Draw(app.map);
           app.toolbar.on("draw-end", addToMap);
+          app.map.on("mouse-move", showCoordinates);
+          app.map.on("mouse-drag", showCoordinates);
         });
         function clearMapGraphics () {
           app.map.graphics.clear();
         }
+        function showCoordinates(evt) {
+          //the map is in web mercator but display coordinates in geographic (lat, long)
+          var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
+          //display mouse coordinates in the right panel
+          dom.byId("coordsinfo").innerHTML = mp.x.toFixed(5) + ", " + mp.y.toFixed(5);
+          mpArray = [mp.x.toFixed(5), mp.y.toFixed(5)];
+        }
+
         function addTextLabel () {
           // ADD EVENT LISTENER FOR CLICK ON MAP TO IDENTIFY LABEL PLACEMENT.
           // THE EVENT LISTENER WILL HAVE THE PROMPT
-          console.log("addTextLabel");
-          // app.symbols.point = new SimpleMarkerSymbol("circle", 10, new SimpleLineSymbol(), new Color([255, 0, 0, 0.75]));
           app.toolbar = new Draw(app.map);
-          // esri.bundle.toolbars.draw.addPoint = "add a text label";
-          // app.toolbar.draw.activate("point", 
           activateTool("label");
           app.toolbar.on("draw-end", addToMap);
+          on.once(dom.byId("map"), "click", showCoordinates);
         }
+
         var PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer;
         var myCounter = 0;
         function setupPrint () {
           if (myCounter > 0) { // you already created the Print Widget
-            return
+            return;
           }
           myCounter += 1;
           var printTitle;
@@ -238,7 +247,6 @@
             t.layoutOptions = lo.options;
             return t;
           });        
-
 
           app.printer = new Print({
             map: app.map,
@@ -350,7 +358,6 @@
         app.symbols.polyline = new SimpleLineSymbol("solid", new Color([255, 128, 0]), 2);
         app.symbols.polygon = new SimpleFillSymbol().setColor(new Color([255,255,0,0.25]));
         app.symbols.circle = new SimpleFillSymbol().setColor(new Color([0, 0, 180, 0.25]));
-        // app.symbols.labelpoint = new SimpleMarkerSymbol("circle", 10, new SimpleLineSymbol(), new Color([255, 0, 0, 0.75]));
 
         // find the divs for buttons
         query(".drawing").forEach(function(btn) {
@@ -380,28 +387,24 @@
         }
 
         function addToMap(evt) {
-          var labelText;
+          var labelText, coordsCheckBox, textSymbolText;
           var font = new Font("20px", Font.STYLE_NORMAL, Font.VARIANT_NORMAL, Font.WEIGHT_BOLDER);
           app.toolbar.deactivate();
           app.map.showZoomSlider();
-          
-          // var graphic = new Graphic(evt.geometry, app.symbols[app.tool]);
-          // app.map.graphics.add(graphic);
-          // console.log(isLabel);
+
           if (isLabel) {
             labelText = prompt("Enter a Text Label", "");
-            var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
-          //display mouse coordinates
-          // dom.byId("info").innerHTML = mp.x.toFixed(3) + ", " + mp.y.toFixed(3);
-            // console.log(number.format(evt.geometry.x) + ", " + number.format(evt.geometry.y));
-            console.log(mp.x.toFixed(5) + ", " + mp.y.toFixed(5));
+            coordsCheckBox = registry.byId("includeCoords");
+            if (coordsCheckBox.get("checked")) {
+              textSymbolText = "X: " + mpArray[0] + ", Y: " + mpArray[1]  + "  -  " + labelText;
+            } else {
+              textSymbolText = labelText;
+            }
             var textSymbol = new TextSymbol(
-              // "X: " + number.format(labelPoint.x) + ", Y: " + number.format(labelPoint.y),
-              "X: " + number.format(evt.geometry.x) + ", Y: " + number.format(evt.geometry.y)  + "\n" + labelText,
+              textSymbolText,
               font, new Color([0, 0, 0]));
             var graphic = new Graphic(evt.geometry, textSymbol);
             var graphic2 = new Graphic(evt.geometry, app.symbols[app.tool]);
-            // graphic.setSymbol(app.symbols.point);
             app.map.graphics.add(graphic);
             app.map.graphics.add(graphic2);
           } else {
@@ -457,7 +460,7 @@
       </div>
       <div data-dojo-type="dojox.layout.ExpandoPane" title="Printing Options"
              data-dojo-props="region:'right', design:'footer', gutters:true, liveSplitters:true, startExpanded:true, easeIn:'expoInOut', easeOut:'expoInOut', duration:600" 
-             style="width:240px;">
+             style="width:260px;">
         <div id="rightPane"
              data-dojo-type="dijit/layout/ContentPane"
              data-dojo-props="region:'right'">
@@ -478,14 +481,17 @@
             <div id="freehandpolygon" class="drawing">Freehand Polygon</div>
             <div id="circle" class="drawing">Circle</div>
           </div>
-          <button  id="textLabel" data-dojo-type="dijit/form/Button">Text Label</button>
+          <button id="textLabel" data-dojo-type="dijit/form/Button">Text Label</button><br />
+          <input type="checkbox" id="includeCoords" checked data-dojo-type="dijit.form.CheckBox">
+          <label for="includeCoords">Include Coordinates?</label>
+          <div id="coordsinfo"></div>
           <hr />
           <div id="layerToggle">
             Toggle Layers: <br />
             <!-- checkbox and labels inserted programmatically -->
           </div>
         </div>
-      </div><!-- end of Expando Pane-->  
+      </div><!-- end of Expando Pane-->
     </div>
   </body>
 </html>

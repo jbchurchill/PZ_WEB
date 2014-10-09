@@ -111,7 +111,6 @@
         "esri/layers/ArcGISTiledMapServiceLayer",
         "esri/layers/ArcGISDynamicMapServiceLayer",
         "esri/layers/FeatureLayer",
-        "esri/layers/LayerDrawingOptions",
         "esri/layers/ImageParameters",
         "esri/tasks/PrintTemplate",
         "esri/symbols/SimpleMarkerSymbol",
@@ -120,14 +119,11 @@
         "esri/symbols/TextSymbol",
         "esri/symbols/Font",
         "esri/graphic",
-        "esri/InfoTemplate",
-        "esri/renderers/ClassBreaksRenderer",
         "esri/config",
         "dojo/_base/array",
         "esri/Color",
         "dojo/parser", 
         "dojo/query",
-        "dojo/number",
         "dojo/dom",
         "dojo/on",
         "dojo/dom-construct", 
@@ -147,7 +143,6 @@
         ArcGISTiledMapServiceLayer,
         ArcGISDynamicMapServiceLayer,
         FeatureLayer,
-        LayerDrawingOptions,
         ImageParameters,
         PrintTemplate,
         SimpleMarkerSymbol,
@@ -156,14 +151,11 @@
         TextSymbol,
         Font,
         Graphic,
-        InfoTemplate,
-        ClassBreaksRenderer,
         esriConfig,
         arrayUtils,
         Color,
         parser, 
         query,
-        number,
         dom,
         on,
         domConstruct, 
@@ -207,7 +199,7 @@
           on.once(dom.byId("map"), "click", showCoordinates);
         }
 
-        var PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer;
+        var PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer;
         var myCounter = 0;
         function setupPrint () {
           if (myCounter > 0) { // you already created the Print Widget
@@ -217,7 +209,6 @@
           var printTitle;
           var myInput = registry.byId("mapTitle");
           printTitle = myInput.get("value"); // in order to use get
-          console.log("PrepMap Clicked: " + printTitle)
           var layouts = [{
             name: "Letter ANSI A Landscape", 
             label: "Landscape (PDF)", 
@@ -326,7 +317,7 @@
           // outFields: ["*"]
         });
 
-        app.map.addLayers([PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer]);
+        app.map.addLayers([PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer]);
 
         // create a check box for each map layer
         arrayUtils.forEach(["Parcels & Addresses", "Cell Towers", "Wind Turbines", "Street Centerlines", "Perennial Streams", "Zoning", "Source Water Prot. Areas", "Protected Species", "Growth Areas", "Flood Hazard", "MD Imagery"], function(id) {
@@ -370,7 +361,6 @@
         });
 
         function activateTool(type) {
-          console.log(type);
           if (type === "label") {
             app.symbols.point = new SimpleMarkerSymbol("circle", 10, new SimpleLineSymbol(), new Color([255, 0, 0, 0.75]));
             type = "point";

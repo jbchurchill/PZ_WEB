@@ -374,24 +374,28 @@ require([
     dom.byId('messages').innerHTML = "<strong>Number of Selected Points: " +
                                             // pointSum + "</strong><br />" + strAddresses + "<br /><button id=\"save\" data-dojo-type=\"dijit.form.Button\" type=\"button\" data-dojo-attach-point=\"button\">Save</button><br />";
                                             pointSum + "</strong><br />" + strAddresses + "<br />" 
-                                            + "<form action=\"file.php\" method=\"post\"><input id=\"save\" type=\"submit\">Save</input><input id=\"hidden_field\" name=\"hidden_field\" type=\"hidden\" value=\"" + strAddresses + "\" /></form><br />";
+                                            + "<form action=\"file.php\" method=\"post\" target=\"_blank\"><input id=\"save\" type=\"submit\">Save</input><input id=\"hidden_field\" name=\"hidden_field\" type=\"hidden\" value=\"" + strAddresses + "\" /></form><br />";
   }
 
   function sumSelectedParcelInfo(event) {
-    var parcelSum, arrParcelData, strParcelInfo;
+    var parcelSum, arrParcelData, strParcelInfo, strStrippedInfo;
     parcelSum = 0;
     arrParcelData = [];
     strParcelInfo = "";
+    strStrippedInfo = "M, P, Link<br />";
     arrayUtil.forEach(event.features, function (feature) {
       strParcelInfo += "<strong>MAP: </strong>" + feature.attributes.MAP + "<br />" +
           "<strong>PARCEL: </strong>" + feature.attributes.PARCEL + "<br />" +
           "<strong>LINK: </strong><a href=\"" + feature.attributes.SDAT_URL + "\" target=\"_blank\">Link</a><br /><hr />";
-      arrParcelData.push(feature.attributes.MAP);
+      strStrippedInfo += feature.attributes.MAP + ", " + feature.attributes.PARCEL + ", " + feature.attributes.SDAT_URL + "<br />";
+      
+      arrParcelData.push(feature.attributes.MAP); // THIS IS NOT ACTUALLY BEING USED FOR ANYTHING
       parcelSum += 1;
     });
+    console.log(strStrippedInfo);
     dom.byId('messages').innerHTML = "<strong>Number of Selected Parcels: " +
-                                            parcelSum + "</strong><br />" + strParcelInfo;
-
+                                            parcelSum + "</strong><br />" + strParcelInfo + "<br />"
+                                            + "<form action=\"file.php\" method=\"post\" target=\"_blank\"><input id=\"save\" type=\"submit\">Save</input><input id=\"hidden_field\" name=\"hidden_field\" type=\"hidden\" value=\"" + strStrippedInfo + "\" /></form><br />";
   }
 
 

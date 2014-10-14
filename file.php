@@ -9,19 +9,36 @@
     // $Data = preg_filter("/<a href=/", "", $DataTemp);
     $DataAdded = true;
   }
+  if (isset($_POST[append_data])) {
+    $doAppend = trim(stripslashes($_POST[append_data]));
+    $doAppendAnswer = "<br />Data was not appended. The file was deleted and new data was written.";
+    $fileAccess = 'w';
+  } else {
+    $doAppendAnswer = "<br />Data was appended to the file.";
+    $fileAccess = 'a+';
+  }
 ?>  
 <?php
   // $File = "E:\map-data\Planning\Zoning\WEB_FILES\YourFile.txt";
   $File = "YourFile.txt"; // USE THIS ONE FOR LOCALHOST
-  $Handle = fopen($File, 'a+');
+  $Handle = fopen($File, $fileAccess); // 'a+'); // use write instead of append
   // $Data = "Jane Doe\r\n";
+  if ($fileAccess === 'w' && $doAppend === "parcel") {
+    fwrite($Handle, "M, P, Link\r\n");
+  }
+  if ($fileAccess === 'a+' && $doAppend === "address") {
+    fwrite($Handle, "Addresses:");
+  }
   fwrite($Handle, $Data);
   // $Data = "Bilbo Jones\r\n";
   // fwrite($Handle, $Data);
   if ($DataAdded === true) {
-    print "Data Added";
+    print "<h2>YourFile.txt</h2>Data has been added.<br />Close this window or tab to return to the web map.<br />";
   } else {
-    print "Data may not have been added. Check the file.";
+    print "Data may not have been added. Check the file.<br />";
   }
   fclose($Handle);
+  print $doAppendAnswer;
+  print "<br />";
+  
 ?>

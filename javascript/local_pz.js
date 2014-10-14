@@ -373,8 +373,9 @@ require([
     });
     dom.byId('messages').innerHTML = "<strong>Number of Selected Points: " +
                                             // pointSum + "</strong><br />" + strAddresses + "<br /><button id=\"save\" data-dojo-type=\"dijit.form.Button\" type=\"button\" data-dojo-attach-point=\"button\">Save</button><br />";
-                                            pointSum + "</strong><br />" + strAddresses + "<br />" 
-                                            + "<form action=\"file.php\" method=\"post\" target=\"_blank\"><input id=\"save\" type=\"submit\">Save</input><input id=\"hidden_field\" name=\"hidden_field\" type=\"hidden\" value=\"" + strAddresses + "\" /></form><br />";
+                                            pointSum + "</strong><br />" + strAddresses + "<br />"
+                                            + "Save these point records<br />"
+                                            + "<form action=\"file.php\" method=\"post\" target=\"_blank\"><input id=\"save\" type=\"submit\"></input><input type=\"checkbox\" name=\"append_data\" checked=\"true\" value=\"address\">Write new file?<br /><input id=\"hidden_field\" name=\"hidden_field\" type=\"hidden\" value=\"" + strAddresses + "\" /></form><br />";
   }
 
   function sumSelectedParcelInfo(event) {
@@ -382,7 +383,8 @@ require([
     parcelSum = 0;
     arrParcelData = [];
     strParcelInfo = "";
-    strStrippedInfo = "M, P, Link<br />";
+    // strStrippedInfo = "M, P, Link<br />";
+    strStrippedInfo = "";
     arrayUtil.forEach(event.features, function (feature) {
       strParcelInfo += "<strong>MAP: </strong>" + feature.attributes.MAP + "<br />" +
           "<strong>PARCEL: </strong>" + feature.attributes.PARCEL + "<br />" +
@@ -395,7 +397,8 @@ require([
     console.log(strStrippedInfo);
     dom.byId('messages').innerHTML = "<strong>Number of Selected Parcels: " +
                                             parcelSum + "</strong><br />" + strParcelInfo + "<br />"
-                                            + "<form action=\"file.php\" method=\"post\" target=\"_blank\"><input id=\"save\" type=\"submit\">Save</input><input id=\"hidden_field\" name=\"hidden_field\" type=\"hidden\" value=\"" + strStrippedInfo + "\" /></form><br />";
+                                            + "Save these parcel records<br />"
+                                            + "<form action=\"file.php\" method=\"post\" target=\"_blank\"><input id=\"save\" type=\"submit\"></input><input type=\"checkbox\" name=\"append_data\" checked=\"true\" value=\"parcel\">Write new file?<br /><input id=\"hidden_field\" name=\"hidden_field\" type=\"hidden\" value=\"" + strStrippedInfo + "\" /></form><br />";
   }
 
 

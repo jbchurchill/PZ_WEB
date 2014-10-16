@@ -1,0 +1,48 @@
+html, body { 
+	height: 100%; width: 100%;
+	margin: 0; padding: 0;
+} 
+body{
+	background-color: #fff; overflow:hidden; 
+	font-family: sans-serif;
+} 
+label {
+	display: inline-block;
+	padding: 5px 5px 0 5px;
+	font-weight: 400;
+	font-size: 12pt;
+}
+.button {
+	width: 100%;
+	margin: 3px auto;
+	text-align: center;
+}
+#header {
+	padding-top: 4px;
+	padding-right: 15px;
+	color: #444; 
+	font-size:16pt; text-align:right;font-weight:bold;
+	height:55px;
+	background: #fff;
+	border-bottom: 1px solid #444;
+	text-shadow: 1px 1px 1px #cee1f0;
+	filter: dropshadow(color=#cee1f0, offx=1, offy=1);
+}
+#rightPane{
+	margin: 0;
+	padding: 10px;
+	background-color: #fff;
+	color: #421b14;
+	width: 180px;
+}
+#mainWindow {
+	height: 100%;
+	width: 100%;
+	margin: 0;
+}
+#legendDiv {
+	font-size: 0.8em;
+}
+#printButton {
+	width: 140px;
+}

@@ -107,12 +107,14 @@
         "esri/toolbars/draw",
         "esri/dijit/Print",
         "esri/dijit/Geocoder",
+        "esri/dijit/Legend",
         "esri/geometry/webMercatorUtils",
         "esri/layers/ArcGISTiledMapServiceLayer",
         "esri/layers/ArcGISDynamicMapServiceLayer",
         "esri/layers/FeatureLayer",
         "esri/layers/ImageParameters",
         "esri/tasks/PrintTemplate",
+        "esri/tasks/LegendLayer",
         "esri/symbols/SimpleMarkerSymbol",
         "esri/symbols/SimpleLineSymbol", 
         "esri/symbols/SimpleFillSymbol",
@@ -139,12 +141,14 @@
         Draw,
         Print,
         Geocoder,
+        Legend,
         webMercatorUtils,
         ArcGISTiledMapServiceLayer,
         ArcGISDynamicMapServiceLayer,
         FeatureLayer,
         ImageParameters,
         PrintTemplate,
+        LegendLayer,
         SimpleMarkerSymbol,
         SimpleLineSymbol,
         SimpleFillSymbol,
@@ -199,6 +203,12 @@
           on.once(dom.byId("map"), "click", showCoordinates);
         }
 
+        var legendLayer = new LegendLayer();
+        legendLayer.layerId = "Zoning"; // "layer6"; // "County_Zoning_Layer"; // "Parcels_and_Zoning"; // or possibly "Planning and Zoning" "Zoning" ?
+        // legendLayer.subLayerIds = [0, 1, 2, 3];
+        
+        // legendLayer.subLayerIds = [4, 10];
+        // console.log(typeof(legendLayer));
         var PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer;
         var myCounter = 0;
         function setupPrint () {
@@ -214,7 +224,7 @@
             label: "Landscape (PDF)", 
             format: "pdf", 
             options: { 
-              legendLayers: [], // empty array means no legend
+              legendLayers: [legendLayer], // empty array means no legend
               scalebarUnit: "Miles",
               titleText: printTitle + ", Landscape PDF" 
             }
@@ -223,7 +233,7 @@
             label: "Portrait (Image)", 
             format: "jpg", 
             options:  { 
-              legendLayers: [],
+              legendLayers: [legendLayer],
               scaleBarUnit: "Miles",
               titleText: printTitle + ", Portrait JPG"
             }
@@ -237,7 +247,7 @@
             t.format = lo.format;
             t.layoutOptions = lo.options;
             return t;
-          });        
+          });
 
           app.printer = new Print({
             map: app.map,
@@ -404,6 +414,16 @@
             app.map.graphics.add(graphic);
           }
         }
+
+          var legendLayers = [];
+          legendLayers.push({ layer: ZN_fLayer, title: 'Zoning' });
+
+          var legend = new Legend({
+            map: app.map,
+            layerInfos: legendLayers
+          }, "legendDiv");
+          legend.startup();
+
          // Add Geocoder  
         var geocoder = new Geocoder({
           map: app.map 
@@ -482,6 +502,7 @@
             Toggle Layers: <br />
             <!-- checkbox and labels inserted programmatically -->
           </div>
+          <div id="legendDiv"></div>
         </div>
       </div><!-- end of Expando Pane-->
     </div>

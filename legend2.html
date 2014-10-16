@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+		<title>Print Test</title>
+		<link rel="stylesheet" href="http://js.arcgis.com/3.11/dijit/themes/nihilo/nihilo.css">
+		<link rel="stylesheet" href="http://js.arcgis.com/3.11/esri/css/esri.css">
+		<script src="http://js.arcgis.com/3.11/"></script>
+		
+		<link rel="stylesheet" href="style.css">
+		
+ <script>	
+
+require([
+		"esri/map", "esri/layers/ArcGISDynamicMapServiceLayer", "esri/dijit/Legend", 
+		"esri/dijit/Print", "esri/tasks/PrintTask", "esri/tasks/PrintTemplate",
+		"esri/request", "esri/config", "dojo/_base/array", "dojo/parser", "dojo/on", 
+		"dojo/query", "dojo/dom", "dojo/dom-construct",
+		"dijit/form/Button", "dijit/layout/BorderContainer", "dijit/layout/ContentPane", "dojo/domReady!"
+	], function(
+		Map, ArcGISDynamicMapServiceLayer, Legend, 
+		Print, PrintTask, PrintTemplate, 
+		esriRequest, esriConfig, arrayUtils, parser, on,
+		query, dom, domConstruct, 
+        Button
+	) {
+		parser.parse();
+		
+		var dataLyr = ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
+		var printUrl = "http://gis.garrettcounty.org:6080/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task";
+		
+		var map = new Map("map");
+		var legend = new Legend({map: map}, "legendDiv");
+		
+		map.addLayer(dataLyr);
+		legend.startup();
+		
+		var legendLayer = new esri.tasks.LegendLayer();
+			legendLayer.layerId = "layer0";
+			legendLayer.subLayerIds = [0, 1, 2, 3];
+		
+		var myTemplate = [new PrintTemplate()];
+			myTemplate[0].format = "PDF";
+			myTemplate[0].layout = "A4 Landscape";
+			myTemplate[0].layoutOptions = {
+				scalebarUnit: "Feet",
+				legendLayers: [legendLayer]
+			};
+		
+		var printer = new Print({
+			map: map,
+			templates: myTemplate,
+			url: printUrl
+		}, dom.byId("printButton"));
+		printer.startup();
+	}
+);
+</script>
+</head>
+<body class="nihilo">
+		<div id="mainWindow" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'headline',gutters:false">
+			<div id="map" class="shadow" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'"></div>
+			<div id="rightPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'right'">
+				<div id="printButton"></div>
+				<h4>Legend</h4>
+				<div id="legendDiv"></div>
+			</div>
+		</div>
+	</body>
+</html>

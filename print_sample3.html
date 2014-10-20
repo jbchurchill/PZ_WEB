@@ -211,7 +211,6 @@
         var PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer;
         var myCounter = 0;
         function setupPrint () {
-          console.log("LL: " + legendLayer.layerId); // TESTING
           if (myCounter > 0) { // you already created the Print Widget
             return;
           }
@@ -328,7 +327,7 @@
         });
 
         app.map.addLayers([PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer]);
-        // console.log(ZN_fLayer.id); // TESTING
+        
         // create a check box for each map layer
         arrayUtils.forEach(["Parcels & Addresses", "Cell Towers", "Wind Turbines", "Street Centerlines", "Perennial Streams", "Zoning", "Source Water Prot. Areas", "Protected Species", "Growth Areas", "Flood Hazard", "MD Imagery"], function(id) {
           new CheckBox({
@@ -415,18 +414,7 @@
           }
         }
 
-          var legendLayers = [];
-          legendLayers.push({ layer: ZN_fLayer, title: 'Zoning' });
-          // legendLayers.push({ layer: PZ_fLayer, title: 'Parcels and Zoning' });
-          // legendLayer.subLayerIds = [4];
-
-          var legend = new Legend({
-            map: app.map,
-            layerInfos: legendLayers
-          }, "legendDiv");
-          legend.startup();
-
-         // Add Geocoder  
+         // Add Geocoder
         var geocoder = new Geocoder({
           map: app.map 
         }, "geosearch");

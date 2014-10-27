@@ -8,6 +8,7 @@ require([
   "esri/dijit/Print",
   "esri/dijit/Geocoder",
   "esri/dijit/Legend",
+  "esri/dijit/BasemapGallery",
   "esri/geometry/webMercatorUtils",
   "esri/layers/ArcGISTiledMapServiceLayer",
   "esri/layers/ArcGISDynamicMapServiceLayer",
@@ -45,6 +46,7 @@ require([
   Print,
   Geocoder,
   Legend,
+  BasemapGallery,
   webMercatorUtils,
   ArcGISTiledMapServiceLayer,
   ArcGISDynamicMapServiceLayer,
@@ -76,10 +78,12 @@ require([
   parser.parse();
 
   esriConfig.defaults.io.proxyUrl = "/proxy";
+  var basemapGallery;
   var isLabel = false;
   passedCenter = [passedX, passedY];
 
   app.map = new Map("map", {
+    basemap: "streets",
     center: passedCenter, // [-79.2, 39.5],
     zoom: zoomLevel // 12
   });
@@ -110,6 +114,28 @@ require([
     on.once(dom.byId("map"), "click", showCoordinates);
   }
 
+     //add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
+  basemapGallery = new BasemapGallery({
+    showArcGISBasemaps: true,
+    map: app.map
+  }, "basemapGallery");
+
+  mdImagelayer = new esri.layers.ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer");
+
+  mdImageBasemap = new esri.dijit.Basemap({
+    layers: [mdImagelayer],
+    title: "MD Imagery",
+    thumbnailUrl: "http://gis.garrettcounty.org/arcgis/images/image_v2.png"
+  });
+  basemapGallery.add(mdImageBasemap);
+
+  basemapGallery.startup();
+
+  basemapGallery.on("error", function (msg) {
+    console.log("basemap gallery error:  ", msg);
+  });
+
+  
   var legendLayer = new LegendLayer();
   // legendLayer.layerId = "Parcels & Addresses"; // THIS WORKS. IT MUST BE THE SAME STRING AS RETURNED BY PZ_fLayer.id
   legendLayer.layerId = "Zoning";
@@ -195,9 +221,9 @@ require([
   on(dom.byId("clearGraphics"), "click", clearMapGraphics);
   on(dom.byId("textLabel"), "click", addTextLabel);
 
-  var url = "http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer";
-  var tiledLayer = new ArcGISTiledMapServiceLayer(url, { "id": "MD Imagery" });
-  app.map.addLayer(tiledLayer);
+  // var url = "http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer";
+  // var tiledLayer = new ArcGISTiledMapServiceLayer(url, { "id": "MD Imagery" });
+  // app.map.addLayer(tiledLayer);
   var saParameters, pzParameters;
   saParameters = new ImageParameters();
   saParameters.layerIds = [1, 4, 5, 6, 7]; // [0, 1, 2, 3, 4, 5, 6, 7];
@@ -264,7 +290,7 @@ require([
   app.map.addLayers([PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer]);
   
   // create a check box for each map layer
-  arrayUtils.forEach(["Parcels & Addresses", "Cell Towers", "Wind Turbines", "Street Centerlines", "Perennial Streams", "Zoning", "Source Water Prot. Areas", "Protected Species", "Growth Areas", "Flood Hazard", "MD Imagery"], function(id) {
+  arrayUtils.forEach(["Parcels & Addresses", "Cell Towers", "Wind Turbines", "Street Centerlines", "Perennial Streams", "Zoning", "Source Water Prot. Areas", "Protected Species", "Growth Areas", "Flood Hazard"], function(id) {
     new CheckBox({
       id: "cb_" + id,
       name: "cb_" + id,
@@ -364,7 +390,6 @@ require([
     passedX = parseFloat(center.x.toFixed(5));
     passedY = parseFloat(center.y.toFixed(5));
     zoomLevel = app.map.getLevel();
-    console.log(passedX + ", " + passedY + ", " + zoomLevel)
   }
 
   function activateTool(type) {

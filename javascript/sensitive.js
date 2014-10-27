@@ -74,6 +74,10 @@ require(["esri/map",
       baseURL = "sensitive.php";
       winTarget = '_self';
       break;
+    case "Printable":
+      baseURL = "printable.php";
+      winTarget = '_blank';
+      break;
     }
     // var url = "measure.php?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
     url = baseURL + "?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
@@ -120,7 +124,8 @@ require(["esri/map",
       {name: "Flood Hazard", id: "FEMA", baseURL: "FEMA_map.php"},
       {name: "Measurement", id: "MSMT", baseURL: "measure.php"},
       {name: "Planning and Zoning", id: "PZMAP", baseURL: "pz_map.php"},
-      {name: "Sensitive Areas", id: "SENSI", baseURL: "sensitive.php"}
+      {name: "Sensitive Areas", id: "SENSI", baseURL: "sensitive.php"},
+      {name: "Printable", id: "PRINT", baseURL: "printable.php"}
     ]
   });
   comboBox = new ComboBox({

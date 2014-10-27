@@ -93,6 +93,10 @@ require([
       baseURL = "sensitive.php";
       winTarget = '_blank';
       break;
+    case "Printable":
+      baseURL = "printable.php";
+      winTarget = '_blank';
+      break;
     }
     // var url = "measure.php?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
     var url = baseURL + "?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel; //  + "&bMap=" + bMap;
@@ -138,7 +142,8 @@ require([
       {name: "Flood Hazard", id: "FEMA", baseURL: "FEMA_map.php"},
       {name: "Measurement", id: "MSMT", baseURL: "measure.php"},
       {name: "Planning and Zoning", id: "PZMAP", baseURL: "pz_map.php"},
-      {name: "Sensitive Areas", id: "SENSI", baseURL: "sensitive.php"}
+      {name: "Sensitive Areas", id: "SENSI", baseURL: "sensitive.php"},
+      {name: "Printable", id: "PRINT", baseURL: "printable.php"}
     ]
   });
   var comboBox = new ComboBox({

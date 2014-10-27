@@ -28,6 +28,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
     <title>Printing Map</title>
+    <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/dojo/dijit/themes/claro/claro.css">
     <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/dojo/dijit/themes/nihilo/nihilo.css">
     <link rel="stylesheet" href="http://archive.dojotoolkit.org/nightly/dojotoolkit/dojox/layout/resources/ExpandoPane.css">
     <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/esri/css/esri.css">
@@ -78,7 +79,7 @@
         text-align:left;
         margin: 0 1em 0 3em;
       }
-      #geosearch {
+      #geosearch, claro {
         display: block;
         position: absolute;
         z-index: 2;
@@ -142,12 +143,40 @@
         Garrett County WebMap &#045; Printable Map
         <div id="subheader">PDF or JPG</div>
         <div id="instxns">
-          Start by turning off layers you don't want to print. Give the map a meaningful title, and then click &#8220;Prep Map&#8221;. When the map is ready to print the button will say &#8220;printout&#8221;. Click that to open the map in a new tab or window and print or save your map.</div>
+          Start by turning off layers you don't want to print. Give the map a meaningful title, and then click &#8220;Prep Map&#8221;. When the map is ready to print the button will say &#8220;printout&#8221; (if not, re&#045;load the page). Click that to open the map in a new tab or window and print or save your map.</div>
       </div>
       <div id="map" class="shadow" 
            data-dojo-type="dijit/layout/ContentPane"
-           data-dojo-props="region:'center'">
+           data-dojo-props="region:'center'"
+           style="padding:0;">
         <div id="geosearch"></div>
+        <div style="position:absolute; right:20px; top:10px; z-Index:999;">
+          <div style=" width: 380px; float: right;">
+            <div data-dojo-type="dijit/TitlePane" 
+                 data-dojo-props="title:'Switch Basemap', closable:false,  open:false">
+              <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">
+                <div id="basemapGallery" ></div>
+              </div><!-- ContentPane 1 -->
+            </div><!-- TitlePane 1 "Switch Basemap" -->          
+           <div data-dojo-type="dijit/TitlePane" class="claro"
+               data-dojo-props="title:'Navigation', closable:false,  open:false">
+              <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">
+                <button id="launchButton" data-dojo-type="dijit/form/Button">Launch</button><br />
+                <input id="mapSelect"><br />
+                <ul>
+                  <li><a href="../help.html">Help ?</a></li>
+                  <li><a href="../">Home</a></li>
+                </ul>
+                <p>
+                  By default, the Launch Button will reload this page in the same window, updating the extent in the address bar. 
+                  This works well for copying and pasting a link to a specific location on this map.
+                  Choose a different map to launch the current extent in a new window or tab (depending on your browser preferences).
+                  The different maps have different uses (see the <a href="../help.html">Help &amp; Documentation</a> for more information).
+                </p>
+              </div><!-- ContentPane 3 -->
+            </div><!-- TitlePane Navigation -->
+          </div><!-- claro -->
+        </div><!-- unnamed div -->
         <!-- drop shadow divs -->
         <div id="ds">
           <div id="ds-h">
@@ -165,7 +194,7 @@
             <div class="ds v5 o5"></div>
           </div>
         </div> <!-- end drop shadow divs -->
-            
+
       </div>
       <div data-dojo-type="dojox.layout.ExpandoPane" title="Printing Options"
              data-dojo-props="region:'right', design:'footer', gutters:true, liveSplitters:true, startExpanded:true, easeIn:'expoInOut', easeOut:'expoInOut', duration:600" 
@@ -200,25 +229,8 @@
             <!-- checkbox and labels inserted programmatically -->
           </div>
           <div id="legendDiv"></div>
-          <div data-dojo-type="dijit/TitlePane" 
-             data-dojo-props="title:'Navigation', closable:false,  open:false">
-            <div data-dojo-type="dijit/layout/ContentPane" style="width:280px; height:280px; overflow:auto;">
-              <button id="launchButton" data-dojo-type="dijit/form/Button">Launch</button><br />
-              <input id="mapSelect"><br />
-              <ul>
-                <li><a href="../help.html">Help ?</a></li>
-                <li><a href="../">Home</a></li>
-              </ul>
-              <p>
-                By default, the Launch Button will reload this page in the same window, updating the extent in the address bar. 
-                This works well for copying and pasting a link to a specific location on this map.
-                Choose a different map to launch the current extent in a new window or tab (depending on your browser preferences).
-                The different maps have different uses (see the <a href="../help.html">Help &amp; Documentation</a> for more information).
-              </p>
-            </div><!-- ContentPane 3 -->
-          </div><!-- TitlePane Navigation -->          
         </div>
-      </div><!-- end of Expando Pane-->
+      </div><!-- end of Expando Pane-->     
     </div>
   </body>
 </html>

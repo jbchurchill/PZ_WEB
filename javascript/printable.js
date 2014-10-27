@@ -1,5 +1,6 @@
 var app = {};
 var mpArray;
+var passedCenter;
 app.map = null; app.toolbar = null; app.tool = null; app.symbols = null; app.printer = null;
 require([
   "esri/map",
@@ -27,12 +28,15 @@ require([
   "dojo/query",
   "dojo/dom",
   "dojo/on",
-  "dojo/dom-construct", 
+  "dojo/dom-construct",
+  "dojo/store/Memory",
   "dijit/registry",
   "dijit/form/CheckBox",
+  "dijit/form/ComboBox",
   "dijit/form/Button",
   "dijit/layout/BorderContainer",
   "dijit/layout/ContentPane",
+  "dijit/TitlePane",
   "dojox/layout/ExpandoPane",
   "dojo/domReady!"
 ], function(
@@ -61,9 +65,11 @@ require([
   query,
   dom,
   on,
-  domConstruct, 
+  domConstruct,
+  Memory,
   registry,
   CheckBox,
+  ComboBox,
   Button,
   ExpandoPane
 ) {
@@ -71,16 +77,18 @@ require([
 
   esriConfig.defaults.io.proxyUrl = "/proxy";
   var isLabel = false;
+  passedCenter = [passedX, passedY];
 
   app.map = new Map("map", {
-    center: [-79.2, 39.5],
-    zoom: 12
+    center: passedCenter, // [-79.2, 39.5],
+    zoom: zoomLevel // 12
   });
   app.map.on("load", function() {
     app.toolbar = new Draw(app.map);
     app.toolbar.on("draw-end", addToMap);
     app.map.on("mouse-move", showCoordinates);
     app.map.on("mouse-drag", showCoordinates);
+    dojo.connect(app.map, "onExtentChange", getExtent);
   });
   function clearMapGraphics () {
     app.map.graphics.clear();
@@ -116,6 +124,8 @@ require([
     myCounter += 1;
     var printTitle;
     var myInput = registry.byId("mapTitle");
+    var dataAuthorText = "Data from Garrett County Office of Planning and Land Management. Accuracy is not guaranteed (see http://gis.garrettcounty.org/).";
+    var copyRightText = "Title and Graphics created by User at " + ip;
     printTitle = myInput.get("value"); // in order to use get
     var layouts = [{
       name: "Letter ANSI A Landscape", 
@@ -124,7 +134,9 @@ require([
       options: { 
         legendLayers: [legendLayer], // empty array means no legend
         scalebarUnit: "Miles",
-        titleText: printTitle + ", Landscape PDF" 
+        titleText: printTitle + ", Landscape PDF",
+        copyrightText: copyRightText,
+        authorText: dataAuthorText
       }
     }, {
       name: "Letter ANSI A Portrait", 
@@ -133,8 +145,32 @@ require([
       options:  { 
         legendLayers: [legendLayer],
         scaleBarUnit: "Miles",
-        titleText: printTitle + ", Portrait JPG"
+        titleText: printTitle + ", Portrait JPG",
+        copyrightText: copyRightText,
+        authorText: dataAuthorText
       }
+    }, {
+      name: "Letter ANSI A Landscape", 
+      label: "Landscape (Image)", 
+      format: "jpg", 
+      options:  { 
+        legendLayers: [legendLayer],
+        scaleBarUnit: "Miles",
+        titleText: printTitle + ", Landscape JPG",
+        copyrightText: copyRightText,
+        authorText: dataAuthorText
+      }
+    }, {
+      name: "Letter ANSI A Portrait", 
+      label: "Portrait (PDF)", 
+      format: "pdf", 
+      options:  { 
+        legendLayers: [legendLayer],
+        scaleBarUnit: "Miles",
+        titleText: printTitle + ", Portrait PDF",
+        copyrightText: copyRightText,
+        authorText: dataAuthorText
+      }            
     }];
 
     // create the print templates
@@ -267,6 +303,69 @@ require([
       }
     }, btn);
   });
+
+
+  
+  // LAUNCH MAP
+  // map.on("load", startTrackingExtent); // NOT NEEDED HERE BECAUSE I PUT IT IN THE initSelectToolbar function
+  var mapLaunchStore, comboBox;
+  mapLaunchStore = new Memory({
+    data: [
+      {name: "Flood Hazard", id: "FEMA", baseURL: "FEMA_map.php"},
+      {name: "Measurement", id: "MSMT", baseURL: "measure.php"},
+      {name: "Planning and Zoning", id: "PZMAP", baseURL: "pz_map.php"},
+      {name: "Sensitive Areas", id: "SENSI", baseURL: "sensitive.php"},
+      {name: "Printable", id: "PRINT", baseURL: "printable.php"}
+    ]
+  });
+  comboBox = new ComboBox({
+    id: "mapSelect",
+    name: "map",
+    value: "Printable",
+    store: mapLaunchStore,
+    searchAttr: "name"
+  }, "mapSelect").startup();
+
+  // runs when Measure Button is clicked (see the second line inside of the "initSelectToolbar" fx and the getExtent fx below)
+
+  function launchURL () {
+    var selectedMap = dijit.byId('mapSelect').get('value'), baseURL, url, winTarget;
+    switch (selectedMap) {
+    case "Measurement":
+      winTarget = '_blank';
+      baseURL = "measure.php";
+      break;
+    case "Planning and Zoning":
+      baseURL = "pz_map.php";
+      winTarget = '_blank';
+      break;
+    case "Flood Hazard":
+      baseURL = "FEMA_map.php";
+      winTarget = '_blank';
+      break;
+    case "Sensitive Areas":
+      baseURL = "sensitive.php";
+      winTarget = '_blank';
+      break;
+    case "Printable":
+      baseURL = "printable.php";
+      winTarget = '_self';
+    }
+    // var url = "measure.php?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
+    var url = baseURL + "?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel; //  + "&bMap=" + bMap;
+    window.open(url, winTarget);
+  }
+
+  registry.byId("launchButton").on("click", launchURL);
+
+  function getExtent(extent) {
+    var center = webMercatorUtils.webMercatorToGeographic(extent.getCenter());
+    // was map.extent.getCenter()
+    passedX = parseFloat(center.x.toFixed(5));
+    passedY = parseFloat(center.y.toFixed(5));
+    zoomLevel = app.map.getLevel();
+    console.log(passedX + ", " + passedY + ", " + zoomLevel)
+  }
 
   function activateTool(type) {
     if (type === "label") {

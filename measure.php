@@ -85,7 +85,7 @@
     </style>
     <script src="http://js.arcgis.com/3.10/"></script>
     <!--<script type="text/javascript" src="http://gis.garrettcounty.org/arcgis/javascript/pmeasure.js"></script>-->
-    <script type="text/javascript" src="javascript/pmeasure.js"></script><!-- local -->
+    <script type="text/javascript" src="javascript/pmeasure.yui.js"></script><!-- local -->
   </head>
   
   <body class="claro">

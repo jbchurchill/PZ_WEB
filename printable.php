@@ -123,7 +123,7 @@
     </style>
 
     <script src="http://js.arcgis.com/3.10/"></script>
-    <script src="javascript/printable.js" type="text/javascript"></script>
+    <script src="javascript/printable.yui.js" type="text/javascript"></script>
   </head>
   <body class="nihilo">
     <script>

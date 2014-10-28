@@ -84,7 +84,7 @@
     
     <script src="http://js.arcgis.com/3.10/"></script>
     <!-- <script src="javascript/php_functions.js" type="text/javascript"></script> -->
-    <script src="javascript/local_pz.js" type="text/javascript"></script>
+    <script src="javascript/local_pz.yui.js" type="text/javascript"></script>
   </head>
 
   <body class="claro">

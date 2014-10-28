@@ -376,6 +376,7 @@ require([
     case "Printable":
       baseURL = "printable.php";
       winTarget = '_self';
+      break;
     }
     // var url = "measure.php?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
     var url = baseURL + "?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel; //  + "&bMap=" + bMap;

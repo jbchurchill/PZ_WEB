@@ -14,6 +14,7 @@ require([
   "esri/layers/ArcGISDynamicMapServiceLayer",
   "esri/layers/FeatureLayer",
   "esri/layers/ImageParameters",
+  "esri/layers/LabelLayer",
   "esri/tasks/PrintTemplate",
   "esri/tasks/LegendLayer",
   "esri/symbols/SimpleMarkerSymbol",
@@ -21,6 +22,7 @@ require([
   "esri/symbols/SimpleFillSymbol",
   "esri/symbols/TextSymbol",
   "esri/symbols/Font",
+  "esri/renderers/SimpleRenderer",
   "esri/graphic",
   "esri/config",
   "dojo/_base/array",
@@ -52,6 +54,7 @@ require([
   ArcGISDynamicMapServiceLayer,
   FeatureLayer,
   ImageParameters,
+  LabelLayer,
   PrintTemplate,
   LegendLayer,
   SimpleMarkerSymbol,
@@ -59,6 +62,7 @@ require([
   SimpleFillSymbol,
   TextSymbol,
   Font,
+  SimpleRenderer,
   Graphic,
   esriConfig,
   arrayUtils,
@@ -224,13 +228,14 @@ require([
   // var url = "http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer";
   // var tiledLayer = new ArcGISTiledMapServiceLayer(url, { "id": "MD Imagery" });
   // app.map.addLayer(tiledLayer);
-  var saParameters, pzParameters;
+  var saParameters, pzParameters, labels, labelField, statesLabel, statesLabelRenderer;
   saParameters = new ImageParameters();
   saParameters.layerIds = [1, 4, 5, 6, 7]; // [0, 1, 2, 3, 4, 5, 6, 7];
   saParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
   pzParameters = new ImageParameters();
   pzParameters.layerIds = [4, 8]; // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
   pzParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
+  labelField = "RDNAMELOCAL"; // "RDNAMELOCAL";
 
   PZ_fLayer = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
     {"imageParameters": pzParameters, opacity: 0.75, id: "Parcels & Addresses"});
@@ -247,6 +252,8 @@ require([
 
   CL_fLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/6", {
     mode: FeatureLayer.MODE_ONDEMAND,
+    outFields: [labelField],
+    showLabels: true,
     id: "Street Centerlines"
   });
 
@@ -288,6 +295,13 @@ require([
   });
 
   app.map.addLayers([PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer]);
+  labels = new LabelLayer({ id: "labels" });
+  centerlinesLabel = new TextSymbol().setColor(new dojo.Color([30,30,30,0.5])); // (centerlinesColor); // not set
+  centerlinesLabel.font.setSize("12pt");
+  centerlinesLabel.font.setFamily("arial");
+  centerlinesLabelRenderer = new SimpleRenderer(centerlinesLabel);  
+  labels.addFeatureLayer(CL_fLayer, centerlinesLabelRenderer, "{" + labelField + "}");
+  app.map.addLayer(labels);
   
   // create a check box for each map layer
   arrayUtils.forEach(["Parcels & Addresses", "Cell Towers", "Wind Turbines", "Street Centerlines", "Perennial Streams", "Zoning", "Source Water Prot. Areas", "Protected Species", "Growth Areas", "Flood Hazard"], function(id) {

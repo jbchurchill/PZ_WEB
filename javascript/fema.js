@@ -143,12 +143,17 @@ require(["esri/map",
   // checkNull infoTemplate Formatting Function
   checkNull = function (value, key) {
     function determineVal(val, strKey, addBreak) {
-      if (val == "Null") {
+      if (val == "Null" | val == "") {
         content = "";
       } else {
         if (addBreak) {
           if (strKey == "SDAT Link: <a href=\"") {
             val += "\" target=\"_blank\">LINK</a>";
+          }
+          if (strKey == "Subtype: " & val == "0.2 PCT ANNUAL CHANCE FLOOD HAZARD") { // ) {
+            // This subtype is redundant with the FLD_ZONE2 Field.
+            strKey = "";
+            val = "";
           }
           val += "<br />";
         }
@@ -178,12 +183,14 @@ require(["esri/map",
     case "SDAT_URL":
       determineVal(value, "SDAT Link: <a href=\"", true);
       break;
+    case "ZONE_SUBTY":
+      determineVal(value, "Subtype: ", true);
     }
     return content;
   };
 
 
-  flzTemplate = new InfoTemplate("", "<span class=\"sectionhead\">Layer: FEMA Flood Hazard Zones </span><br /><br /><hr>Flood Zone: ${FLD_ZONE} <br/>");
+  flzTemplate = new InfoTemplate("", "<span class=\"sectionhead\">Layer: FEMA Flood Hazard Zones </span><br /><br /><hr>Flood Zone: ${FLD_ZONE2} <br/> ${ZONE_SUBTY:checkNull}");
   parcelTemplate = new InfoTemplate("",
         "<span class=\"sectionhead\">Layer: Parcels</span><br /><br /><hr>Address: ${ADDRESS} <br />"
         + "City: ${CITY} <br /> Owner: ${OWNNAME1} ${OWNNAME2:checkNull} <br /> Tax Id: ${ACCTID} <br /><hr><span class=\"sectionhead\">Deed Reference</span><br />"
@@ -266,7 +273,7 @@ require(["esri/map",
         // feature.attributes.layerName = result.layerName;
 
         if (result.layerName === 'Flood Hazard Areas') {
-          console.log("Flood Zone: " + feature.attributes.FLD_ZONE);
+          // console.log("Flood Zone: " + feature.attributes.FLD_ZONE2);
           // var template = new InfoTemplate("", "<span class=\"sectionhead\">Layer: FEMA Flood Hazard Zones </span><br /><br /><hr>Flood Zone: ${FLD_ZONE} <br/>");
           feature.setInfoTemplate(flzTemplate);
         } else if (result.layerName === 'addresspoints') {

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
+    <title>Simple Map</title>
+    <link rel="stylesheet" href="http://js.arcgis.com/3.11/esri/css/esri.css">
+    <style>
+      html, body, #map {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background-color: #FFF;
+        overflow: hidden;
+        font-family: "Trebuchet MS";
+      }
+    </style>
+    <script src="http://js.arcgis.com/3.11/"></script>
+    <script>
+      var map;
+
+      require([
+      "esri/map",
+      "esri/layers/GraphicsLayer",
+      "esri/symbols/SimpleMarkerSymbol",
+      "esri/symbols/SimpleLineSymbol",
+      "esri/geometry/Point",
+      "esri/graphic",
+      "esri/Color",
+      "dojo/domReady!"
+      ], function(Map, GraphicsLayer, SimpleMarkerSymbol, SimpleLineSymbol, Point, Graphic, Color) {
+        map = new Map("map", {
+          basemap: "topo",
+          center: [-122.45, 37.75], // longitude, latitude
+          zoom: 13
+        });
+      
+      
+      var lon = parseFloat(-122.45);
+      var lat = parseFloat(37.75);
+      // console.log(isNaN(x));
+      
+      // var sms = new SimpleMarkerSymbol().setStyle(SimpleMarkerSymbol.STYLE_SQUARE).setColor(new Color([255,0,0,0.5]));
+      var sms = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_SQUARE, 12, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([10,10,10,0.75]), 1), new Color([255,0,0,0.5]));
+      var point = new Point(lon, lat, map.spatialRefernce);  
+      var graphic = new Graphic(point, sms, null, null);  
+        
+      var graphicsLayer = new GraphicsLayer();  
+      graphicsLayer.add(graphic);  
+        
+      map.addLayer(graphicsLayer);        
+      
+    });
+    </script>
+  </head>
+
+  <body>
+    <div id="map"></div>
+  </body>
+</html>

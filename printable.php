@@ -122,8 +122,8 @@
       }
     </style>
 
-    <script src="http://js.arcgis.com/3.10/"></script>
-    <script src="javascript/printable.yui.js" type="text/javascript"></script>
+    <script src="http://js.arcgis.com/3.11/"></script>
+    <script src="javascript/printable.js" type="text/javascript"></script>
   </head>
   <body class="nihilo">
     <script>
@@ -217,7 +217,9 @@
             <div id="point" class="drawing">Point</div>
             <div id="freehandpolyline" class="drawing">Freehand Polyline</div>
             <div id="freehandpolygon" class="drawing">Freehand Polygon</div>
+            <div id="line" class="drawing">Straight Line</div>
             <div id="circle" class="drawing">Circle</div>
+            <div id="arrow" class="drawing">Arrow</div>
           </div>
           <button id="textLabel" data-dojo-type="dijit/form/Button">Text Label</button><br />
           <input type="checkbox" id="includeCoords" checked data-dojo-type="dijit.form.CheckBox">

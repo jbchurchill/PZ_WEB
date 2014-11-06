@@ -1,17 +1,20 @@
 var app = {};
 var mpArray;
+var passedCenter;
+var gLayer;
 app.map = null; app.toolbar = null; app.tool = null; app.symbols = null; app.printer = null;
 require([
   "esri/map",
   "esri/toolbars/draw",
   "esri/dijit/Print",
   "esri/dijit/Geocoder",
-  "esri/dijit/Legend",
+  "esri/dijit/BasemapGallery",
   "esri/geometry/webMercatorUtils",
   "esri/layers/ArcGISTiledMapServiceLayer",
   "esri/layers/ArcGISDynamicMapServiceLayer",
   "esri/layers/FeatureLayer",
   "esri/layers/ImageParameters",
+  "esri/layers/GraphicsLayer",
   "esri/tasks/PrintTemplate",
   "esri/tasks/LegendLayer",
   "esri/symbols/SimpleMarkerSymbol",
@@ -19,6 +22,7 @@ require([
   "esri/symbols/SimpleFillSymbol",
   "esri/symbols/TextSymbol",
   "esri/symbols/Font",
+  "esri/renderers/SimpleRenderer",
   "esri/graphic",
   "esri/config",
   "dojo/_base/array",
@@ -27,12 +31,15 @@ require([
   "dojo/query",
   "dojo/dom",
   "dojo/on",
-  "dojo/dom-construct", 
+  "dojo/dom-construct",
+  "dojo/store/Memory",
   "dijit/registry",
   "dijit/form/CheckBox",
+  "dijit/form/ComboBox",
   "dijit/form/Button",
   "dijit/layout/BorderContainer",
   "dijit/layout/ContentPane",
+  "dijit/TitlePane",
   "dojox/layout/ExpandoPane",
   "dojo/domReady!"
 ], function(
@@ -40,12 +47,13 @@ require([
   Draw,
   Print,
   Geocoder,
-  Legend,
+  BasemapGallery,
   webMercatorUtils,
   ArcGISTiledMapServiceLayer,
   ArcGISDynamicMapServiceLayer,
   FeatureLayer,
   ImageParameters,
+  GraphicsLayer,
   PrintTemplate,
   LegendLayer,
   SimpleMarkerSymbol,
@@ -53,6 +61,7 @@ require([
   SimpleFillSymbol,
   TextSymbol,
   Font,
+  SimpleRenderer,
   Graphic,
   esriConfig,
   arrayUtils,
@@ -61,26 +70,32 @@ require([
   query,
   dom,
   on,
-  domConstruct, 
+  domConstruct,
+  Memory,
   registry,
   CheckBox,
+  ComboBox,
   Button,
   ExpandoPane
 ) {
   parser.parse();
 
   esriConfig.defaults.io.proxyUrl = "/proxy";
+  var basemapGallery;
   var isLabel = false;
+  passedCenter = [passedX, passedY];
 
   app.map = new Map("map", {
-    center: [-79.2, 39.5],
-    zoom: 12
+    basemap: "streets",
+    center: passedCenter, // [-79.2, 39.5],
+    zoom: zoomLevel // 12
   });
   app.map.on("load", function() {
     app.toolbar = new Draw(app.map);
     app.toolbar.on("draw-end", addToMap);
     app.map.on("mouse-move", showCoordinates);
     app.map.on("mouse-drag", showCoordinates);
+    dojo.connect(app.map, "onExtentChange", getExtent);
   });
   function clearMapGraphics () {
     app.map.graphics.clear();
@@ -102,6 +117,28 @@ require([
     on.once(dom.byId("map"), "click", showCoordinates);
   }
 
+     //add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
+  basemapGallery = new BasemapGallery({
+    showArcGISBasemaps: true,
+    map: app.map
+  }, "basemapGallery");
+
+  mdImagelayer = new ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer");
+
+  mdImageBasemap = new esri.dijit.Basemap({
+    layers: [mdImagelayer],
+    title: "MD Imagery",
+    thumbnailUrl: "http://gis.garrettcounty.org/arcgis/images/image_v2.png"
+  });
+  basemapGallery.add(mdImageBasemap);
+
+  basemapGallery.startup();
+
+  basemapGallery.on("error", function (msg) {
+    console.log("basemap gallery error:  ", msg);
+  });
+
+
   var legendLayer = new LegendLayer();
   // legendLayer.layerId = "Parcels & Addresses"; // THIS WORKS. IT MUST BE THE SAME STRING AS RETURNED BY PZ_fLayer.id
   legendLayer.layerId = "Zoning";
@@ -116,6 +153,8 @@ require([
     myCounter += 1;
     var printTitle;
     var myInput = registry.byId("mapTitle");
+    var dataAuthorText = "Data from Garrett County Office of Planning and Land Management. Accuracy is not guaranteed (see http://gis.garrettcounty.org/).";
+    var copyRightText = "Title and Graphics created by User at " + ip;
     printTitle = myInput.get("value"); // in order to use get
     var layouts = [{
       name: "Letter ANSI A Landscape", 
@@ -124,7 +163,9 @@ require([
       options: { 
         legendLayers: [legendLayer], // empty array means no legend
         scalebarUnit: "Miles",
-        titleText: printTitle + ", Landscape PDF" 
+        titleText: printTitle + ", Landscape PDF",
+        copyrightText: copyRightText,
+        authorText: dataAuthorText
       }
     }, {
       name: "Letter ANSI A Portrait", 
@@ -133,8 +174,32 @@ require([
       options:  { 
         legendLayers: [legendLayer],
         scaleBarUnit: "Miles",
-        titleText: printTitle + ", Portrait JPG"
+        titleText: printTitle + ", Portrait JPG",
+        copyrightText: copyRightText,
+        authorText: dataAuthorText
       }
+    }, {
+      name: "Letter ANSI A Landscape", 
+      label: "Landscape (Image)", 
+      format: "jpg", 
+      options:  { 
+        legendLayers: [legendLayer],
+        scaleBarUnit: "Miles",
+        titleText: printTitle + ", Landscape JPG",
+        copyrightText: copyRightText,
+        authorText: dataAuthorText
+      }
+    }, {
+      name: "Letter ANSI A Portrait", 
+      label: "Portrait (PDF)", 
+      format: "pdf", 
+      options:  { 
+        legendLayers: [legendLayer],
+        scaleBarUnit: "Miles",
+        titleText: printTitle + ", Portrait PDF",
+        copyrightText: copyRightText,
+        authorText: dataAuthorText
+      }            
     }];
 
     // create the print templates
@@ -159,16 +224,17 @@ require([
   on(dom.byId("clearGraphics"), "click", clearMapGraphics);
   on(dom.byId("textLabel"), "click", addTextLabel);
 
-  var url = "http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer";
-  var tiledLayer = new ArcGISTiledMapServiceLayer(url, { "id": "MD Imagery" });
-  app.map.addLayer(tiledLayer);
-  var saParameters, pzParameters;
+  // var url = "http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer";
+  // var tiledLayer = new ArcGISTiledMapServiceLayer(url, { "id": "MD Imagery" });
+  // app.map.addLayer(tiledLayer);
+  var saParameters, pzParameters, labels, labelField;
   saParameters = new ImageParameters();
   saParameters.layerIds = [1, 4, 5, 6, 7]; // [0, 1, 2, 3, 4, 5, 6, 7];
   saParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
   pzParameters = new ImageParameters();
   pzParameters.layerIds = [4, 8]; // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
   pzParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
+  labelField = "RDNAMELOCAL";
 
   PZ_fLayer = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
     {"imageParameters": pzParameters, opacity: 0.75, id: "Parcels & Addresses"});
@@ -185,6 +251,8 @@ require([
 
   CL_fLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/6", {
     mode: FeatureLayer.MODE_ONDEMAND,
+    outFields: [labelField],
+    showLabels: true,
     id: "Street Centerlines"
   });
 
@@ -216,19 +284,17 @@ require([
     opacity: 0.75, 
     id: "Growth Areas"
   });
-    // {"imageParameters": saParameters, opacity: 0.75, id: "Source Water Protection Areas"});
 
   FH_fLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/FEMA/Flood_Hazard/MapServer/2", {
     mode: FeatureLayer.MODE_ONDEMAND,
     id: "Flood Hazard",
     opacity: 0.75
-    // outFields: ["*"]
   });
 
   app.map.addLayers([PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer]);
-  
+
   // create a check box for each map layer
-  arrayUtils.forEach(["Parcels & Addresses", "Cell Towers", "Wind Turbines", "Street Centerlines", "Perennial Streams", "Zoning", "Source Water Prot. Areas", "Protected Species", "Growth Areas", "Flood Hazard", "MD Imagery"], function(id) {
+  arrayUtils.forEach(["Parcels & Addresses", "Cell Towers", "Wind Turbines", "Street Centerlines", "Perennial Streams", "Zoning", "Source Water Prot. Areas", "Protected Species", "Growth Areas", "Flood Hazard"], function(id) {
     new CheckBox({
       id: "cb_" + id,
       name: "cb_" + id,
@@ -257,6 +323,7 @@ require([
   app.symbols.polyline = new SimpleLineSymbol("solid", new Color([255, 128, 0]), 2);
   app.symbols.polygon = new SimpleFillSymbol().setColor(new Color([255,255,0,0.25]));
   app.symbols.circle = new SimpleFillSymbol().setColor(new Color([0, 0, 180, 0.25]));
+  app.symbols.line = new SimpleLineSymbol("solid", new Color([180, 10, 80]), 2);
 
   // find the divs for buttons
   query(".drawing").forEach(function(btn) {
@@ -268,6 +335,66 @@ require([
     }, btn);
   });
 
+
+  // LAUNCH MAP
+  // map.on("load", startTrackingExtent); // NOT NEEDED HERE BECAUSE I PUT IT IN THE initSelectToolbar function
+  var mapLaunchStore, comboBox;
+  mapLaunchStore = new Memory({
+    data: [
+      {name: "Flood Hazard", id: "FEMA", baseURL: "FEMA_map.php"},
+      {name: "Measurement", id: "MSMT", baseURL: "measure.php"},
+      {name: "Planning and Zoning", id: "PZMAP", baseURL: "pz_map.php"},
+      {name: "Sensitive Areas", id: "SENSI", baseURL: "sensitive.php"},
+      {name: "Printable", id: "PRINT", baseURL: "printable.php"}
+    ]
+  });
+  comboBox = new ComboBox({
+    id: "mapSelect",
+    name: "map",
+    value: "Printable",
+    store: mapLaunchStore,
+    searchAttr: "name"
+  }, "mapSelect").startup();
+
+  // runs when Measure Button is clicked (see the second line inside of the "initSelectToolbar" fx and the getExtent fx below)
+
+  function launchURL () {
+    var selectedMap = dijit.byId('mapSelect').get('value'), baseURL, url, winTarget;
+    switch (selectedMap) {
+    case "Measurement":
+      winTarget = '_blank';
+      baseURL = "measure.php";
+      break;
+    case "Planning and Zoning":
+      baseURL = "pz_map.php";
+      winTarget = '_blank';
+      break;
+    case "Flood Hazard":
+      baseURL = "FEMA_map.php";
+      winTarget = '_blank';
+      break;
+    case "Sensitive Areas":
+      baseURL = "sensitive.php";
+      winTarget = '_blank';
+      break;
+    case "Printable":
+      baseURL = "printable.php";
+      winTarget = '_self';
+      break;
+    }
+    var url = baseURL + "?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
+    window.open(url, winTarget);
+  }
+
+  registry.byId("launchButton").on("click", launchURL);
+
+  function getExtent(extent) {
+    var center = webMercatorUtils.webMercatorToGeographic(extent.getCenter());
+    passedX = parseFloat(center.x.toFixed(5));
+    passedY = parseFloat(center.y.toFixed(5));
+    zoomLevel = app.map.getLevel();
+  }
+
   function activateTool(type) {
     if (type === "label") {
       app.symbols.point = new SimpleMarkerSymbol("circle", 10, new SimpleLineSymbol(), new Color([255, 0, 0, 0.75]));
@@ -278,6 +405,8 @@ require([
       app.symbols.point = new SimpleMarkerSymbol("square", 10, new SimpleLineSymbol(), new Color([0, 255, 0, 0.75]));
       esri.bundle.toolbars.draw.addPoint = "Click to add a point";
       isLabel = false;
+    } else if (type === "arrow") {
+      app.symbols.arrow = new SimpleFillSymbol().setColor(new Color([0, 0, 180, 0.25]));
     } else {
       isLabel = false;
     }
@@ -287,8 +416,9 @@ require([
   }
 
   function addToMap(evt) {
-    var labelText, coordsCheckBox, textSymbolText;
-    var font = new Font("20px", Font.STYLE_NORMAL, Font.VARIANT_NORMAL, Font.WEIGHT_BOLDER);
+    app.gLayer = new GraphicsLayer();
+    var labelText, textSymbol, coordsCheckBox, textSymbolText, graphic, graphic2;
+    var font = new Font("20px", Font.STYLE_NORMAL, Font.VARIANT_NORMAL, Font.WEIGHT_BOLDER, "Ariel");
     app.toolbar.deactivate();
     app.map.showZoomSlider();
 
@@ -300,18 +430,21 @@ require([
       } else {
         textSymbolText = labelText;
       }
-      var textSymbol = new TextSymbol(
+      textSymbol = new TextSymbol(
         textSymbolText,
         font, new Color([0, 0, 0]));
-      var graphic = new Graphic(evt.geometry, textSymbol);
-      var graphic2 = new Graphic(evt.geometry, app.symbols[app.tool]);
+      graphic = new Graphic(evt.geometry, textSymbol);
+      graphic2 = new Graphic(evt.geometry, app.symbols[app.tool]);
+      // before changing to version 3.11 of the API, only the first of the two above graphics added would print (text OR graphic point but never both).
       app.map.graphics.add(graphic);
       app.map.graphics.add(graphic2);
     } else {
-      var graphic = new Graphic(evt.geometry, app.symbols[app.tool]);
+      graphic = new Graphic(evt.geometry, app.symbols[app.tool]);
       app.map.graphics.add(graphic);
     }
+    isLabel = false;
   }
+
 
    // Add Geocoder
   var geocoder = new Geocoder({

@@ -34,25 +34,29 @@
       ], function(Map, GraphicsLayer, SimpleMarkerSymbol, SimpleLineSymbol, Point, Graphic, Color) {
         map = new Map("map", {
           basemap: "topo",
-          center: [-122.45, 37.75], // longitude, latitude
+          center: [-122.95, 37.65], // longitude, latitude
           zoom: 13
         });
-      
-      
+
       var lon = parseFloat(-122.45);
       var lat = parseFloat(37.75);
-      // console.log(isNaN(x));
-      
-      // var sms = new SimpleMarkerSymbol().setStyle(SimpleMarkerSymbol.STYLE_SQUARE).setColor(new Color([255,0,0,0.5]));
+
       var sms = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_SQUARE, 12, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([10,10,10,0.75]), 1), new Color([255,0,0,0.5]));
-      var point = new Point(lon, lat, map.spatialRefernce);  
-      var graphic = new Graphic(point, sms, null, null);  
-        
+      var point = new Point(lon, lat, map.spatialRefernce);
+      var graphic = new Graphic(point, sms, null, null);
+
       var graphicsLayer = new GraphicsLayer();  
       graphicsLayer.add(graphic);  
-        
-      map.addLayer(graphicsLayer);        
-      
+
+      map.addLayer(graphicsLayer);
+
+      if (graphic.geometry.type === 'point') {  
+        var maxZoom = map.getMaxZoom();  
+        map.centerAndZoom(graphic.geometry, maxZoom - 1);  
+      } else {  
+        map.setExtent(graphicsUtils.graphicsExtent([graphic]));  
+      }
+
     });
     </script>
   </head>

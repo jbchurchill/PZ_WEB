@@ -10,6 +10,7 @@ require([
   "esri/dijit/Geocoder",
   "esri/dijit/BasemapGallery",
   "esri/geometry/webMercatorUtils",
+  "esri/geometry/Point",
   "esri/layers/ArcGISTiledMapServiceLayer",
   "esri/layers/ArcGISDynamicMapServiceLayer",
   "esri/layers/FeatureLayer",
@@ -49,6 +50,7 @@ require([
   Geocoder,
   BasemapGallery,
   webMercatorUtils,
+  Point,
   ArcGISTiledMapServiceLayer,
   ArcGISDynamicMapServiceLayer,
   FeatureLayer,
@@ -90,12 +92,42 @@ require([
     center: passedCenter, // [-79.2, 39.5],
     zoom: zoomLevel // 12
   });
+  function zoomToLatLong() {
+    var txtLL, txtComma, txtLat, txtLong, sms, point, graphicLL, graphicsLayer, maxZoom;
+    txtLL = document.getElementById("textLatLong").value;
+    txtLL = txtLL.replace(/\s+/g, ''); // get rid of white space so it is just lat,long
+    txtComma = txtLL.indexOf(",");
+
+    if (txtComma > 0) {
+      txtLat = txtLL.slice(0, txtComma);
+      txtLong = txtLL.substring(txtComma + 1);
+      sms = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_SQUARE, 12, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([10,10,10,0.75]), 1), new Color([255,0,0,0.5]));
+      point = new Point(txtLong, txtLat, map.spatialRefernce);
+      graphicLL = new Graphic(point, sms, null, null);
+
+      graphicsLayer = new GraphicsLayer();  
+      graphicsLayer.add(graphicLL);  
+
+      app.map.addLayer(graphicsLayer);
+
+      if (graphicLL.geometry.type === 'point') {  
+        maxZoom = app.map.getMaxZoom();  
+        app.map.centerAndZoom(graphicLL.geometry, maxZoom - 1);  
+      } else {  
+        app.map.setExtent(graphicsUtils.graphicsExtent([graphicLL]));  
+      }      
+    } else {
+      return "";
+    } // end if
+  } // end zoomToLatLong function
+
   app.map.on("load", function() {
     app.toolbar = new Draw(app.map);
     app.toolbar.on("draw-end", addToMap);
     app.map.on("mouse-move", showCoordinates);
     app.map.on("mouse-drag", showCoordinates);
     dojo.connect(app.map, "onExtentChange", getExtent);
+    on(dom.byId("submitLatLongButton"), "click", zoomToLatLong);
   });
   function clearMapGraphics () {
     app.map.graphics.clear();

@@ -157,7 +157,7 @@
               <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">
                 <div id="basemapGallery" ></div>
               </div><!-- ContentPane 1 -->
-            </div><!-- TitlePane 1 "Switch Basemap" -->          
+            </div><!-- TitlePane 1 "Switch Basemap" -->
            <div data-dojo-type="dijit/TitlePane" class="claro"
                data-dojo-props="title:'Navigation', closable:false,  open:false">
               <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">
@@ -173,8 +173,14 @@
                   Choose a different map to launch the current extent in a new window or tab (depending on your browser preferences).
                   The different maps have different uses (see the <a href="../help.html">Help &amp; Documentation</a> for more information).
                 </p>
-              </div><!-- ContentPane 3 -->
+              </div><!-- ContentPane 2 -->
             </div><!-- TitlePane Navigation -->
+            <div data-dojo-type="dijit/TitlePane" 
+                 data-dojo-props="title:'Enter Lat Long', closable:false,  open:false">
+              <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">
+                <div id="enterLatLong" ><form><input type="text" id="textLatLong"><input type="button" value="Submit" label="Submit" id="submitLatLongButton" dojoType="dijit.form.Button" /></form><br /><span>Enter Lat, Long in Decimal Degrees<br />e.g. 39.499059, -79.418682</span></div>
+              </div><!-- ContentPane 3 -->
+            </div><!-- TitlePane 1 "Enter Lat Long" -->                      
           </div><!-- claro -->
         </div><!-- unnamed div -->
         <!-- drop shadow divs -->

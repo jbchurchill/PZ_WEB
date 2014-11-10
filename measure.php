@@ -26,7 +26,7 @@
     <!--The viewport meta tag is used to improve the presentation and behavior of the samples 
     on iOS devices-->
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-    <title>Measure Tool</title>
+    <title>Measurement Map</title>
     <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/dojo/dijit/themes/claro/claro.css">
     <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/esri/css/esri.css">
     <style>

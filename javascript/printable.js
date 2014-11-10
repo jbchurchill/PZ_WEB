@@ -448,7 +448,7 @@ require([
       winTarget = '_self';
       break;
     }
-    var url = baseURL + "?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
+    url = baseURL + "?px=" + passedX + "&py=" + passedY + "&zl=" + zoomLevel;
     window.open(url, winTarget);
   }
 

@@ -83,7 +83,7 @@ require([
   parser.parse();
 
   esriConfig.defaults.io.proxyUrl = "/proxy";
-  var basemapGallery;
+  var basemapGallery, legZoning, legSpecies, legGrowth, legEOP;
   var isLabel = false;
   passedCenter = [passedX, passedY];
 
@@ -99,8 +99,10 @@ require([
     txtComma = txtLL.indexOf(",");
 
     if (txtComma > 0) {
-      txtLat = txtLL.slice(0, txtComma);
-      txtLong = txtLL.substring(txtComma + 1);
+      txtLat = parseFloat(txtLL.slice(0, txtComma)); // using parseFloat may take some alpha garbage out of the string
+      txtLong = parseFloat(txtLL.substring(txtComma + 1));
+      console.log("latitude: " + txtLat);
+      console.log("longitude: " + txtLong);
       sms = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_SQUARE, 12, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([10,10,10,0.75]), 1), new Color([255,0,0,0.5]));
       point = new Point(txtLong, txtLat, map.spatialRefernce);
       graphicLL = new Graphic(point, sms, null, null);
@@ -171,16 +173,29 @@ require([
   });
 
 
-  var legendLayer = new LegendLayer();
+  legZoning = new LegendLayer();
+  legZoning.layerId = "Zoning";
   // legendLayer.layerId = "Parcels & Addresses"; // THIS WORKS. IT MUST BE THE SAME STRING AS RETURNED BY PZ_fLayer.id
-  legendLayer.layerId = "Zoning";
   // legendLayer.subLayerIds = [4, 10];
+  legSpecies = new LegendLayer();
+  legSpecies.layerId = "Protected Species";
+  legGrowth = new LegendLayer();
+  legGrowth.layerId = "Growth Areas";
+  legEOP = new LegendLayer();
+  legEOP.layerId = "Edge of Pavement";
+  legSourceWater = new LegendLayer();
+  legSourceWater.layerId = "Source Water Prot. Areas";
 
-  var PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer;
+  var PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer, BF_fLayer, EP_fLayer, CN_fLayer;
   var myCounter = 0;
   function setupPrint () {
+    // if (typeof app.printer !== "undefined") {
+    //   app.printer.destroy();
+    // }
+    // if (myCounter > 0) { // you already created the Print Widget
     if (myCounter > 0) { // you already created the Print Widget
-      return;
+      // return;
+      app.printer.destroy();
     }
     myCounter += 1;
     var printTitle;
@@ -193,7 +208,7 @@ require([
       label: "Landscape (PDF)", 
       format: "pdf", 
       options: { 
-        legendLayers: [legendLayer], // empty array means no legend
+        legendLayers: [legZoning, legSpecies, legGrowth, legEOP, legSourceWater], // empty array means no legend
         scalebarUnit: "Miles",
         titleText: printTitle + ", Landscape PDF",
         copyrightText: copyRightText,
@@ -204,7 +219,7 @@ require([
       label: "Portrait (Image)", 
       format: "jpg", 
       options:  { 
-        legendLayers: [legendLayer],
+        legendLayers: [legZoning, legSpecies, legGrowth, legEOP, legSourceWater],
         scaleBarUnit: "Miles",
         titleText: printTitle + ", Portrait JPG",
         copyrightText: copyRightText,
@@ -215,7 +230,7 @@ require([
       label: "Landscape (Image)", 
       format: "jpg", 
       options:  { 
-        legendLayers: [legendLayer],
+        legendLayers: [legZoning, legSpecies, legGrowth, legEOP, legSourceWater],
         scaleBarUnit: "Miles",
         titleText: printTitle + ", Landscape JPG",
         copyrightText: copyRightText,
@@ -226,7 +241,7 @@ require([
       label: "Portrait (PDF)", 
       format: "pdf", 
       options:  { 
-        legendLayers: [legendLayer],
+        legendLayers: [legZoning, legSpecies, legGrowth, legEOP, legSourceWater],
         scaleBarUnit: "Miles",
         titleText: printTitle + ", Portrait PDF",
         copyrightText: copyRightText,
@@ -256,10 +271,7 @@ require([
   on(dom.byId("clearGraphics"), "click", clearMapGraphics);
   on(dom.byId("textLabel"), "click", addTextLabel);
 
-  // var url = "http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer";
-  // var tiledLayer = new ArcGISTiledMapServiceLayer(url, { "id": "MD Imagery" });
-  // app.map.addLayer(tiledLayer);
-  var saParameters, pzParameters, labels, labelField;
+  var saParameters, pzParameters, epParameters, cnParameters, labels, labelField;
   saParameters = new ImageParameters();
   saParameters.layerIds = [1, 4, 5, 6, 7]; // [0, 1, 2, 3, 4, 5, 6, 7];
   saParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
@@ -267,6 +279,13 @@ require([
   pzParameters.layerIds = [4, 8]; // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
   pzParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
   labelField = "RDNAMELOCAL";
+  epParameters = new ImageParameters();
+  epParameters.layerIds = [2, 3, 4, 5, 6, 7, 8, 9];
+  epParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
+  cnParameters = new ImageParameters();
+  cnParameters.layerIds = [11, 12, 13, 14];
+  cnParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
+
 
   PZ_fLayer = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
     {"imageParameters": pzParameters, opacity: 0.75, id: "Parcels & Addresses"});
@@ -323,10 +342,25 @@ require([
     opacity: 0.75
   });
 
-  app.map.addLayers([PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer]);
+  BF_fLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/Contours_and_Plan/Contours_and_Plan/MapServer/0", {
+    mode: FeatureLayer.MODE_ONDEMAND,
+    opacity: 0.75, 
+    id: "Building Footprints"
+  });
+  
+  EP_fLayer = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/Contours_and_Plan/Contours_and_Plan/MapServer",
+    {"imageParameters": epParameters, opacity: 0.75, id: "Edge of Pavement"});
+
+  CN_fLayer = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/Contours_and_Plan/Contours_and_Plan/MapServer",
+    {"imageParameters": cnParameters, opacity: 0.75, id: "Contours"});
+
+  app.map.addLayers([PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer, BF_fLayer, EP_fLayer, CN_fLayer]);
+
+  console.log(EP_fLayer.id);
+  console.log(SP_fLayer.id);
 
   // create a check box for each map layer
-  arrayUtils.forEach(["Parcels & Addresses", "Cell Towers", "Wind Turbines", "Street Centerlines", "Perennial Streams", "Zoning", "Source Water Prot. Areas", "Protected Species", "Growth Areas", "Flood Hazard"], function(id) {
+  arrayUtils.forEach(["Parcels & Addresses", "Cell Towers", "Wind Turbines", "Street Centerlines", "Perennial Streams", "Zoning", "Source Water Prot. Areas", "Protected Species", "Growth Areas", "Flood Hazard", "Building Footprints", "Edge of Pavement", "Contours"], function(id) {
     new CheckBox({
       id: "cb_" + id,
       name: "cb_" + id,

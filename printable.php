@@ -27,7 +27,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-    <title>Printing Map</title>
+    <title>Printable Map</title>
     <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/dojo/dijit/themes/claro/claro.css">
     <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/dojo/dijit/themes/nihilo/nihilo.css">
     <link rel="stylesheet" href="http://archive.dojotoolkit.org/nightly/dojotoolkit/dojox/layout/resources/ExpandoPane.css">
@@ -91,7 +91,10 @@
       }
       .esriScalebarLine {
         background-color: white;
-      }      
+      }
+      span#latlongInstructions {
+        font-size:small;
+      }  
 
       .ds { background: #000; overflow: hidden; position: absolute; z-index: 2; }
       #ds-h div { width: 100%; }
@@ -178,7 +181,7 @@
             <div data-dojo-type="dijit/TitlePane" 
                  data-dojo-props="title:'Enter Lat Long', closable:false,  open:false">
               <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">
-                <div id="enterLatLong" ><form><input type="text" id="textLatLong"><input type="button" value="Submit" label="Submit" id="submitLatLongButton" dojoType="dijit.form.Button" /></form><br /><span>Enter Lat, Long in Decimal Degrees<br />e.g. 39.499059, -79.418682</span></div>
+                <div id="enterLatLong" ><form><input type="text" id="textLatLong"><input type="button" value="Submit" label="Submit" id="submitLatLongButton" dojoType="dijit.form.Button" /></form><br /><span id="latlongInstructions">Enter Lat, Long in Decimal Degrees<br />e.g. 39.499059, -79.418682</span></div>
               </div><!-- ContentPane 3 -->
             </div><!-- TitlePane 1 "Enter Lat Long" -->                      
           </div><!-- claro -->

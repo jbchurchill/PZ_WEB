@@ -7,6 +7,7 @@ require(["esri/map",
   "esri/dijit/Popup",
   "esri/dijit/BasemapGallery",
   "esri/dijit/Basemap",
+  "dojo/dom",
   "dojo/store/Memory",
   "dijit/form/ComboBox",
   "dijit/registry",
@@ -33,6 +34,7 @@ require(["esri/map",
   Popup,
   BasemapGallery,
   Basemap,
+  dom,
   Memory,
   ComboBox,
   registry,
@@ -95,6 +97,15 @@ require(["esri/map",
     passedX = parseFloat(center.x.toFixed(5));
     passedY = parseFloat(center.y.toFixed(5));
     zoomLevel = map.getLevel();
+  }
+
+  function makePopupDraggable() {
+    var popupDiv, dnd;
+    popupDiv = document.querySelector(".esriPopup");
+    if (popupDiv) {
+      dnd = new dojo.dnd.Moveable(dom.byId(popupDiv));
+    }
+    return dnd;
   }
 
   passedCenter = [passedX, passedY];
@@ -304,6 +315,7 @@ require(["esri/map",
   } // end of function executeIdentifyTask
 
   map.on("click", executeIdentifyTask);
+  map.on("click", makePopupDraggable);
 
 // Add Geocoder
   geocoder = new Geocoder({

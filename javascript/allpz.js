@@ -27,6 +27,7 @@ function executeIdentifyTask(evt) {
   identifyParams.geometry = evt.mapPoint;
   identifyParams.mapExtent = map.extent;
 
+
   // layers that can be identified by "click" that are NOT in the "Additional Layers" Content Pane
   identifyParams.layerIds = [1, 4, 5, 6, 8];
   // If a layer is checked in the "Additional Layers" pane, it will have been added
@@ -186,7 +187,7 @@ function executeIdentifyTask(evt) {
   map.infoWindow.setFeatures([ deferred ]);
   map.infoWindow.show(evt.mapPoint);
 
-}; // end of function executeIdentifyTask
+  }; // end of function executeIdentifyTask
 
 require([
   "esri/map",
@@ -366,6 +367,15 @@ require([
                                             pointSum + "</strong><br />" + strAddresses;
   }
 
+  function makePopupDraggable() {
+    var popupDiv, dnd;
+    popupDiv = document.querySelector(".esriPopup");
+    if (popupDiv) {
+      dnd = new dojo.dnd.Moveable(dom.byId(popupDiv));
+    }
+    return dnd;
+  }
+
   function sumSelectedParcelInfo(event) {
     var parcelSum, arrParcelData, strParcelInfo;
     parcelSum = 0;
@@ -537,6 +547,7 @@ require([
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // IDENTIFY LAYERS
   map.on("click", executeIdentifyTask);
+  map.on("click", makePopupDraggable);
   identifyTask = new IdentifyTask("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
 
   identifyParams = new IdentifyParameters();

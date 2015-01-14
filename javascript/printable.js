@@ -473,6 +473,8 @@ require([
       isLabel = false;
     } else if (type === "arrow") {
       app.symbols.arrow = new SimpleFillSymbol().setColor(new Color([0, 0, 180, 0.25]));
+    } else if (type === "rectangle") {
+      app.symbols.rectangle = new SimpleFillSymbol().setColor(new Color([0, 180, 39, 0.25]));
     } else {
       isLabel = false;
     }

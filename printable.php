@@ -228,6 +228,7 @@
             <div id="freehandpolygon" class="drawing">Freehand Polygon</div>
             <div id="line" class="drawing">Straight Line</div>
             <div id="circle" class="drawing">Circle</div>
+            <div id="rectangle" class="drawing">Rectangle</div>
             <div id="arrow" class="drawing">Arrow</div>
           </div>
           <button id="textLabel" data-dojo-type="dijit/form/Button">Text Label</button><br />

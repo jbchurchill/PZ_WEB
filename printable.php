@@ -125,7 +125,7 @@
       }
     </style>
 
-    <script src="http://js.arcgis.com/3.11/"></script>
+    <script src="http://js.arcgis.com/3.12/"></script>
     <script src="javascript/printable.yui.js" type="text/javascript"></script>
   </head>
   <body class="nihilo">
@@ -222,7 +222,7 @@
           <hr />
           
           <div id="drawingWrapper">
-            Add some graphics:
+            Add some graphics (click to edit):
             <div id="point" class="drawing">Point</div>
             <div id="freehandpolyline" class="drawing">Freehand Polyline</div>
             <div id="freehandpolygon" class="drawing">Freehand Polygon</div>

@@ -1,11 +1,12 @@
 var app = {};
 var mpArray;
 var passedCenter;
-var gLayer;
+// var gLayer;
 app.map = null; app.toolbar = null; app.tool = null; app.symbols = null; app.printer = null;
 require([
   "esri/map",
   "esri/toolbars/draw",
+  "esri/toolbars/edit",
   "esri/dijit/Print",
   "esri/dijit/Geocoder",
   "esri/dijit/BasemapGallery",
@@ -46,6 +47,7 @@ require([
 ], function(
   Map,
   Draw,
+  editToolbar,
   Print,
   Geocoder,
   BasemapGallery,
@@ -130,6 +132,9 @@ require([
     app.map.on("mouse-drag", showCoordinates);
     dojo.connect(app.map, "onExtentChange", getExtent);
     on(dom.byId("submitLatLongButton"), "click", zoomToLatLong);
+    // dojo.connect(app.map, "onLoad", createToolbar);
+    // dojo.connect(app.map, "layers-add-result", createToolbar);
+    createToolbar(app.map);
   });
   function clearMapGraphics () {
     app.map.graphics.clear();
@@ -356,8 +361,8 @@ require([
 
   app.map.addLayers([PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer, BF_fLayer, EP_fLayer, CN_fLayer]);
 
-  console.log(EP_fLayer.id);
-  console.log(SP_fLayer.id);
+  // console.log(EP_fLayer.id);
+  // console.log(SP_fLayer.id);
 
   // create a check box for each map layer
   arrayUtils.forEach(["Parcels & Addresses", "Cell Towers", "Wind Turbines", "Street Centerlines", "Perennial Streams", "Zoning", "Source Water Prot. Areas", "Protected Species", "Growth Areas", "Flood Hazard", "Building Footprints", "Edge of Pavement", "Contours"], function(id) {
@@ -483,8 +488,35 @@ require([
     app.map.hideZoomSlider();
   }
 
+  function createToolbar() {
+    //resize the map when the browser resizes
+    dojo.connect(dijit.byId('map'), 'resize', app.map, app.map.resize);     
+
+    editToolbar = new esri.toolbars.Edit(app.map);
+    //Activate the toolbar when you click on a graphic
+    dojo.connect(app.map.graphics, "onClick", function(evt) {
+      dojo.stopEvent(evt);
+      activateToolbar(evt.graphic);
+    });
+
+    //deactivate the toolbar when you click outside a graphic
+    dojo.connect(app.map,"onClick", function(evt){
+      editToolbar.deactivate();
+    });
+  }
+
+  function activateToolbar(graphic) {
+    var options = {allowAddVertices: true, allowDeleteVertices: true};
+    editToolbar.activate(
+      esri.toolbars.Edit.EDIT_VERTICES | esri.toolbars.Edit.ROTATE,
+      graphic, 
+      options
+    );
+  }
+  
+
   function addToMap(evt) {
-    app.gLayer = new GraphicsLayer();
+    // app.gLayer = new GraphicsLayer();
     var labelText, textSymbol, coordsCheckBox, textSymbolText, graphic, graphic2;
     var font = new Font("20px", Font.STYLE_NORMAL, Font.VARIANT_NORMAL, Font.WEIGHT_BOLDER, "Ariel");
     app.toolbar.deactivate();

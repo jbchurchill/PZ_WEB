@@ -1,5 +1,6 @@
 var findTask, findParams;
-var dojo, getExtent, require, doFind, esri, document, dijit, console, window;
+// var dojo, getExtent, require, doFind, esri, document, dijit, console, window;
+var getExtent, doFind;
 var map, center, zoom;
 var grid, store;
 var identifyTask, identifyParams;

@@ -1,4 +1,4 @@
-var map, zoom, center, require, dojo, dijit, esri, scalebar, checkNull, formatProtectedSpecies, formatFLU, content, console, window;
+var map, zoom, center, scalebar, checkNull, formatProtectedSpecies, formatFLU, content;
 var saParameters, mdImageLayer, mdImageBasemap, geocoder, mapLaunchStore, comboBox;
 var parcelTemplate, addrTemplate, streetTemplate, pstreamTemplate, swpaTemplate, growthAreasTemplate, protectedSpeciesTemplate, SA_fLayer, basemapGallery;
 var passedCenter, passedX, passedY, zoomLevel;
@@ -6,6 +6,7 @@ require(["esri/map",
   "esri/dijit/Scalebar",
   "esri/dijit/Popup",
   "esri/dijit/BasemapGallery",
+  "dojo/dom",
   "dojo/store/Memory",
   "dijit/form/ComboBox",
   "dijit/registry",
@@ -30,6 +31,7 @@ require(["esri/map",
   Scalebar,
   Popup,
   BasemapGallery,
+  dom,
   Memory,
   ComboBox,
   registry,
@@ -89,6 +91,15 @@ require(["esri/map",
     passedX = parseFloat(center.x.toFixed(5));
     passedY = parseFloat(center.y.toFixed(5));
     zoomLevel = map.getLevel();
+  }
+
+  function makePopupDraggable() {
+    var popupDiv, dnd;
+    popupDiv = document.querySelector(".esriPopup");
+    if (popupDiv) {
+      dnd = new dojo.dnd.Moveable(dom.byId(popupDiv));
+    }
+    return dnd;
   }
 
   // center = [-79.2, 39.5];
@@ -361,6 +372,7 @@ require(["esri/map",
   } // end of function executeIdentifyTask
 
   map.on("click", executeIdentifyTask);
+  map.on("click", makePopupDraggable);
 
   // Add Geocoder  
   geocoder = new Geocoder({

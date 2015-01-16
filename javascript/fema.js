@@ -1,4 +1,4 @@
-var map, zoom, center, require, dojo, dijit, esri, scalebar, checkNull, window, content, console;
+var map, zoom, center, scalebar, checkNull, content;
 var mdImagelayer, mapLaunchStore, comboBox, flzTemplate, parcelTemplate, addrTemplate, streetTemplate, fpFEMA_task, mdImageBasemap, identifyParams, geocoder;
 var basemapGallery, layerFEMA, imageParameters;
 var passedCenter, passedX, passedY, zoomLevel;

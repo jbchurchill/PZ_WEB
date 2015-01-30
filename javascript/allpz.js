@@ -95,7 +95,7 @@ function executeIdentifyTask(evt) {
     case "OWNNAME2":
       determineVal(value, " ", false);
       break;
-    case "SDAT_URL":
+    case "SDATWEBADR":
       determineVal(value, "SDAT Link: <a href=\"", true);
       break;
     }
@@ -163,7 +163,7 @@ function executeIdentifyTask(evt) {
         + "Liber: ${DR1LIBER} <br /> Folio: ${DR1FOLIO} <br /><hr> ${SUBDIVSN:checkNull} ${PLAT:checkNull} ${BLOCK:checkNull} Grid: ${GRID} <br />"
         + "Map: ${MAP} <br /> Parcel: ${PARCEL} <br /> Lot: ${LOT} <br /> Area: ${ACRES:NumberFormat(places:2)} Acres <br />"
         + "${PLTLIBER:checkNull} ${PLTFOLIO:checkNull} <hr>"
-        + "Year Built: ${YRBLT_CAMA} <br /> ${SDAT_URL:checkNull}"); 
+        + "Year Built: ${YRBLT_CAMA} <br /> ${SDATWEBADR:checkNull}"); 
         map.infoWindow.resize(250, 500);
         feature.setInfoTemplate(template);
       } else if (result.layerName === 'Town Boundary') {
@@ -385,7 +385,7 @@ require([
     arrayUtil.forEach(event.features, function (feature) {
       strParcelInfo += "<strong>MAP: </strong>" + feature.attributes.MAP + "<br />" +
           "<strong>PARCEL: </strong>" + feature.attributes.PARCEL + "<br />" +
-          "<strong>LINK: </strong><a href=\"" + feature.attributes.SDAT_URL + "\" target=\"_blank\">Link</a><br /><hr />";
+          "<strong>LINK: </strong><a href=\"" + feature.attributes.SDATWEBADR + "\" target=\"_blank\">Link</a><br /><hr />";
       arrParcelData.push(feature.attributes.MAP);
       parcelSum += 1;
     });

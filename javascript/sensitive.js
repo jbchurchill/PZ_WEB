@@ -182,7 +182,7 @@ require(["esri/map",
     case "OWNNAME2":
       determineVal(value, " ", false);
       break;
-    case "SDAT_URL":
+    case "SDATWEBADR":
       determineVal(value, "SDAT Link: <a href=\"", true);
       break;
     case "DR1LIBER":
@@ -254,7 +254,7 @@ require(["esri/map",
         + "${DR1LIBER:checkNull} ${DR1FOLIO:checkNull} <hr> ${SUBDIVSN:checkNull} ${PLAT:checkNull} ${BLOCK:checkNull} Grid: ${GRID} <br />"
         + "Map: ${MAP} <br /> Parcel: ${PARCEL} <br /> Lot: ${LOT} <br /> Area: ${ACRES} Acres <br />"
         + "${PLTLIBER:checkNull} ${PLTFOLIO:checkNull} <hr>"
-        + "Year Built: ${YRBLT_CAMA} <br /> ${SDAT_URL:checkNull}");
+        + "Year Built: ${YRBLT_CAMA} <br /> ${SDATWEBADR:checkNull}");
 
   addrTemplate = new InfoTemplate("Address Info",
               "<span class=\"sectionhead\">Layer: Address Points</span><br /><br /><hr>Address: ${ADDRESS} <br /><br /> City: ${CITY} <br /> Zip: ${ZIP_CODE} <br /> ESN: ${ESN} <br /> Community: ${COMMUNITY} <br /> Map: ${MAP} <br /> Parcel: ${PARCEL} <br />"

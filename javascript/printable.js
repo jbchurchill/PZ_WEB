@@ -95,7 +95,7 @@ require([
     zoom: zoomLevel // 12
   });
   function zoomToLatLong() {
-    var txtLL, txtComma, txtLat, txtLong, sms, point, graphicLL, graphicsLayer, maxZoom;
+    var txtLL, txtComma, txtLat, txtLong, sms, point, graphicLL, maxZoom;
     txtLL = document.getElementById("textLatLong").value;
     txtLL = txtLL.replace(/\s+/g, ''); // get rid of white space so it is just lat,long
     txtComma = txtLL.indexOf(",");
@@ -109,10 +109,7 @@ require([
       point = new Point(txtLong, txtLat, map.spatialRefernce);
       graphicLL = new Graphic(point, sms, null, null);
 
-      graphicsLayer = new GraphicsLayer();  
-      graphicsLayer.add(graphicLL);  
-
-      app.map.addLayer(graphicsLayer);
+      app.map.graphics.add(graphicLL);
 
       if (graphicLL.geometry.type === 'point') {  
         maxZoom = app.map.getMaxZoom();  
@@ -138,12 +135,13 @@ require([
   });
   function clearMapGraphics () {
     app.map.graphics.clear();
+    // app.map.graphicsLayer.clear(); // THIS IS NOT WORKING
   }
   function showCoordinates(evt) {
     //the map is in web mercator but display coordinates in geographic (lat, long)
     var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
     //display mouse coordinates in the right panel
-    dom.byId("coordsinfo").innerHTML = mp.x.toFixed(5) + ", " + mp.y.toFixed(5);
+    dom.byId("coordsinfo").innerHTML = mp.y.toFixed(5) + ", " + mp.x.toFixed(5);
     mpArray = [mp.x.toFixed(5), mp.y.toFixed(5)];
   }
 
@@ -526,7 +524,7 @@ require([
       labelText = prompt("Enter a Text Label", "");
       coordsCheckBox = registry.byId("includeCoords");
       if (coordsCheckBox.get("checked")) {
-        textSymbolText = "X: " + mpArray[0] + ", Y: " + mpArray[1]  + "  -  " + labelText;
+        textSymbolText = "Lat: " + mpArray[1] + ", Long: " + mpArray[0]  + "  -  " + labelText;
       } else {
         textSymbolText = labelText;
       }

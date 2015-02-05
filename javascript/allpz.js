@@ -48,7 +48,7 @@ function executeIdentifyTask(evt) {
   checkNull = function (value, key, data) {
     var content;
     function determineVal(val, strKey, addBreak) {
-      if (val == "Null") {
+      if (val == "" | val == "Null") {
         content = "";
       } else {
         if (addBreak) {
@@ -295,7 +295,7 @@ require([
   });
 
 
-  findTask = new FindTask("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
+  findTask = new FindTask("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
   map.on("load", function () {
     //Create the find parameters
     findParams = new FindParameters();
@@ -327,7 +327,7 @@ require([
   mdImageBasemap = new esri.dijit.Basemap({
     layers: [mdImagelayer],
     title: "MD Imagery",
-    thumbnailUrl: "http://gis.garrettcounty.org/arcgis/images/image_v2.png"
+    thumbnailUrl: "http://maps.garrettcounty.org/arcgis/images/image_v2.png"
   });
   basemapGallery.add(mdImageBasemap);
 
@@ -346,7 +346,7 @@ require([
   // TURN LAYERS OFF AND ON
 
   // IDENTIFY LAYERS
-  landBaseLayer = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
+  landBaseLayer = new ArcGISDynamicMapServiceLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
     {"imageParameters": imageParameters, opacity: 0.55}); // , opacity:.55}); // NEW
   map.addLayer(landBaseLayer);
 
@@ -407,7 +407,7 @@ require([
       infoTemplate = new InfoTemplate("${FIELD_NAME}", content);
 
       // Parcels = Layer 8
-      featureLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/8", {
+      featureLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/8", {
         mode: FeatureLayer.MODE_ONDEMAND,
         outFields: ["*"]
       });
@@ -419,7 +419,7 @@ require([
         "City: ${CITY} <br /> Owner: ${OWNNAME1} ${OWNNAME2} <br /> Tax Id: ${ACCTID} <br /><hr>";
       infoTemplate = new InfoTemplate("${FIELD_NAME}", content);
       // Address Points = Layer 4
-      featureLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/4", {
+      featureLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/4", {
         mode: FeatureLayer.MODE_ONDEMAND,
         outFields: ["*"]
       });
@@ -549,7 +549,7 @@ require([
     // IDENTIFY LAYERS
   map.on("click", executeIdentifyTask);
   map.on("click", makePopupDraggable);
-  identifyTask = new IdentifyTask("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
+  identifyTask = new IdentifyTask("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
 
   identifyParams = new IdentifyParameters();
   identifyParams.tolerance = 3;

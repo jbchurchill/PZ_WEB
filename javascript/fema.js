@@ -220,7 +220,7 @@ require(["esri/map",
 
   // FEMA service does not work very well in my experience.
   // fpFEMA_task = new IdentifyTask("https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer/");
-  fpFEMA_task = new IdentifyTask("http://gis.garrettcounty.org:6080/arcgis/rest/services/FEMA/Flood_Hazard/MapServer/");
+  fpFEMA_task = new IdentifyTask("http://maps.garrettcounty.org:6080/arcgis/rest/services/FEMA/Flood_Hazard/MapServer/");
   // featureLayer = new FeatureLayer("https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer/28",
 
 
@@ -229,8 +229,8 @@ require(["esri/map",
   imageParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
 
 
-  // var landBaseLayer = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
-  layerFEMA = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/FEMA/Flood_Hazard/MapServer/",
+  // var landBaseLayer = new ArcGISDynamicMapServiceLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
+  layerFEMA = new ArcGISDynamicMapServiceLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/FEMA/Flood_Hazard/MapServer/",
     {"imageParameters": imageParameters, opacity: 0.75});
 
   map.addLayer(layerFEMA);
@@ -245,7 +245,7 @@ require(["esri/map",
   mdImageBasemap = new Basemap({
     layers: [mdImagelayer],
     title: "MD Imagery",
-    thumbnailUrl: "http://gis.garrettcounty.org/arcgis/images/image_v2.png"
+    thumbnailUrl: "http://maps.garrettcounty.org/arcgis/images/image_v2.png"
   });
   basemapGallery.add(mdImageBasemap);
 

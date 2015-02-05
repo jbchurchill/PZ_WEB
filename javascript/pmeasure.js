@@ -168,7 +168,7 @@ require([
   mdImageBasemap = new esri.dijit.Basemap({
     layers: [mdImagelayer],
     title: "MD Imagery",
-    thumbnailUrl: "http://gis.garrettcounty.org/arcgis/images/image_v2.png"
+    thumbnailUrl: "http://maps.garrettcounty.org/arcgis/images/image_v2.png"
   });
   basemapGallery.add(mdImageBasemap);
 
@@ -189,11 +189,11 @@ require([
   imageParameters.layerIds = [1, 4, 5, 6, 8];
   imageParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
 
-  visibleLayers = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
+  visibleLayers = new ArcGISDynamicMapServiceLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
       {"imageParameters": imageParameters, opacity: 0.55}); // , opacity:.55}); // NEW
   map.addLayer(visibleLayers);
 
-  parcelsLayer = new FeatureLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/8", {
+  parcelsLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/8", {
     mode: FeatureLayer.MODE_ONDEMAND,
     outFields: ["*"]
   });

@@ -150,7 +150,7 @@ require(["esri/map",
   // checkNull infoTemplate Formatting Function (value, key, data) data returns a large object with the entire record (all fields).
   checkNull = function (value, key) {
     function determineVal(val, strKey, addBreak) {
-      if (val == "Null") {
+      if (val == "" | val == "Null") {
         content = "";
       } else {
         if (addBreak) {
@@ -290,7 +290,7 @@ require(["esri/map",
   saParameters.layerIds = [0, 1, 2, 3, 4, 5, 6, 7];
   saParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
 
-  SA_fLayer = new ArcGISDynamicMapServiceLayer("http://gis.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer", // {
+  SA_fLayer = new ArcGISDynamicMapServiceLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer", // {
     {"imageParameters": saParameters, opacity: 0.75});
 
   map.addLayer(SA_fLayer);
@@ -305,7 +305,7 @@ require(["esri/map",
   mdImageBasemap = new esri.dijit.Basemap({
     layers: [mdImageLayer],
     title: "MD Imagery",
-    thumbnailUrl: "http://gis.garrettcounty.org/arcgis/images/image_v2.png"
+    thumbnailUrl: "http://maps.garrettcounty.org/arcgis/images/image_v2.png"
   });
   basemapGallery.add(mdImageBasemap);
 
@@ -316,7 +316,7 @@ require(["esri/map",
   });
 
   function executeIdentifyTask(evt) {
-    var deferred, myLayerIds, identifyParams, task = new IdentifyTask("http://gis.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer");
+    var deferred, myLayerIds, identifyParams, task = new IdentifyTask("http://maps.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer");
     myLayerIds = [0, 1, 2, 3, 4, 5, 6, 7];
 
     identifyParams = new IdentifyParameters();

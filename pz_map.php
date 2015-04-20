@@ -199,7 +199,7 @@
     <div data-dojo-type="dijit.layout.AccordionContainer" data-dojo-props="closable:false,  open:false">
 
           <div data-dojo-type="dijit/layout/ContentPane" title="Search Roads" data-dojo-props="region:'center'" style="height:280px; margin-top:0; padding:0;">
-      Road name: <input type="text" id="roadName" size="60" value="ROCK LODGE RD" />      
+      Road name: <input type="text" id="roadName" size="60" value="ROCK LODGE ROAD" />      
           <button id="search" data-dojo-type="dijit.form.Button" type="button" data-dojo-attach-point="button" >Search
           <!--<button id="search" type="button" onclick="doFind;">Search -->
           </button>

@@ -240,14 +240,23 @@ require(["esri/map",
     map: map
   }, "basemapGallery");
 
-  mdImagelayer = new ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer");
+  mdImagelayer = new esri.layers.ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/ImageServer");
+  
+  mdImage2011 = new esri.layers.ArcGISTiledMapServiceLayer("http://imagery.geodata.md.gov/imap/rest/services/SixInch/SixInchImagery2011_2013/MapServer");
 
-  mdImageBasemap = new Basemap({
+  mdImageBasemap = new esri.dijit.Basemap({
     layers: [mdImagelayer],
-    title: "MD Imagery",
+    title: "MD 2014 Imagery",
+    thumbnailUrl: "http://maps.garrettcounty.org/arcgis/images/image2014.png"
+  });
+
+  mdImageBasemap2011 = new esri.dijit.Basemap({
+    layers: [mdImage2011],
+    title: "MD 2011 Imagery",
     thumbnailUrl: "http://maps.garrettcounty.org/arcgis/images/image_v2.png"
   });
   basemapGallery.add(mdImageBasemap);
+  basemapGallery.add(mdImageBasemap2011);
 
   basemapGallery.startup();
 
@@ -318,8 +327,14 @@ require(["esri/map",
   map.on("click", makePopupDraggable);
 
 // Add Geocoder
+  geocoders = [{
+    url: "http://geodata.md.gov/imap/rest/services/GeocodeServices/MD_AddressPointLocator/GeocodeServer",
+    name: "iMap GeoCoder"
+  }];
   geocoder = new Geocoder({
-    map: map
+    map: map,
+    geocoders: geocoders,
+    arcgisGeocoder: false
   }, "geosearch");
   geocoder.startup();
   // End Geocoder

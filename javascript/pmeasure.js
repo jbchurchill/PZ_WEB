@@ -62,7 +62,7 @@ require([
 ) {
   parser.parse();
   // SET Variables
-  var basemapGallery, scalebar, mdImagelayer, mdImageBasemap, sfs, imageParameters, visibleLayers, parcelsLayer, snapManager, layerInfos, measurement, geocoder;
+  var basemapGallery, scalebar, mdImagelayer, mdImageBasemap, sfs, imageParameters, visibleLayers, parcelsLayer, snapManager, layerInfos, measurement, geocoders, geocoder;
   var mapLaunchStore, comboBox;
 
   //This sample may require a proxy page to handle communications with the ArcGIS Server services. You will need to  
@@ -160,17 +160,26 @@ require([
     passedX = parseFloat(center.x.toFixed(5));
     passedY = parseFloat(center.y.toFixed(5));
     zoomLevel = map.getLevel();
-    console.log("Zoom: " + zoomLevel + ";  XY: " + passedX + ", " + passedY);
+    // console.log("Zoom: " + zoomLevel + ";  XY: " + passedX + ", " + passedY);
   }
 
-  mdImagelayer = new esri.layers.ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer");
+  mdImagelayer = new esri.layers.ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/ImageServer");
+  
+  mdImage2011 = new esri.layers.ArcGISTiledMapServiceLayer("http://imagery.geodata.md.gov/imap/rest/services/SixInch/SixInchImagery2011_2013/MapServer");
 
   mdImageBasemap = new esri.dijit.Basemap({
     layers: [mdImagelayer],
-    title: "MD Imagery",
+    title: "MD 2014 Imagery",
+    thumbnailUrl: "http://maps.garrettcounty.org/arcgis/images/image2014.png"
+  });
+
+  mdImageBasemap2011 = new esri.dijit.Basemap({
+    layers: [mdImage2011],
+    title: "MD 2011 Imagery",
     thumbnailUrl: "http://maps.garrettcounty.org/arcgis/images/image_v2.png"
   });
   basemapGallery.add(mdImageBasemap);
+  basemapGallery.add(mdImageBasemap2011);
 
   basemapGallery.startup();
 
@@ -214,11 +223,17 @@ require([
   }, dom.byId("measurementDiv"));
   measurement.startup();
 
-  // Add Geocoder  
+  // Add Geocoder
+  geocoders = [{
+    url: "http://geodata.md.gov/imap/rest/services/GeocodeServices/MD_AddressPointLocator/GeocodeServer",
+    name: "iMap GeoCoder"
+  }];
   geocoder = new Geocoder({
-    map: map
+    map: map,
+    geocoders: geocoders,
+    arcgisGeocoder: false
   }, "geosearch");
   geocoder.startup();
-  // End Geocoder
+  // End Geocoder - console.log(geocoder.activeGeocoder.url);
 
 });

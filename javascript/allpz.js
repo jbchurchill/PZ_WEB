@@ -276,7 +276,7 @@ require([
 
   // doZoom variable allows us to zoom to extent of selected features (default) 
   // or not when that is unwanted (like when clicking "Clear Selection")
-  var doZoom, popup, scalebar, basemapGallery, mdImagelayer, mdImageBasemap, imageParameters, visibleLayerIds, landBaseLayer, selectionToolbar;
+  var doZoom, popup, scalebar, basemapGallery, mdImagelayer, mdImageBasemap, imageParameters, visibleLayerIds, landBaseLayer, selectionToolbar, geocoders, geocoder;
   doZoom = 1;
 
   registry.byId("search").on("click", doFind);
@@ -691,8 +691,9 @@ require([
   // TURN LAYERS ON AND OFF
   // Add Geocoder
   geocoders = [{
-    url: "http://geodata.md.gov/imap/rest/services/GeocodeServices/MD_AddressPointLocator/GeocodeServer",
-    name: "iMap GeoCoder"
+    url: "http://geodata.md.gov/imap/rest/services/GeocodeServices/MD_CompositeLocatorWithEsri/GeocodeServer",
+    name: "MDiMap Composite Locator", 
+    singleLineFieldName: "SingleLine",
   }];
   geocoder = new Geocoder({
     map: map,

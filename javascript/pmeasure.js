@@ -225,8 +225,9 @@ require([
 
   // Add Geocoder
   geocoders = [{
-    url: "http://geodata.md.gov/imap/rest/services/GeocodeServices/MD_AddressPointLocator/GeocodeServer",
-    name: "iMap GeoCoder"
+    url: "http://geodata.md.gov/imap/rest/services/GeocodeServices/MD_CompositeLocatorWithEsri/GeocodeServer",
+    name: "MDiMap Composite Locator", 
+    singleLineFieldName: "SingleLine",
   }];
   geocoder = new Geocoder({
     map: map,
@@ -235,5 +236,4 @@ require([
   }, "geosearch");
   geocoder.startup();
   // End Geocoder - console.log(geocoder.activeGeocoder.url);
-
 });

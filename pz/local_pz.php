@@ -84,7 +84,7 @@
     
     <script src="http://js.arcgis.com/3.10/"></script>
     <!-- <script src="javascript/php_functions.js" type="text/javascript"></script> -->
-    <script src="../javascript/local_pz.yui.js" type="text/javascript"></script>
+    <script src="../javascript/local_pz.js" type="text/javascript"></script>
   </head>
 
   <body class="claro">
@@ -99,6 +99,8 @@
       <div data-dojo-type="dijit/layout/ContentPane" id="cp"
         data-dojo-props="region: 'top'">
       <button id="selectPointsButton" data-dojo-type="dijit/form/Button">Select Points/Polys</button>
+      <button id="addPointsButton" data-dojo-type="dijit/form/Button">Add</button>
+      <button id="removePointsButton" data-dojo-type="dijit/form/Button">Remove</button>
       <button id="clearSelectionButton" data-dojo-type="dijit/form/Button">Clear Selection</button>
       <div class="selType">
           <input type="radio" id="rectangle" data-dojo-type="dijit/form/RadioButton" name="selectType"  checked="true">Rectangle<br />

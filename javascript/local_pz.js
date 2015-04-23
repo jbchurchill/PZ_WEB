@@ -12,7 +12,7 @@ function startTrackingExtent() {
   dojo.connect(map, "onExtentChange", getExtent);
 }
 
-function saveFile (addrArray) {
+function saveFile(addrArray) {
   //console.log("HELLO");
   //var baseFileURL = "file.php";
   //var url = baseFileURL + "?addrData=" + addrArray;
@@ -281,8 +281,8 @@ require([
 
   // doZoom variable allows us to zoom to extent of selected features (default) 
   // or not when that is unwanted (like when clicking "Clear Selection")
-  var doZoom, popup, scalebar, basemapGallery, mdImagelayer, mdImageBasemap, imageParameters, visibleLayerIds, landBaseLayer, selectionToolbar, geocoders, geocoder;
-  doZoom = 1;
+  var doZoom, popup, scalebar, basemapGallery, mdImagelayer, mdImageBasemap, imageParameters, visibleLayerIds, landBaseLayer, selectionToolbar, addSelectionToolbar, removeSelectionToolbar, geocoders, geocoder, plusOrMinus;
+  doZoom = 1, pointSum = 0, arrStructNum = [], strAddresses = "";
 
   registry.byId("search").on("click", doFind);
   registry.byId("search2").on("click", doFind);
@@ -370,15 +370,39 @@ require([
   
   function sumSelectedPoints(event) {
     // registry.byId("save").on("click", saveFile);
-    var pointSum, arrStructNum, strAddresses;
-    pointSum = 0;
-    arrStructNum = [];
-    strAddresses = "";
+    "use strict";
+    var addrIndex;
     //show the selected address points in the map display
     arrayUtil.forEach(event.features, function (feature) {
-      strAddresses += feature.attributes.ADDRESS + "<br />";
-      arrStructNum.push(feature.attributes.ADDRESS);
-      pointSum += 1;
+      addrIndex = arrStructNum.indexOf(feature.attributes.ADDRESS);
+      if (arrStructNum.length == 0) {
+        strAddresses += feature.attributes.ADDRESS + "<br />";
+        arrStructNum.push(feature.attributes.ADDRESS);
+        pointSum += 1;
+      } else if (arrStructNum.indexOf(feature.attributes.ADDRESS) == -1) { // current value is not in the Array
+        // START SEPARATE IF STATEMENT
+        if (plusOrMinus == 1) {
+          strAddresses += feature.attributes.ADDRESS + "<br />";
+          arrStructNum.push(feature.attributes.ADDRESS);
+          pointSum += 1;
+        } else if (plusOrMinus == 0) {
+          // DO NOTHING ... Attempt to remove an address that is not in the array
+        }
+        // END SEPARATE IF STATEMENT        
+      } else { // Array has at least one value and the present value is one of them
+        // START SEPARATE IF STATEMENT
+        if (plusOrMinus == 0) {
+          strAddresses = strAddresses.replace(feature.attributes.ADDRESS + "<br \/>", '');
+          arrStructNum.splice(addrIndex, 1);
+          pointSum -= 1;          
+        } else if (plusOrMinus == 1) {
+          // Do nothing. This was an attempt to add a value to array that is already present.
+        }
+        // SEPARATE IF STATEMENT        
+      }
+      // console.log(addrIndex);
+      // console.log("Array: " + arrStructNum);
+      // console.log("Addresses: " + strAddresses);
     });
     dom.byId('messages').innerHTML = "<strong>Number of Selected Points: " +
                                             // pointSum + "</strong><br />" + strAddresses + "<br /><button id=\"save\" data-dojo-type=\"dijit.form.Button\" type=\"button\" data-dojo-attach-point=\"button\">Save</button><br />";
@@ -466,6 +490,9 @@ require([
   // SELECT POINTS/POLYS CODE
   // If Rectangle radio button is selected select by rectangle, if not, select by polygon
   on(dom.byId("selectPointsButton"), "click", function () {
+    "use strict";
+    plusOrMinus = 1;
+    // console.log("click registered for selectPointsButton");
     var SelectRectangle;
     SelectRectangle = document.getElementById("rectangle").checked;
     if (SelectRectangle) {
@@ -475,8 +502,37 @@ require([
     }
   });
 
+  on(dom.byId("addPointsButton"), "click", function () {
+    "use strict";
+    plusOrMinus = 1;
+    // console.log("click registered for addPointsButton");
+    var SelectRectangle;
+    SelectRectangle = document.getElementById("rectangle").checked;
+    if (SelectRectangle) {
+      addSelectionToolbar.activate(Draw.EXTENT);
+    } else {
+      addSelectionToolbar.activate(Draw.FREEHAND_POLYGON);
+    }
+  });
+
+  on(dom.byId("removePointsButton"), "click", function () {
+    "use strict";
+    plusOrMinus = 0;
+    // console.log("click registered for removePointsButton");
+    var SelectRectangle;
+    SelectRectangle = document.getElementById("rectangle").checked;
+    if (SelectRectangle) {
+      removeSelectionToolbar.activate(Draw.EXTENT);
+    } else {
+      removeSelectionToolbar.activate(Draw.FREEHAND_POLYGON);
+    }
+  });
+  
   on(dom.byId("clearSelectionButton"), "click", function () {
     featureLayer.clearSelection();
+    pointSum = 0;
+    arrStructNum = [];
+    strAddresses = "";
     map.graphics.clear();
     doZoom = 0;
     showResults("");
@@ -544,7 +600,7 @@ require([
   }
 
   function initSelectToolbar(event) {
-    var selectQuery; // selectionToolbar is already defined
+    var selectQuery, addSelectQuery, removeSelectQuery; // selectionToolbar and the other 2 are already defined globally
     setupSelections();
     dojo.connect(map, "onExtentChange", getExtent);
 
@@ -555,6 +611,24 @@ require([
       selectQuery.geometry = geometry;
       featureLayer.selectFeatures(selectQuery,
         FeatureLayer.SELECTION_NEW);
+    });
+
+    addSelectionToolbar = new Draw(event.map);
+    addSelectQuery = new Query();
+    on(addSelectionToolbar, "DrawEnd", function (geometry) {
+      addSelectionToolbar.deactivate();
+      addSelectQuery.geometry = geometry;
+      featureLayer.selectFeatures(addSelectQuery,
+        FeatureLayer.SELECTION_ADD);
+    });
+
+    removeSelectionToolbar = new Draw(event.map);
+    removeSelectQuery = new Query();
+    on(removeSelectionToolbar, "DrawEnd", function (geometry) {
+      removeSelectionToolbar.deactivate();
+      removeSelectQuery.geometry = geometry;
+      featureLayer.selectFeatures(removeSelectQuery,
+        FeatureLayer.SELECTION_SUBTRACT);
     });
   }
   map.on("load", initSelectToolbar);

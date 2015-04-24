@@ -281,8 +281,8 @@ require([
 
   // doZoom variable allows us to zoom to extent of selected features (default) 
   // or not when that is unwanted (like when clicking "Clear Selection")
-  var doZoom, popup, scalebar, basemapGallery, mdImagelayer, mdImageBasemap, imageParameters, visibleLayerIds, landBaseLayer, selectionToolbar, addSelectionToolbar, removeSelectionToolbar, geocoders, geocoder, plusOrMinus;
-  doZoom = 1, pointSum = 0, arrStructNum = [], strAddresses = "";
+  var doZoom, popup, scalebar, basemapGallery, mdImagelayer, mdImageBasemap, imageParameters, visibleLayerIds, landBaseLayer, selectionToolbar, addSelectionToolbar, removeSelectionToolbar, geocoders, geocoder, arrStructNum, plusOrMinus;
+  doZoom = 1, arrStructNum = []; // pointSum = 0, arrStructNum = [], strAddresses = "";
 
   registry.byId("search").on("click", doFind);
   registry.byId("search2").on("click", doFind);
@@ -371,20 +371,20 @@ require([
   function sumSelectedPoints(event) {
     // registry.byId("save").on("click", saveFile);
     "use strict";
-    var addrIndex;
+    var pointSum, strAddresses, addrIndex, i;
     //show the selected address points in the map display
     arrayUtil.forEach(event.features, function (feature) {
       addrIndex = arrStructNum.indexOf(feature.attributes.ADDRESS);
       if (arrStructNum.length == 0) {
-        strAddresses += feature.attributes.ADDRESS + "<br />";
+        // strAddresses += feature.attributes.ADDRESS + "<br />";
         arrStructNum.push(feature.attributes.ADDRESS);
-        pointSum += 1;
+        // pointSum += 1;
       } else if (arrStructNum.indexOf(feature.attributes.ADDRESS) == -1) { // current value is not in the Array
         // START SEPARATE IF STATEMENT
         if (plusOrMinus == 1) {
-          strAddresses += feature.attributes.ADDRESS + "<br />";
+          // strAddresses += feature.attributes.ADDRESS + "<br />";
           arrStructNum.push(feature.attributes.ADDRESS);
-          pointSum += 1;
+          // pointSum += 1;
         } else if (plusOrMinus == 0) {
           // DO NOTHING ... Attempt to remove an address that is not in the array
         }
@@ -392,9 +392,9 @@ require([
       } else { // Array has at least one value and the present value is one of them
         // START SEPARATE IF STATEMENT
         if (plusOrMinus == 0) {
-          strAddresses = strAddresses.replace(feature.attributes.ADDRESS + "<br \/>", '');
+          // strAddresses = strAddresses.replace(feature.attributes.ADDRESS + "<br \/>", '');
           arrStructNum.splice(addrIndex, 1);
-          pointSum -= 1;          
+          // pointSum -= 1;          
         } else if (plusOrMinus == 1) {
           // Do nothing. This was an attempt to add a value to array that is already present.
         }
@@ -404,6 +404,12 @@ require([
       // console.log("Array: " + arrStructNum);
       // console.log("Addresses: " + strAddresses);
     });
+    // ATTEMPT TO RE-WRITE strAddresses
+    strAddresses = "";
+    pointSum = arrStructNum.length;
+    for (i = 0; i < arrStructNum.length; i++) {
+      strAddresses += arrStructNum[i] + "<br \/>";
+    }
     dom.byId('messages').innerHTML = "<strong>Number of Selected Points: " +
                                             // pointSum + "</strong><br />" + strAddresses + "<br /><button id=\"save\" data-dojo-type=\"dijit.form.Button\" type=\"button\" data-dojo-attach-point=\"button\">Save</button><br />";
                                             pointSum + "</strong><br />" + strAddresses + "<br />"
@@ -412,6 +418,7 @@ require([
   }
 
   function sumSelectedParcelInfo(event) {
+    "use strict";
     var parcelSum, arrParcelData, strParcelInfo, strStrippedInfo;
     parcelSum = 0;
     arrParcelData = [];
@@ -424,10 +431,16 @@ require([
           "<strong>LINK: </strong><a href=\"" + feature.attributes.SDATWEBADR + "\" target=\"_blank\">Link</a><br /><hr />";
       strStrippedInfo += feature.attributes.MAP + ", " + feature.attributes.PARCEL + ", " + feature.attributes.SDATWEBADR + "<br />";
       
-      arrParcelData.push(feature.attributes.MAP); // THIS IS NOT ACTUALLY BEING USED FOR ANYTHING
+      // arrParcelData.push(feature.attributes.MAP); // THIS IS NOT ACTUALLY BEING USED FOR ANYTHING
       parcelSum += 1;
+      console.log("Array: " + arrParcelData);
+      console.log("Parcel Info: " + strParcelInfo);
+      console.log("Stripped: " + strStrippedInfo);
     });
-    console.log(strStrippedInfo);
+    // arrStructNum.push() WAIT ON THIS
+    // parcelSum = arrStructNum.length;
+
+    //console.log(strStrippedInfo);
     dom.byId('messages').innerHTML = "<strong>Number of Selected Parcels: " +
                                             parcelSum + "</strong><br />" + strParcelInfo + "<br />"
                                             + "Save these parcel records<br />"
@@ -494,6 +507,7 @@ require([
     plusOrMinus = 1;
     // console.log("click registered for selectPointsButton");
     var SelectRectangle;
+    arrStructNum = [];
     SelectRectangle = document.getElementById("rectangle").checked;
     if (SelectRectangle) {
       selectionToolbar.activate(Draw.EXTENT);

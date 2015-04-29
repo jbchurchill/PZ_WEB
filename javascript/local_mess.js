@@ -398,7 +398,7 @@ require([
         } else if (plusOrMinus == 1) {
           // Do nothing. This was an attempt to add a value to array that is already present.
         }
-        // SEPARATE IF STATEMENT        
+        // SEPARATE IF STATEMENT
       }
       // console.log(addrIndex);
       // console.log("Array: " + arrStructNum);
@@ -418,38 +418,77 @@ require([
   }
 
   function sumSelectedParcelInfo(event) {
-    // "use strict";
-    var parcelSum, parcelValue, arrParcelData, strParcelInfo, strStrippedInfo, parcelIndex, i, x; // n, x;
+    "use strict";
+    var parcelSum, parcelValue, arrParcelData, strParcelInfo, strStrippedInfo, parcelIndex, i, x, n; // n, x;
     parcelSum = 0;
     // n = 0;
-    arrParcelData = []; // MAY DECIDE TO REMOVE THIS VARIABLE OR BETTER YET TURN IT INTO AN INNER ARRAY
     strParcelInfo = "";
     // strStrippedInfo = "M, P, Link<br />";
     strStrippedInfo = "";
+    n = 0;
+
     arrayUtil.forEach(event.features, function (feature) {
 
-      arrParcelData = new Array ( String(feature.attributes.MAP), String(feature.attributes.PARCEL), String(feature.attributes.SDATWEBADR) ); //], [String(feature.attributes.MAP), String(feature.attributes.PARCEL), String(feature.attributes.SDATWEBADR)]);
-      parcelValue = arrParcelData[0] + "," + arrParcelData[1] + "," + arrParcelData[2];
+      // arrParcelData = new Array ( String(feature.attributes.MAP), String(feature.attributes.PARCEL), String(feature.attributes.SDATWEBADR) ); //], [String(feature.attributes.MAP), String(feature.attributes.PARCEL), String(feature.attributes.SDATWEBADR)]);
+      //////// parcelValue = new Array ( String(feature.attributes.MAP), String(feature.attributes.PARCEL), String(feature.attributes.SDATWEBADR) ); //], [String(feature.attributes.MAP), String(feature.attributes.PARCEL), String(feature.attributes.SDATWEBADR)]);
+      parcelValue = [ String(feature.attributes.MAP), String(feature.attributes.PARCEL), String(feature.attributes.SDATWEBADR) ];
+      // parcelValue = arrParcelData[0] + "," + arrParcelData[1] + "," + arrParcelData[2];
 
-      console.log("len " + arrStructNum.length);
-      // parcelIndex = arrStructNum.indexOf(parcelValue);
-      if (arrStructNum.length == 0) {
-        arrStructNum[0] = parcelValue;
-        parcelIndex = x;
-        console.log("You SHOULD see this");
-      } else {
-        for (x = 0; x < arrStructNum.length; x++) {
-          console.log("Current x: " + x);
-          if (String(arrStructNum[x]) == String(parcelValue)) {
-            console.log("IT IS IN HERE ... KRIKEY");
-            parcelIndex = x;
-          } else {
-            parcelIndex = -1;
-          }
+      parcelIndex = arrStructNum.indexOf(parcelValue); // This doesn't appear to work
+      
+      for (x = 0; x < arrStructNum.length; x++) {
+        if (String(arrStructNum[x]) === String(parcelValue)) {
+          parcelIndex = x;
         }
       }
 
-      
+      if (parcelIndex >= 0) {
+        console.log("Parcel Index is " + parcelIndex);
+        if (plusOrMinus === 0) {
+          arrStructNum.splice(parcelIndex, 1);
+          console.log("Removed " + parcelIndex);
+        }
+    } else { // Parcel Index = -1
+      if (plusOrMinus === 1) {
+        if (parcelIndex === 'undefined') { // if (typeof parcelIndex === 'undefined') {
+          // arrStructNum[n] = parcelValue;
+          arrStructNum.push(parcelValue);
+          console.log("Added " + parcelValue);
+        } else if (parcelIndex === -1) {
+          // arrStructNum[n] = parcelValue;
+          arrStructNum.push(parcelValue);
+          console.log("ParcelIndex: " + parcelIndex + " - Value Added " + parcelValue);
+        }
+      }
+    }
+      console.log("len " + arrStructNum.length);
+      console.log("Current Parcel Index: " + parcelIndex);
+      console.log("N " + n);
+      // parcelIndex = arrStructNum.indexOf(parcelValue);
+
+
+      /*
+      if (arrStructNum.length == 0) {
+        arrStructNum[0] = parcelValue;
+        parcelIndex = 0;
+        console.log("You SHOULD see this");
+      } else {
+        for (x = 0; x < arrStructNum.length; x++) {
+          x2 = x + 1;
+          console.log("Current x: " + x);
+        }
+      }
+      if ((String(arrStructNum[n]) == String(parcelValue)) && (n > 0)) {
+        console.log("N: " + n + " X: " + x + " Array Value: " + arrStructNum[x] + " Parcel Value: " + parcelValue);
+        parcelIndex = n;
+      } else {
+        parcelIndex = -1;
+        arrStructNum[n] = String(parcelValue);
+        console.log("Adding " + n);
+      }      
+
+      */
+
       /* 888
       if (parcelIndex == -1) { // (arrStructNum.indexOf(arrParcelData) == -1) { // (parcelIndex === -1) { // current value is not in the Array
         // START SEPARATE IF STATEMENT
@@ -475,7 +514,7 @@ require([
         }
         // SEPARATE IF STATEMENT        
       }
-      
+
       */
       // arrParcelData.push(feature.attributes.MAP); // THIS IS NOT ACTUALLY BEING USED FOR ANYTHING
       // parcelSum += 1;
@@ -489,17 +528,19 @@ require([
         console.log("FIRST value added: " + arrParcelData);        
       }
       */ // 888
-      console.log("Current Parcel Index: " + parcelIndex);
-      // n += 1;
+      // console.log("Current Parcel Index: " + parcelIndex);
+      // console.log(n);
+      n += 1;
     });
-    
-    /* 999
+    console.log("ARRAY!!! " + arrStructNum);
+    // * 999
+    /* TEMP
       console.log("ARRPARCELDATA: " + arrParcelData);
       console.log("LENGTH: " + arrStructNum.length);
       console.log("ARRAY !!!!!: " + arrStructNum);
       parcelIndex = arrStructNum.indexOf(arrParcelData);
       console.log("Parcel Index: " + parcelIndex);
-    
+    */ // TEMP
     
     // arrStructNum.push() WAIT ON THIS
     parcelSum = arrStructNum.length;
@@ -511,10 +552,10 @@ require([
       strStrippedInfo += arrStructNum[i][0] + ", " + arrStructNum[i][1] + ", " + arrStructNum[i][2] + "<br />";
     }
     strParcelInfo += "Save these parcel records<br />"
-    + "<form action=\"file.php\" method=\"post\" target=\"_blank\"><input id=\"save\" type=\"submit\"></input><input type=\"checkbox\" name=\"append_data\" checked=\"true\" value=\"parcel\">Write new file?<br /><input id=\"hidden_field\" name=\"hidden_field\" type=\"hidden\" value=\"" + strStrippedInfo + "\" /></form><br />";
+      + "<form action=\"file.php\" method=\"post\" target=\"_blank\"><input id=\"save\" type=\"submit\"></input><input type=\"checkbox\" name=\"append_data\" checked=\"true\" value=\"parcel\">Write new file?<br /><input id=\"hidden_field\" name=\"hidden_field\" type=\"hidden\" value=\"" + strStrippedInfo + "\" /></form><br />";
     //console.log(strStrippedInfo);
     dom.byId('messages').innerHTML = strParcelInfo;
-    */ // 999
+    // */ // 999
   }
 
 

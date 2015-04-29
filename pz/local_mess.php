@@ -58,6 +58,9 @@
         background-color: white;
         margin: 0.4em;
         padding: 0 0.2em;
+        width: 210px;
+        display: inline-block;
+        overflow: hidden;
       }
       .selType{
         float:left;

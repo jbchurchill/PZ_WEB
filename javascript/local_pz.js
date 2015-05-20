@@ -1,22 +1,9 @@
-var findTask, findParams;
-var dojo, getExtent, require, doFind, esri, document, dijit, console, window;
-var map, center, zoom;
-var grid, store;
-var identifyTask, identifyParams;
+var findTask, findParams, checkNull, getExtent, require, doFind, map, center, zoom, grid, store, identifyTask, identifyParams, passedCenter, passedX, passedY, zoomLevel, xMin, yMin, xMax, yMax;
 var addlIdArray = [];
-var xMin, yMin, xMax, yMax;
 var extArray = [];
-var passedCenter, passedX, passedY, zoomLevel;
 
 function startTrackingExtent() {
   dojo.connect(map, "onExtentChange", getExtent);
-}
-
-function saveFile(addrArray) {
-  //console.log("HELLO");
-  //var baseFileURL = "file.php";
-  //var url = baseFileURL + "?addrData=" + addrArray;
-  //window.open(url, '_blank');
 }
 
 function contains(a, obj) {
@@ -30,6 +17,7 @@ function contains(a, obj) {
 }
 
 function executeIdentifyTask(evt) {
+  "use strict";
   var i;
   identifyParams.geometry = evt.mapPoint;
   identifyParams.mapExtent = map.extent;
@@ -50,7 +38,7 @@ function executeIdentifyTask(evt) {
   var deferred = identifyTask.execute(identifyParams);
 
   // checkNull infoTemplate Formatting Function
-  checkNull = function (value, key, data) {
+  checkNull = function (value, key) {
     var content;
     function determineVal(val, strKey, addBreak) {
       if (val == "" | val == "Null") {
@@ -159,7 +147,7 @@ function executeIdentifyTask(evt) {
         template = new esri.InfoTemplate("Zoning Info", "<span class=\"sectionhead\">Layer: County Zoning Layer </span><br /><br /><hr>${GENZONE} <br/> Land Use Code: ${FLU}");
         feature.setInfoTemplate(template);
       } else if (result.layerName === 'Tax Map Grid') {
-        template = new esri.InfoTemplate("Tax Map Info", "<span class=\"sectionhead\">Layer: Tax Map Grid </span><br /><br /><hr>Map ID: ${MAPID} <br />Tax Map: ${TAXMAP}")
+        template = new esri.InfoTemplate("Tax Map Info", "<span class=\"sectionhead\">Layer: Tax Map Grid </span><br /><br /><hr>Map ID: ${MAPID} <br />Tax Map: ${TAXMAP}");
         feature.setInfoTemplate(template);
       } else if (result.layerName === 'Garrett.DBO.TaxParcel') {
         template = new esri.InfoTemplate("",
@@ -193,7 +181,7 @@ function executeIdentifyTask(evt) {
   map.infoWindow.setFeatures([ deferred ]);
   map.infoWindow.show(evt.mapPoint);
 
-}; // end of function executeIdentifyTask
+} // end of function executeIdentifyTask
 
 require([
   "esri/map",
@@ -369,7 +357,6 @@ require([
   // Determine how many points were selected and list the Addresses for each point
   
   function sumSelectedPoints(event) {
-    // registry.byId("save").on("click", saveFile);
     "use strict";
     var pointSum, strAddresses, addrIndex, i;
     //show the selected address points in the map display
@@ -398,7 +385,7 @@ require([
         } else if (plusOrMinus == 1) {
           // Do nothing. This was an attempt to add a value to array that is already present.
         }
-        // SEPARATE IF STATEMENT        
+        // SEPARATE IF STATEMENT
       }
       // console.log(addrIndex);
       // console.log("Array: " + arrStructNum);
@@ -419,32 +406,54 @@ require([
 
   function sumSelectedParcelInfo(event) {
     "use strict";
-    var parcelSum, arrParcelData, strParcelInfo, strStrippedInfo;
+    var parcelSum, parcelValue, arrParcelData, strParcelInfo, strFormInfo, strStrippedInfo, parcelIndex, i, x, n; // n, x;
     parcelSum = 0;
-    arrParcelData = [];
     strParcelInfo = "";
     // strStrippedInfo = "M, P, Link<br />";
     strStrippedInfo = "";
-    arrayUtil.forEach(event.features, function (feature) {
-      strParcelInfo += "<strong>MAP: </strong>" + feature.attributes.MAP + "<br />" +
-          "<strong>PARCEL: </strong>" + feature.attributes.PARCEL + "<br />" +
-          "<strong>LINK: </strong><a href=\"" + feature.attributes.SDATWEBADR + "\" target=\"_blank\">Link</a><br /><hr />";
-      strStrippedInfo += feature.attributes.MAP + ", " + feature.attributes.PARCEL + ", " + feature.attributes.SDATWEBADR + "<br />";
-      
-      // arrParcelData.push(feature.attributes.MAP); // THIS IS NOT ACTUALLY BEING USED FOR ANYTHING
-      parcelSum += 1;
-      console.log("Array: " + arrParcelData);
-      console.log("Parcel Info: " + strParcelInfo);
-      console.log("Stripped: " + strStrippedInfo);
-    });
-    // arrStructNum.push() WAIT ON THIS
-    // parcelSum = arrStructNum.length;
+    n = 0;
 
-    //console.log(strStrippedInfo);
-    dom.byId('messages').innerHTML = "<strong>Number of Selected Parcels: " +
-                                            parcelSum + "</strong><br />" + strParcelInfo + "<br />"
-                                            + "Save these parcel records<br />"
-                                            + "<form action=\"file.php\" method=\"post\" target=\"_blank\"><input id=\"save\" type=\"submit\"></input><input type=\"checkbox\" name=\"append_data\" checked=\"true\" value=\"parcel\">Write new file?<br /><input id=\"hidden_field\" name=\"hidden_field\" type=\"hidden\" value=\"" + strStrippedInfo + "\" /></form><br />";
+    arrayUtil.forEach(event.features, function (feature) {
+
+      parcelValue = [ String(feature.attributes.MAP), String(feature.attributes.PARCEL), String(feature.attributes.SDATWEBADR) ];
+      parcelIndex = arrStructNum.indexOf(parcelValue);
+
+      for (x = 0; x < arrStructNum.length; x++) {
+        if (String(arrStructNum[x]) === String(parcelValue)) {
+          parcelIndex = x;
+        }
+      }
+
+      if (parcelIndex >= 0) {
+        if (plusOrMinus === 0) {
+          arrStructNum.splice(parcelIndex, 1);
+        }
+      } else { // Parcel Index = -1
+        if (plusOrMinus === 1) {
+          if (parcelIndex === 'undefined') { // if (typeof parcelIndex === 'undefined') {
+            arrStructNum.push(parcelValue);
+          } else if (parcelIndex === -1) {
+            arrStructNum.push(parcelValue);
+          }
+        }
+      }
+
+      n += 1;
+    });
+
+    parcelSum = arrStructNum.length;
+    strParcelInfo = "<strong>Number of Selected Parcels: " + parcelSum + "</strong><br />";
+
+    for (i = 0; i < arrStructNum.length; i++) {
+      strParcelInfo += "<strong>MAP: </strong>" + arrStructNum[i][0] + "<br \/>" +
+          "<strong>PARCEL: </strong>" + arrStructNum[i][1] + "<br />" +
+          "<strong>LINK: </strong><a href=\"" + arrStructNum[i][2] + "\" target=\"_blank\">Link</a><br /><hr />";
+      strStrippedInfo += arrStructNum[i][0] + ", " + arrStructNum[i][1] + ", " + arrStructNum[i][2] + "<br />";
+    }
+    strFormInfo = "Save these parcel records<br />"
+      + "<form action=\"file.php\" method=\"post\" target=\"_blank\"><input id=\"save\" type=\"submit\"></input><input type=\"checkbox\" name=\"append_data\" checked=\"true\" value=\"parcel\">Write new file?<br /><input id=\"hidden_field\" name=\"hidden_field\" type=\"hidden\" value=\"" + strStrippedInfo + "\" /></form><br />";
+    dom.byId('formContent').innerHTML = strFormInfo;
+    dom.byId('messages').innerHTML = strParcelInfo;
   }
 
 

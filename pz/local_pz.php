@@ -54,10 +54,13 @@
         font-weight: bold;
         font-size: larger;
       }
-      #messages{
+      #messages, #formContent{
         background-color: white;
         margin: 0.4em;
         padding: 0 0.2em;
+        width: 210px;
+        display: inline-block;
+        overflow: hidden;
       }
       .selType{
         float:left;
@@ -84,7 +87,7 @@
     
     <script src="http://js.arcgis.com/3.10/"></script>
     <!-- <script src="javascript/php_functions.js" type="text/javascript"></script> -->
-    <script src="../javascript/local_pz.js" type="text/javascript"></script>
+    <script src="../javascript/local_pz.yui.js" type="text/javascript"></script>
   </head>
 
   <body class="claro">
@@ -120,6 +123,7 @@
            style="padding:0;">
         <div id="geosearch"></div>
         <div style="position:absolute; right:20px; top:10px; z-Index:999;">
+          <span id="formContent"></span><br />
           <span id="messages"></span>  
           <div data-dojo-type="dijit/TitlePane" 
                data-dojo-props="title:'Switch Basemap', closable:false,  open:false">

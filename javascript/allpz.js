@@ -30,7 +30,8 @@ function executeIdentifyTask(evt) {
 
 
   // layers that can be identified by "click" that are NOT in the "Additional Layers" Content Pane
-  identifyParams.layerIds = [1, 4, 5, 6, 8];
+  // Critical Facilities, addresspoints, celltowers, centerlines, dbo.TaxParcel
+  identifyParams.layerIds = [0, 2, 3, 4, 6];
   // If a layer is checked in the "Additional Layers" pane, it will have been added
   // to the array (in updateLayerVisibility above), so add it to the list of those 
   // that can be clicked and identified.
@@ -166,6 +167,12 @@ function executeIdentifyTask(evt) {
         + "Year Built: ${YRBLT_CAMA} <br /> ${SDATWEBADR:checkNull}"); 
         map.infoWindow.resize(250, 500);
         feature.setInfoTemplate(template);
+      } else if (result.layerName === 'Water Service') {
+        template = new esri.InfoTemplate("Water Service Info", "<span class=\"sectionhead\">Layer: Water Service </span><br /><br /><hr>Water System: ${System}");
+        feature.setInfoTemplate(template);
+      } else if (result.layerName === 'Sewer Service') {
+        template = new esri.InfoTemplate("Sewer Service Info", "<span class=\"sectionhead\">Layer: Sewer Service </span><br /><br /><hr>Sewer System: ${System}");
+        feature.setInfoTemplate(template);
       } else if (result.layerName === 'Town Boundary') {
         template = new esri.InfoTemplate("",
         "<span class=\"sectionhead\">Layer: Town Boundary</span><br /><br /><hr>Community: ${COMMUNITY_NAME} <br />");
@@ -296,12 +303,13 @@ require([
   });
 
 
-  findTask = new FindTask("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
+  // findTask = new FindTask("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
+  findTask = new FindTask("http://192.168.100.36:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
   map.on("load", function () {
     //Create the find parameters
     findParams = new FindParameters();
     findParams.returnGeometry = true;
-    findParams.layerIds = [6, 8]; // Shows the Roads (6) when it first loads
+    findParams.layerIds = [4, 6]; // CHANGED [6, 8]; // Shows the Roads (6) when it first loads
     findParams.searchFields = ["RDNAMELOCAL", "PARCEL"]; // "ACCTID", "MAINTENANCE", "FRADDL_P", "TOADDL_P", "FRADDR_P", "TOADDR_P"];
     findParams.outSpatialReference = map.spatialReference;
     console.log("find sr: ", findParams.outSpatialReference);
@@ -350,14 +358,15 @@ require([
 
   // TURN LAYERS OFF AND ON
   imageParameters = new ImageParameters();
-  imageParameters.layerIds = [1, 4, 5, 6, 8];
+  imageParameters.layerIds = [0, 2, 3, 4, 6]; // [1, 4, 5, 6, 8];
   imageParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
   //can also be: LAYER_OPTION_EXCLUDE, LAYER_OPTION_HIDE, LAYER_OPTION_INCLUDE
   visibleLayerIds = []; // [1, 2, 3, 4, 5, 6, 8];
   // TURN LAYERS OFF AND ON
 
   // IDENTIFY LAYERS
-  landBaseLayer = new ArcGISDynamicMapServiceLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
+  // landBaseLayer = new ArcGISDynamicMapServiceLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
+  landBaseLayer = new ArcGISDynamicMapServiceLayer("http://192.168.100.36:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
     {"imageParameters": imageParameters, opacity: 0.55}); // , opacity:.55}); // NEW
   map.addLayer(landBaseLayer);
 
@@ -417,8 +426,9 @@ require([
           "Lot: ${LOT}<br />Grid: ${GRID}<br />Tax ID: ${ACCTID}<br /><hr>";
       infoTemplate = new InfoTemplate("${FIELD_NAME}", content);
 
-      // Parcels = Layer 8
-      featureLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/8", {
+      // Parcels = Layer 8 (NOW 6)
+      // featureLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/8", {
+        featureLayer = new FeatureLayer("http://192.168.100.36:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/6", {
         mode: FeatureLayer.MODE_ONDEMAND,
         outFields: ["*"]
       });
@@ -429,8 +439,9 @@ require([
       content = "Address: ${ADDRESS}<br />" +
         "City: ${CITY} <br /> Owner: ${OWNNAME1} ${OWNNAME2} <br /> Tax Id: ${ACCTID} <br /><hr>";
       infoTemplate = new InfoTemplate("${FIELD_NAME}", content);
-      // Address Points = Layer 4
-      featureLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/4", {
+      // Address Points = Layer 4 (NOW 2)
+      // featureLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/4", {
+      featureLayer = new FeatureLayer("http://192.168.100.36:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/2", {  
         mode: FeatureLayer.MODE_ONDEMAND,
         outFields: ["*"]
       });
@@ -560,7 +571,8 @@ require([
     // IDENTIFY LAYERS
   map.on("click", executeIdentifyTask);
   map.on("click", makePopupDraggable);
-  identifyTask = new IdentifyTask("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
+  // identifyTask = new IdentifyTask("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
+  identifyTask = new IdentifyTask("http://192.168.100.36:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
 
   identifyParams = new IdentifyParameters();
   identifyParams.tolerance = 3;
@@ -653,11 +665,14 @@ require([
   /////////////////////////////////////////////////////////////////////////////////////    
 
   // TURN LAYERS ON AND OFF
-  on(dom.byId("layer10CheckBox"), "change", updateLayerVisibility);
+  
   // on(dom.byId("layer2CheckBox"), "change", updateLayerVisibility);
-  on(dom.byId("layer3CheckBox"), "change", updateLayerVisibility);
+  on(dom.byId("layer1CheckBox"), "change", updateLayerVisibility);
+  on(dom.byId("layer5CheckBox"), "change", updateLayerVisibility);
   on(dom.byId("layer7CheckBox"), "change", updateLayerVisibility);
+  on(dom.byId("layer8CheckBox"), "change", updateLayerVisibility);
   on(dom.byId("layer9CheckBox"), "change", updateLayerVisibility);
+  on(dom.byId("layer10CheckBox"), "change", updateLayerVisibility);
   on(dom.byId("layer11CheckBox"), "change", updateLayerVisibility);
   on(dom.byId("layer12CheckBox"), "change", updateLayerVisibility);
   on(dom.byId("layer13CheckBox"), "change", updateLayerVisibility);
@@ -667,7 +682,7 @@ require([
     var inputs = query(".list_item");
     var inputCount = inputs.length;
     //in this application, layer 2 is always on.
-    visibleLayerIds = [1, 4, 5, 6, 8];
+    visibleLayerIds = [0, 2, 3, 4, 6];
     addlIdArray = []; // array used to track layers turned on in the "Additional Layers" pane.
     // It informs the identifyParams.layerIds array in the executeIdentifyTask function below.
     for (i = 0; i < inputCount; i++) {

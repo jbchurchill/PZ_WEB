@@ -130,40 +130,42 @@
             <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">
               <div id="addLayers" >
                 <h3>Additional Layers : </h3>
-                <span id="layer_list">
-                  <!--<input type='checkbox' class='list_item' id='layer2CheckBox' value=2 />Gas Wells&nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/GAS_WELLS.png" /><br/>-->
-                  <input type='checkbox' class='list_item' id='layer3CheckBox' value=3 />Wind Turbines&nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/Wind_Turbines.png" height="10" width="10" /><br/>
-                  <input type='checkbox' class='list_item' id='layer7CheckBox' value=7 />Zip Codes&nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/zip_codes.png" height="16" width="16" /><br />
-                  <input type='checkbox' class='list_item' id='layer9CheckBox' value=9 />Tax Map&nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/tax_map.png" height="16" width="16" /><br />
+                <span id="layer_list"><!-- updated layer order -->
+                  <!--<input type='checkbox' class='list_item' id='layer2CheckBox' value=2 />Gas Wells&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/GAS_WELLS.png" /><br/>-->
+                  <input type='checkbox' class='list_item' id='layer1CheckBox' value=1 />Wind Turbines&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/Wind_Turbines.png" height="10" width="10" /><br/>
+                  <input type='checkbox' class='list_item' id='layer5CheckBox' value=5 />Zip Codes&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/zip_codes.png" height="16" width="16" /><br />
+                  <input type='checkbox' class='list_item' id='layer7CheckBox' value=7 />Water Service&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/tax_map.png" height="16" width="16" /><br />
+                  <input type='checkbox' class='list_item' id='layer8CheckBox' value=8 />Sewer Service&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/tax_map.png" height="16" width="16" /><br />
+                  <input type='checkbox' class='list_item' id='layer9CheckBox' value=9 />Tax Map&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/tax_map.png" height="16" width="16" /><br />
                   <input type='checkbox' class='list_item' id='layer10CheckBox' value=10 />Zoning&nbsp;&nbsp;(See legend below)<br />
-                  <input type='checkbox' class='list_item' id='layer11CheckBox' value=11 />Election Districts&nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/Election_Districts.png" height="16" width="16" /><br />
-                  <input type='checkbox' class='list_item' id='layer12CheckBox' value=12 />Town Boundaries&nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/tax_map.png" height="16" width="16" /><br />
-                  <input type='checkbox' class='list_item' id='layer13CheckBox' value=13 />County Boundary&nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/CountyBoundary.jpg" height="16" width="16" /><br />
+                  <input type='checkbox' class='list_item' id='layer11CheckBox' value=11 />Election Districts&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/Election_Districts.png" height="16" width="16" /><br />
+                  <input type='checkbox' class='list_item' id='layer12CheckBox' value=12 />Town Boundaries&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/tax_map.png" height="16" width="16" /><br />
+                  <input type='checkbox' class='list_item' id='layer13CheckBox' value=13 />County Boundary&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/CountyBoundary.jpg" height="16" width="16" /><br />
                 </span><hr /><br />
                 <div id="ZoningLegend">
-                  <img src="http://gis.garrettcounty.org/arcgis/images/Zoning.PNG" /><br/>
+                  <img src="http://maps.garrettcounty.org/arcgis/images/Zoning.PNG" /><br/>
                   <h4>Layers that are always on:</h4>
                   <ul>
                     <li>Critical Facilities
                       <ul>
                         <lh>Types:</lh>
-                        <li>1 &#045; Parks &nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/parks.png" height="16" width="16" /></li>
-                        <li>2L &#045; Libraries &nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/library.png" height="16" width="16" /></li>
-                        <li>2S &#045; Schools &nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/school.png" height="16" width="16" /></li>
-                        <li>3 &#045; Post Office or Govt. Bldg.&nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/post_office_govt_building.png" height="16" width="19" /></li>
-                        <li>4 &#045; Water, Sewer, Dump, Recycle&nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/water_sewer_dump.png" height="16" width="16" /></li>
-                        <li>5 &#045; Police &amp; Criminal Justice &nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/police_criminal_justice.png" height="16" width="16" /></li>
-                        <li>6 &#045; Roads &amp; Highways Facilities &nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/roads_highways_facilities.png" height="16" width="16" /></li>
-                        <li>6A &#045; Roads &amp; Highways Facilities &nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/airport.png" height="16" width="16" /></li>
-                        <li>7 &#045; Nursing Homes &nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/nursing_home.png" height="16" width="16" /></li>
-                        <li>8 &#045; Communications Towers &nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/communications_tower.png" height="16" width="16" /></li>
-                        <li>9 &#045; Fire &amp; Rescue Facilities &nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/CountyBoundary.jpg" height="16" width="16" /></li>
+                        <li>1 &#045; Parks &nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/parks.png" height="16" width="16" /></li>
+                        <li>2L &#045; Libraries &nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/library.png" height="16" width="16" /></li>
+                        <li>2S &#045; Schools &nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/school.png" height="16" width="16" /></li>
+                        <li>3 &#045; Post Office or Govt. Bldg.&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/post_office_govt_building.png" height="16" width="19" /></li>
+                        <li>4 &#045; Water, Sewer, Dump, Recycle&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/water_sewer_dump.png" height="16" width="16" /></li>
+                        <li>5 &#045; Police &amp; Criminal Justice &nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/police_criminal_justice.png" height="16" width="16" /></li>
+                        <li>6 &#045; Roads &amp; Highways Facilities &nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/roads_highways_facilities.png" height="16" width="16" /></li>
+                        <li>6A &#045; Roads &amp; Highways Facilities &nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/airport.png" height="16" width="16" /></li>
+                        <li>7 &#045; Nursing Homes &nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/nursing_home.png" height="16" width="16" /></li>
+                        <li>8 &#045; Communications Towers &nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/communications_tower.png" height="16" width="16" /></li>
+                        <li>9 &#045; Fire &amp; Rescue Facilities &nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/CountyBoundary.jpg" height="16" width="16" /></li>
                       </ul>
                     </li>
-                    <li>Addresses&nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/AddressPoints.png" /></li>
-                    <li>Cell Towers&nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/CELLTOWERS.png" /></li>
-                    <li>Street Centerlines&nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/centerlines.png" height="8" width="34" /></li>
-                    <li>Tax Parcels&nbsp;&nbsp;<img src="http://gis.garrettcounty.org/arcgis/images/parcels.png" height="16" width="16" /></li>
+                    <li>Addresses&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/AddressPoints.png" /></li>
+                    <li>Cell Towers&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/CELLTOWERS.png" /></li>
+                    <li>Street Centerlines&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/centerlines.png" height="8" width="34" /></li>
+                    <li>Tax Parcels&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/parcels.png" height="16" width="16" /></li>
                   </ul>
                 </div>
               </div><!-- addLayers -->

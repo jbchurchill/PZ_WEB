@@ -138,8 +138,10 @@
                 <h3>Additional Layers : </h3>
                 <span id="layer_list">
                   <!--<input type='checkbox' class='list_item' id='layer2CheckBox' value=2 />Gas Wells&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/GAS_WELLS.png" /><br/>-->
-                  <input type='checkbox' class='list_item' id='layer3CheckBox' value=3 />Wind Turbines&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/Wind_Turbines.png" height="10" width="10" /><br/>
-                  <input type='checkbox' class='list_item' id='layer7CheckBox' value=7 />Zip Codes&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/zip_codes.png" height="16" width="16" /><br />
+                  <input type='checkbox' class='list_item' id='layer1CheckBox' value=1 />Wind Turbines&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/Wind_Turbines.png" height="10" width="10" /><br/>
+                  <input type='checkbox' class='list_item' id='layer5CheckBox' value=5 />Zip Codes&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/zip_codes.png" height="16" width="16" /><br />
+                  <input type='checkbox' class='list_item' id='layer7CheckBox' value=7 />Water Service&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/tax_map.png" height="16" width="16" /><br />
+                  <input type='checkbox' class='list_item' id='layer8CheckBox' value=8 />Sewer Service&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/tax_map.png" height="16" width="16" /><br />
                   <input type='checkbox' class='list_item' id='layer9CheckBox' value=9 />Tax Map&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/tax_map.png" height="16" width="16" /><br />
                   <input type='checkbox' class='list_item' id='layer10CheckBox' value=10 />Zoning&nbsp;&nbsp;(See legend below)<br />
                   <input type='checkbox' class='list_item' id='layer11CheckBox' value=11 />Election Districts&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/Election_Districts.png" height="16" width="16" /><br />

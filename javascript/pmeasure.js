@@ -195,14 +195,16 @@ require([
   );
 
   imageParameters = new ImageParameters();
-  imageParameters.layerIds = [1, 4, 5, 6, 8];
+  imageParameters.layerIds = [0, 2, 3, 4, 6]; // [1, 4, 5, 6, 8];
   imageParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
 
-  visibleLayers = new ArcGISDynamicMapServiceLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
+  // visibleLayers = new ArcGISDynamicMapServiceLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
+  visibleLayers = new ArcGISDynamicMapServiceLayer("http://192.168.100.36:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
       {"imageParameters": imageParameters, opacity: 0.55}); // , opacity:.55}); // NEW
   map.addLayer(visibleLayers);
 
-  parcelsLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/8", {
+  // parcelsLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/8", {
+    parcelsLayer = new FeatureLayer("http://192.168.100.36:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/6", {
     mode: FeatureLayer.MODE_ONDEMAND,
     outFields: ["*"]
   });

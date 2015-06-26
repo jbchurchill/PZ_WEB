@@ -274,7 +274,8 @@ require([
     app.printer = new Print({
       map: app.map,
       templates: templates,
-      url: "http://maps.garrettcounty.org:6080/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
+      // url: "http://maps.garrettcounty.org:6080/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
+      url: "http://192.168.100.36:6080/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
     }, dom.byId("printButton"));
     app.printer.startup();
   } // end function setupPrint
@@ -288,7 +289,7 @@ require([
   saParameters.layerIds = [1, 4, 5, 6, 7]; // [0, 1, 2, 3, 4, 5, 6, 7];
   saParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
   pzParameters = new ImageParameters();
-  pzParameters.layerIds = [4, 8]; // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+  pzParameters.layerIds = [2, 6]; // addresspoints, parcels - OLD [4, 8]; // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
   pzParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
   labelField = "RDNAMELOCAL";
   epParameters = new ImageParameters();
@@ -299,71 +300,72 @@ require([
   cnParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
 
 
-  PZ_fLayer = new ArcGISDynamicMapServiceLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
+  // PZ_fLayer = new ArcGISDynamicMapServiceLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
+  PZ_fLayer = new ArcGISDynamicMapServiceLayer("http://192.168.100.36:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
     {"imageParameters": pzParameters, opacity: 0.75, id: "Parcels & Addresses"});
 
-  CT_fLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/5", {
+  CT_fLayer = new FeatureLayer("http://192.168.100.36:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/3", { // was 5
     mode: FeatureLayer.MODE_ONDEMAND,
     id: "Cell Towers"
   });
 
-  WT_fLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/3", {
+  WT_fLayer = new FeatureLayer("http://192.168.100.36:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/1", { // was 3
     mode: FeatureLayer.MODE_ONDEMAND,
     id: "Wind Turbines"
   });
 
-  CL_fLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/6", {
+  CL_fLayer = new FeatureLayer("http://192.168.100.36:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/4", { // was 6
     mode: FeatureLayer.MODE_ONDEMAND,
     outFields: [labelField],
     showLabels: true,
     id: "Street Centerlines"
   });
 
-  PS_fLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer/1", {
+  PS_fLayer = new FeatureLayer("http://192.168.100.36:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer/1", {
     mode: FeatureLayer.MODE_ONDEMAND,
     id: "Perennial Streams"
   });
 
-  ZN_fLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/10", {
+  ZN_fLayer = new FeatureLayer("http://192.168.100.36:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/10", { // still 10!
     mode: FeatureLayer.MODE_ONDEMAND,
     opacity: 0.3,
     id: "Zoning"
   });
 
-  SP_fLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer/4", {
+  SP_fLayer = new FeatureLayer("http://192.168.100.36:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer/4", {
     mode: FeatureLayer.MODE_ONDEMAND,
     opacity: 0.45, 
     id: "Source Water Prot. Areas"
   });
 
-  PR_fLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer/6", {
+  PR_fLayer = new FeatureLayer("http://192.168.100.36:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer/6", {
     mode: FeatureLayer.MODE_ONDEMAND,
     opacity: 0.45, 
     id: "Protected Species"
   });
 
-  GA_fLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer/7", {
+  GA_fLayer = new FeatureLayer("http://192.168.100.36:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer/7", {
     mode: FeatureLayer.MODE_ONDEMAND,
     opacity: 0.75, 
     id: "Growth Areas"
   });
 
-  FH_fLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/FEMA/Flood_Hazard/MapServer/2", {
+  FH_fLayer = new FeatureLayer("http://192.168.100.36:6080/arcgis/rest/services/FEMA/Flood_Hazard/MapServer/2", {
     mode: FeatureLayer.MODE_ONDEMAND,
     id: "Flood Hazard",
     opacity: 0.75
   });
 
-  BF_fLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/Contours_and_Plan/Contours_and_Plan/MapServer/0", {
+  BF_fLayer = new FeatureLayer("http://192.168.100.36:6080/arcgis/rest/services/Contours_and_Plan/Contours_and_Plan/MapServer/0", {
     mode: FeatureLayer.MODE_ONDEMAND,
     opacity: 0.75, 
     id: "Building Footprints"
   });
   
-  EP_fLayer = new ArcGISDynamicMapServiceLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/Contours_and_Plan/Contours_and_Plan/MapServer",
+  EP_fLayer = new ArcGISDynamicMapServiceLayer("http://192.168.100.36:6080/arcgis/rest/services/Contours_and_Plan/Contours_and_Plan/MapServer",
     {"imageParameters": epParameters, opacity: 0.75, id: "Edge of Pavement"});
 
-  CN_fLayer = new ArcGISDynamicMapServiceLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/Contours_and_Plan/Contours_and_Plan/MapServer",
+  CN_fLayer = new ArcGISDynamicMapServiceLayer("http://192.168.100.36:6080/arcgis/rest/services/Contours_and_Plan/Contours_and_Plan/MapServer",
     {"imageParameters": cnParameters, opacity: 0.75, id: "Contours"});
 
   app.map.addLayers([PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer, BF_fLayer, EP_fLayer, CN_fLayer]);

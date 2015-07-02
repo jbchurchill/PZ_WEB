@@ -71,7 +71,7 @@ require([
   esriConfig.defaults.io.proxyUrl = "/proxy";
   esriConfig.defaults.io.alwaysUseProxy = false;
   //This service is for development and testing purposes only. We recommend that you create your own geometry service for use within your applications
-  esriConfig.defaults.geometryService = new GeometryService("http://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
+  esriConfig.defaults.geometryService = new GeometryService("https://tasks.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer");
   // runs when Measure Button is clicked (see the second line inside of the "initSelectToolbar" fx and the getExtent fx below)
 
   function launchURL () {
@@ -163,20 +163,20 @@ require([
     // console.log("Zoom: " + zoomLevel + ";  XY: " + passedX + ", " + passedY);
   }
 
-  mdImagelayer = new esri.layers.ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/ImageServer");
+  mdImagelayer = new esri.layers.ArcGISTiledMapServiceLayer("https://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/ImageServer");
   
-  mdImage2011 = new esri.layers.ArcGISTiledMapServiceLayer("http://imagery.geodata.md.gov/imap/rest/services/SixInch/SixInchImagery2011_2013/MapServer");
+  mdImage2011 = new esri.layers.ArcGISTiledMapServiceLayer("https://imagery.geodata.md.gov/imap/rest/services/SixInch/SixInchImagery2011_2013/MapServer");
 
   mdImageBasemap = new esri.dijit.Basemap({
     layers: [mdImagelayer],
     title: "MD 2014 Imagery",
-    thumbnailUrl: "http://maps.garrettcounty.org/arcgis/images/image2014.png"
+    thumbnailUrl: "https://maps.garrettcounty.org/arcgis/images/image2014.png"
   });
 
   mdImageBasemap2011 = new esri.dijit.Basemap({
     layers: [mdImage2011],
     title: "MD 2011 Imagery",
-    thumbnailUrl: "http://maps.garrettcounty.org/arcgis/images/image_v2.png"
+    thumbnailUrl: "https://maps.garrettcounty.org/arcgis/images/image_v2.png"
   });
   basemapGallery.add(mdImageBasemap);
   basemapGallery.add(mdImageBasemap2011);
@@ -199,12 +199,12 @@ require([
   imageParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
 
   // visibleLayers = new ArcGISDynamicMapServiceLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
-  visibleLayers = new ArcGISDynamicMapServiceLayer("http://192.168.100.36:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
+  visibleLayers = new ArcGISDynamicMapServiceLayer("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
       {"imageParameters": imageParameters, opacity: 0.55}); // , opacity:.55}); // NEW
   map.addLayer(visibleLayers);
 
   // parcelsLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/8", {
-    parcelsLayer = new FeatureLayer("http://192.168.100.36:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/6", {
+    parcelsLayer = new FeatureLayer("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/6", {
     mode: FeatureLayer.MODE_ONDEMAND,
     outFields: ["*"]
   });
@@ -227,7 +227,7 @@ require([
 
   // Add Geocoder
   geocoders = [{
-    url: "http://geodata.md.gov/imap/rest/services/GeocodeServices/MD_CompositeLocatorWithEsri/GeocodeServer",
+    url: "https://geodata.md.gov/imap/rest/services/GeocodeServices/MD_CompositeLocatorWithEsri/GeocodeServer",
     name: "MDiMap Composite Locator", 
     singleLineFieldName: "SingleLine",
   }];

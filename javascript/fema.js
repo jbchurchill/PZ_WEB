@@ -220,9 +220,8 @@ require(["esri/map",
 
   // FEMA service does not work very well in my experience.
   // fpFEMA_task = new IdentifyTask("https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer/");
-  fpFEMA_task = new IdentifyTask("http://maps.garrettcounty.org:6080/arcgis/rest/services/FEMA/Flood_Hazard/MapServer/");
+  fpFEMA_task = new IdentifyTask("https://maps.garrettcounty.org/arcweb/rest/services/FEMA/FEMA/MapServer/");
   // featureLayer = new FeatureLayer("https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer/28",
-
 
   imageParameters = new ImageParameters();
   imageParameters.layerIds = [0, 1, 2, 3];
@@ -230,7 +229,7 @@ require(["esri/map",
 
 
   // var landBaseLayer = new ArcGISDynamicMapServiceLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
-  layerFEMA = new ArcGISDynamicMapServiceLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/FEMA/Flood_Hazard/MapServer/",
+  layerFEMA = new ArcGISDynamicMapServiceLayer("https://maps.garrettcounty.org/arcweb/rest/services/FEMA/FEMA/MapServer",
     {"imageParameters": imageParameters, opacity: 0.75});
 
   map.addLayer(layerFEMA);
@@ -240,20 +239,20 @@ require(["esri/map",
     map: map
   }, "basemapGallery");
 
-  mdImagelayer = new esri.layers.ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/ImageServer");
+  mdImagelayer = new esri.layers.ArcGISTiledMapServiceLayer("https://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/ImageServer");
   
-  mdImage2011 = new esri.layers.ArcGISTiledMapServiceLayer("http://imagery.geodata.md.gov/imap/rest/services/SixInch/SixInchImagery2011_2013/MapServer");
+  mdImage2011 = new esri.layers.ArcGISTiledMapServiceLayer("https://imagery.geodata.md.gov/imap/rest/services/SixInch/SixInchImagery2011_2013/MapServer");
 
   mdImageBasemap = new esri.dijit.Basemap({
     layers: [mdImagelayer],
     title: "MD 2014 Imagery",
-    thumbnailUrl: "http://maps.garrettcounty.org/arcgis/images/image2014.png"
+    thumbnailUrl: "https://maps.garrettcounty.org/arcgis/images/image2014.png"
   });
 
   mdImageBasemap2011 = new esri.dijit.Basemap({
     layers: [mdImage2011],
     title: "MD 2011 Imagery",
-    thumbnailUrl: "http://maps.garrettcounty.org/arcgis/images/image_v2.png"
+    thumbnailUrl: "https://maps.garrettcounty.org/arcgis/images/image_v2.png"
   });
   basemapGallery.add(mdImageBasemap);
   basemapGallery.add(mdImageBasemap2011);
@@ -328,7 +327,7 @@ require(["esri/map",
 
 // Add Geocoder
   geocoders = [{
-    url: "http://geodata.md.gov/imap/rest/services/GeocodeServices/MD_CompositeLocatorWithEsri/GeocodeServer",
+    url: "https://geodata.md.gov/imap/rest/services/GeocodeServices/MD_CompositeLocatorWithEsri/GeocodeServer",
     name: "MDiMap Composite Locator", 
     singleLineFieldName: "SingleLine",
   }];

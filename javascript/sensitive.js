@@ -290,7 +290,7 @@ require(["esri/map",
   saParameters.layerIds = [0, 1, 2, 3, 4, 5, 6, 7];
   saParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
 
-  SA_fLayer = new ArcGISDynamicMapServiceLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer", // {
+  SA_fLayer = new ArcGISDynamicMapServiceLayer("https://maps.garrettcounty.org/arcweb/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer", // {
     {"imageParameters": saParameters, opacity: 0.75});
 
   map.addLayer(SA_fLayer);
@@ -300,20 +300,20 @@ require(["esri/map",
     map: map
   }, "basemapGallery");
 
-  mdImagelayer = new esri.layers.ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/ImageServer");
+  mdImagelayer = new esri.layers.ArcGISTiledMapServiceLayer("https://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/ImageServer");
   
-  mdImage2011 = new esri.layers.ArcGISTiledMapServiceLayer("http://imagery.geodata.md.gov/imap/rest/services/SixInch/SixInchImagery2011_2013/MapServer");
+  mdImage2011 = new esri.layers.ArcGISTiledMapServiceLayer("https://imagery.geodata.md.gov/imap/rest/services/SixInch/SixInchImagery2011_2013/MapServer");
 
   mdImageBasemap = new esri.dijit.Basemap({
     layers: [mdImagelayer],
     title: "MD 2014 Imagery",
-    thumbnailUrl: "http://maps.garrettcounty.org/arcgis/images/image2014.png"
+    thumbnailUrl: "https://maps.garrettcounty.org/arcgis/images/image2014.png"
   });
 
   mdImageBasemap2011 = new esri.dijit.Basemap({
     layers: [mdImage2011],
     title: "MD 2011 Imagery",
-    thumbnailUrl: "http://maps.garrettcounty.org/arcgis/images/image_v2.png"
+    thumbnailUrl: "https://maps.garrettcounty.org/arcgis/images/image_v2.png"
   });
   basemapGallery.add(mdImageBasemap);
   basemapGallery.add(mdImageBasemap2011);
@@ -325,7 +325,7 @@ require(["esri/map",
   });
 
   function executeIdentifyTask(evt) {
-    var deferred, myLayerIds, identifyParams, task = new IdentifyTask("http://maps.garrettcounty.org:6080/arcgis/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer");
+    var deferred, myLayerIds, identifyParams, task = new IdentifyTask("https://maps.garrettcounty.org/arcweb/rest/services/Sensitive_Areas/Sensitive_Areas/MapServer");
     myLayerIds = [0, 1, 2, 3, 4, 5, 6, 7];
 
     identifyParams = new IdentifyParameters();
@@ -385,7 +385,7 @@ require(["esri/map",
 
   // Add Geocoder
   geocoders = [{
-    url: "http://geodata.md.gov/imap/rest/services/GeocodeServices/MD_CompositeLocatorWithEsri/GeocodeServer",
+    url: "https://geodata.md.gov/imap/rest/services/GeocodeServices/MD_CompositeLocatorWithEsri/GeocodeServer",
     name: "MDiMap Composite Locator", 
     singleLineFieldName: "SingleLine",
   }];

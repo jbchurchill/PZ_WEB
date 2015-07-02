@@ -28,10 +28,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
     <title>Printable Map</title>
-    <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/dojo/dijit/themes/claro/claro.css">
-    <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/dojo/dijit/themes/nihilo/nihilo.css">
-    <link rel="stylesheet" href="http://archive.dojotoolkit.org/nightly/dojotoolkit/dojox/layout/resources/ExpandoPane.css">
-    <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/esri/css/esri.css">
+    <!-- <link rel="stylesheet" href="https://js.arcgis.com/3.10/js/dojo/dijit/themes/claro/claro.css"> -->
+    <!-- <link rel="stylesheet" href="https://js.arcgis.com/3.10/js/dojo/dijit/themes/nihilo/nihilo.css"> -->
+    <link rel="stylesheet" href="javascript/dojo_1_10_4/dijit/themes/claro/claro.css"><!-- could have used js.arcgis.com/3.13/dijit/themes/claro/claro.css -->
+    <link rel="stylesheet" href="javascript/dojo_1_10_4/dijit/themes/nihilo/nihilo.css">
+    <!-- <link rel="stylesheet" href="http://archive.dojotoolkit.org/nightly/dojotoolkit/dojox/layout/resources/ExpandoPane.css"> -->
+    <link rel="stylesheet" href="javascript/dojo_1_10_4/dojox/layout/resources/ExpandoPane.css">
+    <!-- <link rel="stylesheet" href="https://js.arcgis.com/3.10/js/esri/css/esri.css"> -->
+    <link rel="stylesheet" href="http://js.arcgis.com/3.13/esri/css/esri.css">
     <style>
       html, body { 
         height: 100%; width: 100%;
@@ -125,7 +129,7 @@
       }
     </style>
 
-    <script src="http://js.arcgis.com/3.12/"></script>
+    <script src="https://js.arcgis.com/3.12/"></script>
     <script src="javascript/printable.yui.js" type="text/javascript"></script>
   </head>
   <body class="nihilo">

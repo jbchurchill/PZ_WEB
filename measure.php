@@ -27,8 +27,11 @@
     on iOS devices-->
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
     <title>Measurement Map</title>
-    <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/dojo/dijit/themes/claro/claro.css">
-    <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/esri/css/esri.css">
+    <!-- <link rel="stylesheet" href="https://js.arcgis.com/3.10/js/dojo/dijit/themes/claro/claro.css"> -->
+    <!-- <link rel="stylesheet" href="https://js.arcgis.com/3.10/js/esri/css/esri.css"> -->
+    <link rel="stylesheet" href="javascript/dojo_1_10_4/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="http://js.arcgis.com/3.13/esri/css/esri.css">
+
     <style>
       html,body {
         height:100%;
@@ -83,7 +86,7 @@
         background-color: white;
       }      
     </style>
-    <script src="http://js.arcgis.com/3.10/"></script>
+    <script src="https://js.arcgis.com/3.13/"></script>
     <!--<script type="text/javascript" src="http://gis.garrettcounty.org/arcgis/javascript/pmeasure.js"></script>-->
     <script type="text/javascript" src="javascript/pmeasure.yui.js"></script><!-- local -->
   </head>

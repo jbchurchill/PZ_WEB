@@ -296,7 +296,7 @@ require([
 
 
   // findTask = new FindTask("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
-  findTask = new FindTask("http://192.168.100.36:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
+  findTask = new FindTask("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
   map.on("load", function () {
     //Create the find parameters
     findParams = new FindParameters();
@@ -323,20 +323,20 @@ require([
     map: map
   }, "basemapGallery");
 
-  mdImagelayer = new esri.layers.ArcGISTiledMapServiceLayer("http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/ImageServer");
+  mdImagelayer = new esri.layers.ArcGISTiledMapServiceLayer("https://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/ImageServer");
   
-  mdImage2011 = new esri.layers.ArcGISTiledMapServiceLayer("http://imagery.geodata.md.gov/imap/rest/services/SixInch/SixInchImagery2011_2013/MapServer");
+  mdImage2011 = new esri.layers.ArcGISTiledMapServiceLayer("https://imagery.geodata.md.gov/imap/rest/services/SixInch/SixInchImagery2011_2013/MapServer");
 
   mdImageBasemap = new esri.dijit.Basemap({
     layers: [mdImagelayer],
     title: "MD 2014 Imagery",
-    thumbnailUrl: "http://maps.garrettcounty.org/arcgis/images/image2014.png"
+    thumbnailUrl: "https://maps.garrettcounty.org/arcgis/images/image2014.png"
   });
 
   mdImageBasemap2011 = new esri.dijit.Basemap({
     layers: [mdImage2011],
     title: "MD 2011 Imagery",
-    thumbnailUrl: "http://maps.garrettcounty.org/arcgis/images/image_v2.png"
+    thumbnailUrl: "https://maps.garrettcounty.org/arcgis/images/image_v2.png"
   });
   basemapGallery.add(mdImageBasemap);
   basemapGallery.add(mdImageBasemap2011);
@@ -357,7 +357,7 @@ require([
 
   // IDENTIFY LAYERS
   // landBaseLayer = new ArcGISDynamicMapServiceLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
-  landBaseLayer = new ArcGISDynamicMapServiceLayer("http://192.168.100.36:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
+  landBaseLayer = new ArcGISDynamicMapServiceLayer("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
     {"imageParameters": imageParameters, opacity: 0.55}); // , opacity:.55}); // NEW
   map.addLayer(landBaseLayer);
 
@@ -491,7 +491,7 @@ require([
 
       // Parcels = Layer 6 (was 8)
       // featureLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/8", {
-        featureLayer = new FeatureLayer("http://192.168.100.36:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/6", {
+        featureLayer = new FeatureLayer("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/6", {
         mode: FeatureLayer.MODE_ONDEMAND,
         outFields: ["*"]
       });
@@ -504,7 +504,7 @@ require([
       infoTemplate = new InfoTemplate("${FIELD_NAME}", content);
       // Address Points = Layer 2 (was 4)
       // featureLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/4", {
-        featureLayer = new FeatureLayer("http://192.168.100.36:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/2", {
+        featureLayer = new FeatureLayer("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/2", {
         mode: FeatureLayer.MODE_ONDEMAND,
         outFields: ["*"]
       });
@@ -686,7 +686,7 @@ require([
     // IDENTIFY LAYERS
   map.on("click", executeIdentifyTask);
   // identifyTask = new IdentifyTask("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
-  identifyTask = new IdentifyTask("http://192.168.100.36:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
+  identifyTask = new IdentifyTask("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
 
   identifyParams = new IdentifyParameters();
   identifyParams.tolerance = 3;
@@ -818,7 +818,7 @@ require([
   // TURN LAYERS ON AND OFF
   // Add Geocoder  
   geocoders = [{
-    url: "http://geodata.md.gov/imap/rest/services/GeocodeServices/MD_CompositeLocatorWithEsri/GeocodeServer",
+    url: "https://geodata.md.gov/imap/rest/services/GeocodeServices/MD_CompositeLocatorWithEsri/GeocodeServer",
     name: "MDiMap Composite Locator", 
     singleLineFieldName: "SingleLine",
   }];

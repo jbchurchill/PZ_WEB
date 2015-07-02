@@ -21,8 +21,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
     <title>Flood Hazard Map</title>
-    <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/dojo/dijit/themes/claro/claro.css">
-    <link rel="stylesheet" href="http://js.arcgis.com/3.10/js/esri/css/esri.css">
+    <!-- <link rel="stylesheet" href="https://js.arcgis.com/3.10/js/dojo/dijit/themes/claro/claro.css"> -->
+    <!-- <link rel="stylesheet" href="https://js.arcgis.com/3.10/js/esri/css/esri.css"> -->
+    <link rel="stylesheet" href="javascript/dojo_1_10_4/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="http://js.arcgis.com/3.13/esri/css/esri.css">
 
     <style>
       html, body, #mapDiv {
@@ -79,7 +81,7 @@
         background-color: white;
       }            
     </style>
-    <script type="text/javascript" src="http://js.arcgis.com/3.10/"></script>
+    <script type="text/javascript" src="https://js.arcgis.com/3.10/"></script>
     <script type="text/javascript" src="javascript/fema.yui.js"></script>
   </head>
 

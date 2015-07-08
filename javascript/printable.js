@@ -350,7 +350,7 @@ require([
     id: "Growth Areas"
   });
 
-  FH_fLayer = new FeatureLayer("https://maps.garrettcounty.org/arcweb/rest/services/FEMA/Flood_Hazard/MapServer/2", {
+  FH_fLayer = new FeatureLayer("https://maps.garrettcounty.org/arcweb/rest/services/FEMA/FEMA/MapServer/2", {
     mode: FeatureLayer.MODE_ONDEMAND,
     id: "Flood Hazard",
     opacity: 0.75

@@ -35,7 +35,7 @@
     <!-- <link rel="stylesheet" href="http://archive.dojotoolkit.org/nightly/dojotoolkit/dojox/layout/resources/ExpandoPane.css"> -->
     <link rel="stylesheet" href="javascript/dojo_1_10_4/dojox/layout/resources/ExpandoPane.css">
     <!-- <link rel="stylesheet" href="https://js.arcgis.com/3.10/js/esri/css/esri.css"> -->
-    <link rel="stylesheet" href="http://js.arcgis.com/3.13/esri/css/esri.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.13/esri/css/esri.css">
     <style>
       html, body { 
         height: 100%; width: 100%;

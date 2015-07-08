@@ -26,7 +26,7 @@
     <title>Planning and Zoning &#045; Click to Identify</title>
     <link rel="stylesheet" href="../javascript/dojo_1_10_4/dijit/themes/claro/claro.css">
     <link rel="stylesheet" href="../javascript/dojo_1_10_4/dojox/layout/resources/ExpandoPane.css">
-    <link rel="stylesheet" href="http://js.arcgis.com/3.13/esri/css/esri.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.13/esri/css/esri.css">
     <!-- <link rel="stylesheet" href="https://js.arcgis.com/3.10/js/dojo/dijit/themes/claro/claro.css">
     <link rel="stylesheet" href="https://archive.dojotoolkit.org/nightly/dojotoolkit/dojox/layout/resources/ExpandoPane.css">
     <link rel="stylesheet" href="https://js.arcgis.com/3.10/js/esri/css/esri.css">

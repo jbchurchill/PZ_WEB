@@ -123,14 +123,14 @@
               <button id="launchButton" data-dojo-type="dijit/form/Button">Launch</button>
               <input id="mapSelect"><br />
               <ul>
-                <li><a href="../help.html">Help ?</a></li>
+                <li><a href="../help.php">Help ?</a></li>
                 <li><a href="../">Home</a></li>
               </ul>
               <p>
                 By default, the Launch Button will reload this page in the same window, updating the extent in the address bar. 
                 This works well for copying and pasting a link to a specific location on this map.
                 Choose a different map to launch the current extent in a new window or tab (depending on your browser preferences).
-                The different maps have different uses (see the <a href="../help.html">Help &amp; Documentation</a> for more information).
+                The different maps have different uses (see the <a href="../help.php">Help &amp; Documentation</a> for more information).
               </p>
             </div><!-- ContentPane 3 -->
           </div><!-- TitlePane Navigation -->

@@ -1,3 +1,7 @@
+<?php 
+	ob_start(); 
+	//instert HTML HEAD here
+?>
 <?php
   if (isset($_GET['px'])) {
     $px = trim(stripslashes($_GET[px]));
@@ -86,9 +90,20 @@
     <script src="https://js.arcgis.com/3.10/"></script>
     <!-- <script src="javascript/php_functions.js" type="text/javascript"></script> -->
     <script src="javascript/allpz.yui.js" type="text/javascript"></script>
-  </head>
+<?php 
+	$htmlHEAD = ob_get_contents();
+	ob_end_clean();
+	
+	//body class
+	$htmlBodyClass = 'claro';
+	
+	//build the header
+	include('../includes/inc.header.php'); 
+	
+	//you are now inside the html body:
+?>
 
-  <body class="claro">
+  <!-- <body class="claro"> -->
     <script>
       var passedX = '<?php echo $px; ?>';
       var passedY = '<?php echo $py; ?>';

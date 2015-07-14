@@ -1,3 +1,19 @@
+<?php 
+	ob_start(); 
+	//instert HTML HEAD here
+?>
+<?php 
+	$htmlHEAD = ob_get_contents();
+	ob_end_clean();
+	
+	//body class
+	$htmlBodyClass = 'claro';
+	
+	//build the header
+	include('../includes/inc.header.php'); 
+	
+	//you are now inside the html body:
+?>
 <?php
   if (isset($_GET['px'])) {
     $px = trim(stripslashes($_GET[px]));
@@ -130,7 +146,7 @@
     </style>
 
     <script src="https://js.arcgis.com/3.12/"></script>
-    <script src="javascript/printable.yui.js" type="text/javascript"></script>
+    <script src="javascript/printable.yui.js" type="text/javascript"></script>    
   </head>
   <body class="nihilo">
     <script>

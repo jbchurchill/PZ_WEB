@@ -2,12 +2,20 @@
 	ob_start(); 
 	//instert HTML HEAD here
 ?>
+    <link rel="stylesheet" href="javascript/dojo_1_10_4/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.13/esri/css/esri.css">
+    <link rel="stylesheet" href="../css/mapstyles.css">
+
+    <script src="https://js.arcgis.com/3.13/"></script>
+    <!--<script type="text/javascript" src="http://gis.garrettcounty.org/arcgis/javascript/pmeasure.js"></script>-->
+    <script type="text/javascript" src="javascript/pmeasure.yui.js"></script><!-- local -->
 <?php 
 	$htmlHEAD = ob_get_contents();
 	ob_end_clean();
 	
 	//body class
 	$htmlBodyClass = 'claro';
+  $htmlTitle = 'Measurement Map';
 	
 	//build the header
 	include('../includes/inc.header.php'); 
@@ -34,80 +42,9 @@
   } else {
     $bmap = "streets";
   }
-?>
-<!DOCTYPE html>
-<html> 
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <!--The viewport meta tag is used to improve the presentation and behavior of the samples 
-    on iOS devices-->
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-    <title>Measurement Map</title>
-    <!-- <link rel="stylesheet" href="https://js.arcgis.com/3.10/js/dojo/dijit/themes/claro/claro.css"> -->
-    <!-- <link rel="stylesheet" href="https://js.arcgis.com/3.10/js/esri/css/esri.css"> -->
-    <link rel="stylesheet" href="javascript/dojo_1_10_4/dijit/themes/claro/claro.css">
-    <link rel="stylesheet" href="https://js.arcgis.com/3.13/esri/css/esri.css">
-
-    <style>
-      html,body {
-        height:100%;
-        width:100%;
-        margin:0;
-      }
-      body {
-        background-color:#FFF;
-        overflow:hidden;
-        font-family:"Trebuchet MS";
-      }
-      #map {
-        border:solid 2px #808775;
-        -moz-border-radius:4px;
-        -webkit-border-radius:4px;
-        border-radius:4px;
-        margin:5px;
-        padding:0px;
-      }
-      #titlePane{
-        width:240px;
-      }
-      .claro .dijitTitlePaneTitle {
-        background: #fff;
-        font-weight:600;
-        border: none;
-        border-bottom:solid 1px #29201A;
-        border-top:solid 1px #29201A;
-      }
-      .claro .dijitTitlePaneTitleHover {
-        background:#eee;
-      }
-      .claro .dijitTitlePaneTitleActive {
-        background:#808775;
-      }
-      .claro .dijitTitlePaneContentOuter {
-        border-right: none;
-        border-bottom: none;
-        border-left: none;
-      }
-      #geosearch {
-        display: block;
-        position: absolute;
-        z-index: 2;
-        top: 20px;
-        left: 74px;
-      }      
-      .esriScalebar {
-        padding: 10px 40px;
-      }
-      .esriScalebarLine {
-        background-color: white;
-      }      
-    </style>
-    <script src="https://js.arcgis.com/3.13/"></script>
-    <!--<script type="text/javascript" src="http://gis.garrettcounty.org/arcgis/javascript/pmeasure.js"></script>-->
-    <script type="text/javascript" src="javascript/pmeasure.yui.js"></script><!-- local -->
-  </head>
+?>  
   
-  <body class="claro">
+  
   <script>
     var passedX = '<?php echo $px; ?>';
     var passedY = '<?php echo $py; ?>';
@@ -118,7 +55,7 @@
     style="width:100%; height:100%;">
       <div id="map" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
         <div id="geosearch"></div>
-        <div style="position:absolute; right:20px; top:10px; z-Index:999;">
+        <div id="widgetBlock">
         
           <div data-dojo-type="dijit/TitlePane" 
                data-dojo-props="title:'Switch Basemap', closable:false,  open:false">

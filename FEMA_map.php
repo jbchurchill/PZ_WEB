@@ -2,12 +2,20 @@
 	ob_start(); 
 	//instert HTML HEAD here
 ?>
+    <link rel="stylesheet" href="javascript/dojo_1_10_4/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.13/esri/css/esri.css">
+    <link rel="stylesheet" href="../css/mapstyles.css">
+
+    <script type="text/javascript" src="https://js.arcgis.com/3.13/"></script>
+    <script type="text/javascript" src="javascript/fema.yui.js"></script>
+
 <?php 
 	$htmlHEAD = ob_get_contents();
 	ob_end_clean();
 	
 	//body class
 	$htmlBodyClass = 'claro';
+  $htmlTitle = 'Flood Hazard Map';
 	
 	//build the header
 	include('../includes/inc.header.php'); 
@@ -31,77 +39,6 @@
     $zoom = 10;
   }
 ?>
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
-    <title>Flood Hazard Map</title>
-    <!-- <link rel="stylesheet" href="https://js.arcgis.com/3.10/js/dojo/dijit/themes/claro/claro.css"> -->
-    <!-- <link rel="stylesheet" href="https://js.arcgis.com/3.10/js/esri/css/esri.css"> -->
-    <link rel="stylesheet" href="javascript/dojo_1_10_4/dijit/themes/claro/claro.css">
-    <link rel="stylesheet" href="https://js.arcgis.com/3.13/esri/css/esri.css">
-
-    <style>
-      html, body, #mapDiv {
-        height: 100%;
-        width: 100%;
-        margin: 0;
-        padding:0px;
-      }
-      #mapDiv {
-        border:solid 2px #808775;
-        -moz-border-radius:4px;
-        -webkit-border-radius:4px;
-        border-radius:4px;
-        margin:5px;
-        padding:0px;
-      }
-      body {
-        background-color: #FFF;
-        overflow: hidden;
-        font-family: "Trebuchet MS";
-      }
-      #geosearch {
-        display: block;
-        position: absolute;
-        z-index: 2;
-        top: 20px;
-        left: 74px;
-      }
-      #basemapGallery{
-        width:240px;
-      }
-      .claro .dijitTitlePaneTitle {
-        background: #fff;
-        font-weight:600;
-        border: none;
-        border-bottom:solid 1px #29201A;
-        border-top:solid 1px #29201A;
-      }
-      .claro .dijitTitlePaneTitleHover {
-        background:#eee;
-      }
-      .claro .dijitTitlePaneTitleActive {
-        background:#808775;
-      }
-      .claro .dijitTitlePaneContentOuter {
-        border-right: none;
-        border-bottom: none;
-        border-left: none;
-      }
-      .esriScalebar {
-        padding: 10px 40px;
-      }
-      .esriScalebarLine {
-        background-color: white;
-      }            
-    </style>
-    <script type="text/javascript" src="https://js.arcgis.com/3.10/"></script>
-    <script type="text/javascript" src="javascript/fema.yui.js"></script>
-  </head>
-
-  <body class="claro">
     <script>
       var passedX = '<?php echo $px; ?>';
       var passedY = '<?php echo $py; ?>';

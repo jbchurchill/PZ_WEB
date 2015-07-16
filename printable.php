@@ -2,12 +2,51 @@
 	ob_start(); 
 	//instert HTML HEAD here
 ?>
+    <link rel="stylesheet" href="javascript/dojo_1_10_4/dijit/themes/claro/claro.css"><!-- could have used js.arcgis.com/3.13/dijit/themes/claro/claro.css -->
+    <!-- <link rel="stylesheet" href="javascript/dojo_1_10_4/dijit/themes/nihilo/nihilo.css"> -->
+    <!-- <link rel="stylesheet" href="http://archive.dojotoolkit.org/nightly/dojotoolkit/dojox/layout/resources/ExpandoPane.css"> -->
+    <link rel="stylesheet" href="javascript/dojo_1_10_4/dojox/layout/resources/ExpandoPane.css">
+    <!-- <link rel="stylesheet" href="https://js.arcgis.com/3.10/js/esri/css/esri.css"> -->
+    <link rel="stylesheet" href="https://js.arcgis.com/3.13/esri/css/esri.css">
+    <link rel="stylesheet" href="../css/mapstyles.css">
+    <style>
+      .ds { background: #000; overflow: hidden; position: absolute; z-index: 2; }
+      #ds-h div { width: 100%; }
+      #ds-l div, #ds-r div { height: 100%; }
+      #ds-r div { right: 0; }
+      #ds .o1 { filter: alpha(opacity=10); opacity: .1; }
+      #ds .o2 { filter: alpha(opacity=8); opacity: .08; }
+      #ds .o3 { filter: alpha(opacity=6); opacity: .06; }
+      #ds .o4 { filter: alpha(opacity=4); opacity: .04; }
+      #ds .o5 { filter: alpha(opacity=2); opacity: .02; }
+      #ds .h1 { height: 1px; }
+      #ds .h2 { height: 2px; }
+      #ds .h3 { height: 3px; }
+      #ds .h4 { height: 4px; }
+      #ds .h5 { height: 5px; }
+      #ds .v1 { width: 1px; }
+      #ds .v2 { width: 2px; }
+      #ds .v3 { width: 3px; }
+      #ds .v4 { width: 4px; }
+      #ds .v5 { width: 5px; }
+      /* make all dijit buttons the same width */
+      .dijitButton .dijitButtonNode, #drawingWrapper, #printButton {
+        width: 160px;
+      }
+      .esriPrint {
+        padding: 0;
+      }
+    </style>
+
+    <script src="https://js.arcgis.com/3.13/"></script>
+    <script src="javascript/printable.yui.js" type="text/javascript"></script>    
 <?php 
 	$htmlHEAD = ob_get_contents();
 	ob_end_clean();
 	
 	//body class
-	$htmlBodyClass = 'claro';
+	$htmlBodyClass = 'claro'; // nihilo
+  $htmlTitle = 'Printable Map';
 	
 	//build the header
 	include('../includes/inc.header.php'); 
@@ -38,124 +77,13 @@
     $ip = $_SERVER['REMOTE_ADDR'];
 }
 ?>
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-    <title>Printable Map</title>
-    <!-- <link rel="stylesheet" href="https://js.arcgis.com/3.10/js/dojo/dijit/themes/claro/claro.css"> -->
-    <!-- <link rel="stylesheet" href="https://js.arcgis.com/3.10/js/dojo/dijit/themes/nihilo/nihilo.css"> -->
-    <link rel="stylesheet" href="javascript/dojo_1_10_4/dijit/themes/claro/claro.css"><!-- could have used js.arcgis.com/3.13/dijit/themes/claro/claro.css -->
-    <link rel="stylesheet" href="javascript/dojo_1_10_4/dijit/themes/nihilo/nihilo.css">
-    <!-- <link rel="stylesheet" href="http://archive.dojotoolkit.org/nightly/dojotoolkit/dojox/layout/resources/ExpandoPane.css"> -->
-    <link rel="stylesheet" href="javascript/dojo_1_10_4/dojox/layout/resources/ExpandoPane.css">
-    <!-- <link rel="stylesheet" href="https://js.arcgis.com/3.10/js/esri/css/esri.css"> -->
-    <link rel="stylesheet" href="https://js.arcgis.com/3.13/esri/css/esri.css">
-    <style>
-      html, body { 
-        height: 100%; width: 100%;
-        margin: 0; padding: 0;
-      } 
-      body{
-        background-color: #fff; overflow:hidden; 
-        font-family: sans-serif;
-      } 
-      label {
-        display: inline-block;
-        padding: 5px 5px 0 5px;
-        font-weight: 400;
-        font-size: 12pt;
-      }
-      .button {
-        width: 100%;
-        margin: 3px auto;
-        text-align: center;
-      }
-      #header {
-        padding-top: 4px;
-        padding-right: 15px;
-        color: #444; 
-        font-size:16pt; text-align:right;font-weight:bold;
-        height:75px;
-        background: #fff;
-        border-bottom: 1px solid #444;
-      }
-      #subheader {
-        font-size:small;
-        color: #444;
-        text-align:right;
-        padding-right:20px;
-      }
-      #rightPane {
-        margin: 0;
-        padding: 10px;
-        background-color: #fff;
-        color: #421b14;
-        width: 210px;
-      }
-      #instxns {
-        font-size: 0.5em;
-        text-align:left;
-        margin: 0 1em 0 3em;
-      }
-      #geosearch, claro {
-        display: block;
-        position: absolute;
-        z-index: 2;
-        top: 20px;
-        left: 74px;
-      }
-      .esriScalebar {
-        padding: 10px 40px;
-      }
-      .esriScalebarLine {
-        background-color: white;
-      }
-      span#latlongInstructions {
-        font-size:small;
-      }  
-
-      .ds { background: #000; overflow: hidden; position: absolute; z-index: 2; }
-      #ds-h div { width: 100%; }
-      #ds-l div, #ds-r div { height: 100%; }
-      #ds-r div { right: 0; }
-      #ds .o1 { filter: alpha(opacity=10); opacity: .1; }
-      #ds .o2 { filter: alpha(opacity=8); opacity: .08; }
-      #ds .o3 { filter: alpha(opacity=6); opacity: .06; }
-      #ds .o4 { filter: alpha(opacity=4); opacity: .04; }
-      #ds .o5 { filter: alpha(opacity=2); opacity: .02; }
-      #ds .h1 { height: 1px; }
-      #ds .h2 { height: 2px; }
-      #ds .h3 { height: 3px; }
-      #ds .h4 { height: 4px; }
-      #ds .h5 { height: 5px; }
-      #ds .v1 { width: 1px; }
-      #ds .v2 { width: 2px; }
-      #ds .v3 { width: 3px; }
-      #ds .v4 { width: 4px; }
-      #ds .v5 { width: 5px; }
-
-      /* make all dijit buttons the same width */
-      .dijitButton .dijitButtonNode, #drawingWrapper, #printButton {
-        width: 160px;
-      }
-      .esriPrint {
-        padding: 0;
-      }
-    </style>
-
-    <script src="https://js.arcgis.com/3.12/"></script>
-    <script src="javascript/printable.yui.js" type="text/javascript"></script>    
-  </head>
-  <body class="nihilo">
     <script>
       var passedX = '<?php echo $px; ?>';
       var passedY = '<?php echo $py; ?>';
       var zoomLevel = '<?php echo $zoom; ?>';
       var ip = '<?php echo $ip; ?>';
     </script>
-    <div id="mainWindow" 
+    <div id="mainWindow"
          data-dojo-type="dijit/layout/BorderContainer" 
          data-dojo-props="design:'headline',gutters:false"
          style="width: 100%; height: 100%; margin: 0;">
@@ -174,7 +102,6 @@
            style="padding:0;">
         <div id="geosearch"></div>
         <div style="position:absolute; right:20px; top:10px; z-Index:999;">
-          <div style=" width: 380px; float: right;">
             <div data-dojo-type="dijit/TitlePane" 
                  data-dojo-props="title:'Switch Basemap', closable:false,  open:false">
               <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">
@@ -205,7 +132,6 @@
               </div><!-- ContentPane 3 -->
             </div><!-- TitlePane 1 "Enter Lat Long" -->                      
           </div><!-- claro -->
-        </div><!-- unnamed div -->
         <!-- drop shadow divs -->
         <div id="ds">
           <div id="ds-h">

@@ -2,6 +2,30 @@
 	ob_start(); 
 	//instert HTML HEAD here
 ?>
+	<link rel="stylesheet" href="https://js.arcgis.com/3.10/js/dojo/dijit/themes/claro/claro.css">
+    <!-- <link rel="stylesheet" href="http://archive.dojotoolkit.org/nightly/dojotoolkit/dojox/layout/resources/ExpandoPane.css"> -->
+    <link rel="stylesheet" href="javascript/dojo_1_10_4/dojox/layout/resources/ExpandoPane.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.13/esri/css/esri.css">
+    <link rel="stylesheet" href="../css/mapstyles.css">
+
+    <script src="https://js.arcgis.com/3.13/"></script>
+    <!-- <script src="javascript/php_functions.js" type="text/javascript"></script> -->
+    <script src="javascript/allpz.yui.js" type="text/javascript"></script>
+<?php 
+	$htmlHEAD = ob_get_contents();
+	ob_end_clean();
+	
+	//body class
+	$htmlBodyClass = 'claro';
+  $htmlTitle = 'Planning and Zoning';
+	
+	//build the header
+	include('../includes/inc.header.php'); 
+	
+	//you are now inside the html body:
+?>
+
+
 <?php
   if (isset($_GET['px'])) {
     $px = trim(stripslashes($_GET[px]));
@@ -19,29 +43,7 @@
     $zoom = 10;
   }
 ?>
-
-    <link rel="stylesheet" href="../javascript/dojo_1_10_4/dijit/themes/claro/claro.css">
-    <link rel="stylesheet" href="../javascript/dojo_1_10_4/dojox/layout/resources/ExpandoPane.css">
-    <link rel="stylesheet" href="https://js.arcgis.com/3.13/esri/css/esri.css">
-    <link rel="stylesheet" href="../../css/mapstyles.css">
-
-    <script src="https://js.arcgis.com/3.13/"></script>
-    <!-- <script src="javascript/php_functions.js" type="text/javascript"></script> -->
-    <script src="../javascript/local_pz.yui.js" type="text/javascript"></script>
-
-<?php 
-	$htmlHEAD = ob_get_contents();
-	ob_end_clean();
-	
-	//body class
-	$htmlBodyClass = 'claro';
-  $htmlTitle = 'Planning and Zoning';
-	
-	//build the header
-	include('../../includes/inc.header.php'); 
-	
-	//you are now inside the html body:
-?>
+	  
     <script>
       var passedX = '<?php echo $px; ?>';
       var passedY = '<?php echo $py; ?>';
@@ -53,8 +55,6 @@
       <div data-dojo-type="dijit/layout/ContentPane" id="cp"
         data-dojo-props="region: 'top'">
       <button id="selectPointsButton" data-dojo-type="dijit/form/Button">Select Points/Polys</button>
-      <button id="addPointsButton" data-dojo-type="dijit/form/Button">Add</button>
-      <button id="removePointsButton" data-dojo-type="dijit/form/Button">Remove</button>
       <button id="clearSelectionButton" data-dojo-type="dijit/form/Button">Clear Selection</button>
       <div class="selType">
           <input type="radio" id="rectangle" data-dojo-type="dijit/form/RadioButton" name="selectType"  checked="checked">Rectangle<br />
@@ -74,7 +74,6 @@
            style="padding:0;">
         <div id="geosearch"></div>
         <div style="position:absolute; right:20px; top:10px; z-Index:999;">
-          <span id="formContent"></span><br />
           <span id="messages"></span>  
           <div data-dojo-type="dijit/TitlePane" 
                data-dojo-props="title:'Switch Basemap', closable:false,  open:false">
@@ -87,7 +86,7 @@
             <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">
               <div id="addLayers" >
                 <h3>Additional Layers : </h3>
-                <span id="layer_list">
+                <span id="layer_list"><!-- updated layer order -->
                   <!--<input type='checkbox' class='list_item' id='layer2CheckBox' value=2 />Gas Wells&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/GAS_WELLS.png" /><br/>-->
                   <input type='checkbox' class='list_item' id='layer1CheckBox' value=1 />Wind Turbines&nbsp;&nbsp;<img src="https://maps.garrettcounty.org/arcgis/images/Wind_Turbines.png" height="10" width="10" /><br/>
                   <input type='checkbox' class='list_item' id='layer5CheckBox' value=5 />Zip Codes&nbsp;&nbsp;<img src="https://maps.garrettcounty.org/arcgis/images/zip_codes.png" height="16" width="16" /><br />
@@ -213,5 +212,20 @@
     </div><!-- Accordion Container -->
     </div><!-- Content Pane 190px containing all table and search content -->
     </div><!-- Border Container -->
-  </body>
-</html>
+
+	<div class="modal">
+		<h1>Welcome</h1>
+
+		<p>The maps found here are provided by the Garrett County Government Department of Planning and Land Management as a public service to the citizens of Garrett County.</p>
+
+		<p>For help on how to use the maps, please visit the <a href="/help.php">help section</a>.  When you're ready, find the map you want to view and get started.</p>
+
+    <p class="disclaimer">Garrett County makes no warranties, although every attempt will be made to ensure the most accurate and up to date information is available. 
+This web site is not intended to replace official sources and information should not be considered error-free or not be used as the sole basis for decision-making. 
+The use of the information provided here is strictly voluntary and at the user&#039;s sole risk. 
+Garrett County assumes no responsibility or liability whatsoever associated with the use or misuse of this data.</p>
+
+		<a class="button modalClose">Get Started</a>
+	</div>
+	
+	<?php include('../includes/inc.footer.php'); ?>

@@ -1,6 +1,30 @@
 <?php 
 	ob_start(); 
-	//instert HTML HEAD here
+	//insert HTML HEAD here
+?>
+    <title>Planning and Zoning &#045; Click to Identify</title>
+    <!-- <link rel="stylesheet" href="https://js.arcgis.com/3.10/js/dojo/dijit/themes/claro/claro.css"> -->
+    <link rel="stylesheet" href="javascript/dojo_1_10_4/dijit/themes/claro/claro.css">
+    <!-- <link rel="stylesheet" href="http://archive.dojotoolkit.org/nightly/dojotoolkit/dojox/layout/resources/ExpandoPane.css"> -->
+    <link rel="stylesheet" href="javascript/dojo_1_10_4/dojox/layout/resources/ExpandoPane.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.13/esri/css/esri.css">
+    <link rel="stylesheet" href="../css/mapstyles.css">
+
+    <script src="https://js.arcgis.com/3.13/"></script>
+    <!-- <script src="javascript/php_functions.js" type="text/javascript"></script> -->
+    <script src="javascript/allpz.yui.js" type="text/javascript"></script>
+<?php 
+	$htmlHEAD = ob_get_contents();
+	ob_end_clean();
+	
+	//body class
+	$htmlBodyClass = 'claro';
+  $htmlTitle = 'Planning and Zoning';
+	
+	//build the header
+	include('../includes/inc.header.php'); 
+	
+	//you are now inside the html body:
 ?>
 <?php
   if (isset($_GET['px'])) {
@@ -19,90 +43,6 @@
     $zoom = 10;
   }
 ?>
-<!DOCTYPE html>
-<html> 
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=7, IE=9, IE=10">
-    <!--The viewport meta tag is used to improve the presentation and behavior of the samples 
-      on iOS devices-->
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-    <title>Planning and Zoning &#045; Click to Identify</title>
-    <link rel="stylesheet" href="https://js.arcgis.com/3.10/js/dojo/dijit/themes/claro/claro.css">
-    <!-- <link rel="stylesheet" href="http://archive.dojotoolkit.org/nightly/dojotoolkit/dojox/layout/resources/ExpandoPane.css"> -->
-    <link rel="stylesheet" href="javascript/dojo_1_10_4/dojox/layout/resources/ExpandoPane.css">
-    <link rel="stylesheet" href="https://js.arcgis.com/3.10/js/esri/css/esri.css">
-    <style>
-      html, body {
-        height:100%;
-        width:100%;
-        margin:0;
-        padding:0;
-      }
-      #mapDiv {
-        height:100%;
-        width: 100%;
-        margin: 0.75em 0;
-        padding: 0;
-        border-top: 1px solid red;
-      }
-      #mapControls {
-        height: 10%;
-        width: 100%;
-        background-color: red;
-      }
-      form#basemap {
-        padding-top: 10px;
-        padding-left: 5px;
-      }
-      .sectionhead {
-        font-weight: bold;
-        font-size: larger;
-      }
-      #messages{
-        background-color: white;
-        margin: 0.4em;
-        padding: 0 0.2em;
-      }
-      .selType{
-        float:left;
-        margin: 0 2em 0 1em;
-      }
-      #geosearch {
-        display: block;
-        position: absolute;
-        z-index: 2;
-        top: 20px;
-        left: 74px;
-      }
-      .esriScalebar {
-        padding: 10px 40px;
-      }
-      .esriScalebarLine {
-        background-color: white;
-      }
-      #addLayers {
-        font-family: Arial, Helvetica, sans-serif;
-      }
-    </style>
-    
-    
-    <script src="https://js.arcgis.com/3.10/"></script>
-    <!-- <script src="javascript/php_functions.js" type="text/javascript"></script> -->
-    <script src="javascript/allpz.yui.js" type="text/javascript"></script>
-<?php 
-	$htmlHEAD = ob_get_contents();
-	ob_end_clean();
-	
-	//body class
-	$htmlBodyClass = 'claro';
-	
-	//build the header
-	include('../includes/inc.header.php'); 
-	
-	//you are now inside the html body:
-?>
-
   <!-- <body class="claro"> -->
     <script>
       var passedX = '<?php echo $px; ?>';

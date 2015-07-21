@@ -89,8 +89,7 @@
          style="width: 100%; height: 100%; margin: 0;">
       <div id="header" 
            data-dojo-type="dijit/layout/ContentPane"
-           data-dojo-props="region:'top'"
-           style="margin-left: auto; margin-right: auto; text-align: center;">
+           data-dojo-props="region:'top'">
         Garrett County WebMap &#045; Printable Map
         <div id="subheader">PDF or JPG</div>
         <div id="instxns">
@@ -101,7 +100,7 @@
            data-dojo-props="region:'center'"
            style="padding:0;">
         <div id="geosearch"></div>
-        <div style="position:absolute; right:20px; top:10px; z-Index:999;">
+        <div id="positioning_div">
             <div data-dojo-type="dijit/TitlePane" 
                  data-dojo-props="title:'Switch Basemap', closable:false,  open:false">
               <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">
@@ -152,8 +151,8 @@
 
       </div>
       <div data-dojo-type="dojox.layout.ExpandoPane" title="Printing Options"
-             data-dojo-props="region:'right', design:'footer', gutters:true, liveSplitters:true, startExpanded:true, easeIn:'expoInOut', easeOut:'expoInOut', duration:600" 
-             style="width:320px;">
+             data-dojo-props="region:'right', design:'footer', gutters:true, liveSplitters:true, startExpanded:true, easeIn:'expoInOut', easeOut:'expoInOut', duration:600">
+             <!-- style="width:220px;"> -->
         <div id="rightPane"
              data-dojo-type="dijit/layout/ContentPane"
              data-dojo-props="region:'right'">
@@ -189,6 +188,6 @@
           <div id="legendDiv"></div>
         </div>
       </div><!-- end of Expando Pane-->     
-    </div>
+    </div><!-- mainWindow -->
   </body>
 </html>

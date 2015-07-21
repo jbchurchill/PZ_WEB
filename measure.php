@@ -55,7 +55,8 @@
     style="width:100%; height:100%;">
       <div id="map" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
         <div id="geosearch"></div>
-        <div id="widgetBlock">
+        <!-- <div id="widgetBlock"> -->
+        <div id="positioning_div">
         
           <div data-dojo-type="dijit/TitlePane" 
                data-dojo-props="title:'Switch Basemap', closable:false,  open:false">

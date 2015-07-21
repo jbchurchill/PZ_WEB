@@ -73,7 +73,7 @@
            data-dojo-props="region:'center'" 
            style="padding:0;">
         <div id="geosearch"></div>
-        <div style="position:absolute; right:20px; top:10px; z-Index:999;">
+        <div id="positioning_div">
           <span id="messages"></span>  
           <div data-dojo-type="dijit/TitlePane" 
                data-dojo-props="title:'Switch Basemap', closable:false,  open:false">

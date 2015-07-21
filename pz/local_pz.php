@@ -73,7 +73,7 @@
            data-dojo-props="region:'center'" 
            style="padding:0;">
         <div id="geosearch"></div>
-        <div style="position:absolute; right:20px; top:10px; z-Index:999;">
+        <div id="positioning_div">
           <span id="formContent"></span><br />
           <span id="messages"></span>  
           <div data-dojo-type="dijit/TitlePane" 
@@ -145,7 +145,7 @@
               </p>
             </div><!-- ContentPane 3 -->
           </div><!-- TitlePane Navigation -->          
-        </div><!-- unnamed div -->
+        </div><!-- positioning div -->
       </div><!-- mapDiv -->
       
     <div data-dojo-type="dojox.layout.ExpandoPane" title="Search Functionality"

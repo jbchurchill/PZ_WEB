@@ -1,0 +1,62 @@
+{
+	"links":[
+		
+		{
+			"title":"Maps",
+			"link":"",
+			"subnav":{
+				"icon":{
+					"title":"Maps",
+					"source":"/includes/images/nav-maps.png"
+				},
+				"groups":[
+					{
+						"title":"General Info Maps",
+						"links":[
+							{
+								"title":"Planning and Zoning",
+								"link":"/arcgis/pz_map.php"
+							},
+							{
+								"title":"Measurements",
+								"link":"/arcgis/measure.php"
+							},
+							{
+
+							}
+						]
+					},
+					{
+						"title":"Hazard Maps",
+						"links":[
+							{
+								"title":"Flood Hazard Map",
+								"link":"/arcgis/FEMA_map.php"
+							},
+							{
+								"title":"Sensitive Areas",
+								"link":"/arcgis/sensitive.php"
+							}
+						]
+					},
+					{
+						"title":"Printing",
+						"links":[
+							{
+								"title":"Printable Map",
+								"link":"/arcgis/printable.php"
+							}
+						]
+					}
+				]
+				
+			}
+		},
+		
+		{
+			"title":"Help",
+			"link":"/help.php"
+		}
+		
+	]
+}

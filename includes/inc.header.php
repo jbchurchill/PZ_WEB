@@ -9,7 +9,9 @@
 	else {
 		$wwwPath = __DIR__;
 	}
-
+  if (substr($wwwPath, -1) != "/") { // if path doesn't have a slash, add it ... fixes Apache
+    $wwwPath = $wwwPath . "/"; 
+  }
 //	/set_include_path( $wwwPath );
 
 	$navjson = file_get_contents($wwwPath.'includes/navigation.json');

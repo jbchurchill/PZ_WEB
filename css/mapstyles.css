@@ -27,6 +27,9 @@ form#basemap {
   font-weight: bold;
   font-size: larger;
 }
+.emphasis {
+  font-weight: bold;
+}
 #messages, #formContent {
   background-color: white;
   margin: 0.4em;
@@ -55,6 +58,9 @@ form#basemap {
 .disclaimer {
   font-size: xx-small;
   line-height: 100%;
+}
+.boundary_disclaimer {
+  font-size: 0.8em;
 }
 /* used in FEMA_map and Sensitive */
 div#positioning_div {

@@ -1,0 +1,29 @@
+Swanton MD Highway (MD 135) 39.453960, -79.208105
+http://www.chart.state.md.us/video/video.php?feed=9c00ad6c00a300100053fa36c4235c0a
+
+Gormania Rt 50 at Table Rock Road 39.301249, -79.416665
+http://www.chart.state.md.us/video/video.php?feed=be00a3fe007d00d30050fa36c4235c0a
+
+W of Friendsville I-68 39.66034, -79.4625
+http://www.chart.state.md.us/video/video.php?feed=da0072eb01fc00b10052fa36c4235c0a
+
+Keyser's Ridge (N side) I-68 39.69294, -79.2517
+http://www.chart.state.md.us/video/video.php?feed=0e0109d100f1003d00471536ea235d0a
+
+Keyser's Ridge (S side) I-68 39.68929, -79.2498
+http://www.chart.state.md.us/video/video.php?feed=1800a05f00a100ab0050fa36c4235c0a
+
+Big Savage Mountain I-68 39.67423, -78.9622
+http://www.chart.state.md.us/video/video.php?feed=8c01c60d073d000800447a45351f0214
+
+Grantsville Near Pilot View: 39.68833, -79.0921
+http://www.chart.state.md.us/video/video.php?feed=be0017de00e800dd00451536ea235d0a
+
+New Cameras without Feeds
+Grantsville Lower New Germany Road exit I-68 39.683486, -79.071614
+I-68 at MD-42 39.662357, -79.414437
+I-68 at Old Morgantown Road	39.694638, -79.340831
+
+
+
+

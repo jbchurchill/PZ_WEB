@@ -746,11 +746,12 @@ require([
       data: data
     });
     var grid = registry.byId(whichSearch);
-    if (!(whichSearch == "")) {
-      grid.setStore(store);
-      grid.on("rowclick", onRowClickHandler);
+    if(grid) {
+      if (!(whichSearch === "")) {
+        grid.setStore(store);
+        grid.on("rowclick", onRowClickHandler);
+      }
     }
-
     //Zoom back to the initial map extent
     if (doZoom == 1) {
       map.centerAndZoom(center, zoom);

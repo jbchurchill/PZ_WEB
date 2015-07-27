@@ -598,7 +598,7 @@ require([
     }
     findTask.execute(findParams, showResults);
   }
-
+  
   function showResults(results) {
     //This function works with an array of FindResult that the task returns
     map.graphics.clear();
@@ -632,9 +632,11 @@ require([
       data: data
     });
     var grid = registry.byId(whichSearch);
-    if (!(whichSearch == "")) {
-      grid.setStore(store);
-      grid.on("rowclick", onRowClickHandler);
+    if(grid) {
+      if (!(whichSearch === "")) {
+        grid.setStore(store);
+        grid.on("rowclick", onRowClickHandler);
+      }
     }
 
     //Zoom back to the initial map extent

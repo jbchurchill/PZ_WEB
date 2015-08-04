@@ -29,7 +29,28 @@
   if ($fileAccess === 'a+' && $doAppend === "address") {
     fwrite($Handle, "Addresses:");
   }
-  fwrite($Handle, $Data);
+
+  include("../../includes/curl_fx.php");
+  if ($doAppend === "parcel") {
+    // echo strlen($Data);
+    $lines = explode(PHP_EOL, $Data);
+    // while (($buffer = fgets($Handle)) !== false) {
+    foreach($lines as $line) {
+      if(strpos($line, "http") > 0) {
+        $start = stripos(strval($line), "http");
+        $fullLength = strlen($line);
+        $urlLength = ($fullLength - $start);
+        $fullUrl = substr($line, $start, $urlLength);
+        $arraySDAT = getSDAT($fullUrl);
+        $line .= ", " . $arraySDAT[0] . ", " . $arraySDAT[1] . ", " . $arraySDAT[2] . "\n";
+        fwrite($Handle, $line);
+      }  
+    }
+  }
+
+?>
+<?php
+  
   // $Data = "Bilbo Jones\r\n";
   // fwrite($Handle, $Data);
   if ($DataAdded === true) {

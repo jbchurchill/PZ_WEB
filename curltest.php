@@ -1,6 +1,8 @@
 <?php
-$fullUrl = "http://sdat.dat.maryland.gov/RealProperty/Pages/viewdetails.aspx?County=12&SearchType=ACCT&District=18&AccountNumber=020076";
+// $fullUrl = "http://sdat.dat.maryland.gov/RealProperty/Pages/viewdetails.aspx?County=12&SearchType=ACCT&District=18&AccountNumber=020076";
 // $fullUrl = "http://sdat.dat.maryland.gov/RealProperty/Pages/viewdetails.aspx?County=12&SearchType=ACCT&District=06&AccountNumber=026761";
+$fullUrl = "http://sdat.dat.maryland.gov/RealProperty/Pages/viewdetails.aspx?County=12&SearchType=ACCT&District=18&AccountNumber=016265";
+// Note that the url format above is different from what is stored in the parcels. I had to use str_replace on it in the curl_fx.php function.
 $ch = curl_init($fullUrl);
 if (! $ch) {
 	die( "Cannot allocate a new PHP-CURL handle" );
@@ -10,7 +12,7 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
 
 $data = curl_exec($ch);
-header("Content-type: text");
+// header("Content-type: text"); // DO NOT DO THIS!
 // print( $data );
 curl_close($ch);
 
@@ -78,11 +80,9 @@ foreach($entries as $entry) {
   $ownAddr = $entry->nodeValue;
   if(!$entry->childNodes == 0) {
     $ownAddr = $doc->saveHTML($entry);
-    echo "YES"; 
     // echo $entry->firstChild-textContent;
     // echo $entry->firstChild - Creates <br/> but throws an error.
     // echo $ownAddr->textContent; This apparently does nothing.
-    echo "YES";
     
   }
   $ownAddr2 = preg_replace($pattern, $replacement, $ownAddr, 15, $count);
@@ -91,9 +91,9 @@ foreach($entries as $entry) {
   $ownAddr3 = strip_tags($ownAddr2);
 }
 
-echo "Owner Name 1: " . $ownname1 . "\n";
-echo "Owner Name 2: " . $ownname2 . "\n";
-echo "Owner Address: " . $ownAddr3 . "\n";
+echo "Owner Name 1: " . $ownname1 . "<br />";
+echo "Owner Name 2: " . $ownname2 . "<br />";
+echo "Owner Address: " . $ownAddr3 . "<br />";
 // echo strval($ownAddr);
 echo $count;
 

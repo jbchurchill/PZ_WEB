@@ -98,8 +98,9 @@
                   <input type='checkbox' class='list_item' id='layer12CheckBox' value=12 />Town Boundaries&nbsp;&nbsp;<img src="https://maps.garrettcounty.org/arcgis/images/tax_map.png" height="16" width="16" /><br />
                   <input type='checkbox' class='list_item' id='layer13CheckBox' value=13 />County Boundary&nbsp;&nbsp;<img src="https://maps.garrettcounty.org/arcgis/images/CountyBoundary.jpg" height="16" width="16" /><br />
                 </span><hr /><br />
-                <div class="boundary_disclaimer"><span class="emphasis">Note:</span> Boundaries such as water and sewer service areas are considered approximate and should always be checked with governing authorities (e.g. Public Utilities Office or Election Board).
-                We take no responsibility for decisions made based on these estimated boundaries.</div><hr /><br />
+                <div class="boundary_disclaimer"><span class="emphasis">Note:</span> Boundaries such as school districts, and water and sewer service areas are considered approximate and should always be checked with governing authorities 
+                  (e.g. Public Utilities Office, School Board, or Election Board). We take no responsibility for decisions made based on these estimated boundaries.
+                </div><hr /><br />
                 <div id="ZoningLegend">
                   <img src="https://maps.garrettcounty.org/arcgis/images/Zoning.PNG" /><br/>
                   <h4>Layers that are always on:</h4>

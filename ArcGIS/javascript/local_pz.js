@@ -24,7 +24,7 @@ function executeIdentifyTask(evt) {
 
   // layers that can be identified by "click" that are NOT in the "Additional Layers" Content Pane
   // Critical Facilities, addresspoints, celltowers, centerlines, dbo.TaxParcel
-  identifyParams.layerIds = [0, 2, 3, 4, 6];
+  identifyParams.layerIds = [0, 2, 3, 5, 7]; // [0, 2, 3, 4, 6];
   // If a layer is checked in the "Additional Layers" pane, it will have been added
   // to the array (in updateLayerVisibility above), so add it to the list of those 
   // that can be clicked and identified.
@@ -301,7 +301,7 @@ require([
     //Create the find parameters
     findParams = new FindParameters();
     findParams.returnGeometry = true;
-    findParams.layerIds = [4, 6]; // CHANGED [6, 8]; // Shows the Roads (6) when it first loads
+    findParams.layerIds = [5, 7]; // CHANGED [4, 6]; // CHANGED [6, 8]; // Shows the Roads (7) when it first loads
     findParams.searchFields = ["RDNAMELOCAL", "PARCEL"]; // "ACCTID", "MAINTENANCE", "FRADDL_P", "TOADDL_P", "FRADDR_P", "TOADDR_P"];
     findParams.outSpatialReference = map.spatialReference;
     console.log("find sr: ", findParams.outSpatialReference);
@@ -349,7 +349,7 @@ require([
 
   // TURN LAYERS OFF AND ON
   imageParameters = new ImageParameters();
-  imageParameters.layerIds = [0, 2, 3, 4, 6]; // [1, 4, 5, 6, 8];
+  imageParameters.layerIds = [0, 2, 3, 5, 7]; // [0, 2, 3, 4, 6]; // [1, 4, 5, 6, 8];
   imageParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
   //can also be: LAYER_OPTION_EXCLUDE, LAYER_OPTION_HIDE, LAYER_OPTION_INCLUDE
   visibleLayerIds = []; // [1, 2, 3, 4, 5, 6, 8];
@@ -489,9 +489,9 @@ require([
           "Lot: ${LOT}<br />Grid: ${GRID}<br />Tax ID: ${ACCTID}<br /><hr>";
       infoTemplate = new InfoTemplate("${FIELD_NAME}", content);
 
-      // Parcels = Layer 6 (was 8)
+      // Parcels = Layer 7 (was 6) (and before that was 8)
       // featureLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/8", {
-        featureLayer = new FeatureLayer("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/6", {
+        featureLayer = new FeatureLayer("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/7", {
         mode: FeatureLayer.MODE_ONDEMAND,
         outFields: ["*"]
       });
@@ -502,7 +502,7 @@ require([
       content = "Address: ${ADDRESS}<br />" +
         "City: ${CITY} <br /> Owner: ${OWNNAME1} ${OWNNAME2} <br /> Tax Id: ${ACCTID} <br /><hr>";
       infoTemplate = new InfoTemplate("${FIELD_NAME}", content);
-      // Address Points = Layer 2 (was 4)
+      // Address Points = Layer 2 (was 4) (still 2)
       // featureLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/4", {
         featureLayer = new FeatureLayer("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/2", {
         mode: FeatureLayer.MODE_ONDEMAND,
@@ -781,21 +781,23 @@ require([
 
   // TURN LAYERS ON AND OFF
   on(dom.byId("layer1CheckBox"), "change", updateLayerVisibility);
-  on(dom.byId("layer5CheckBox"), "change", updateLayerVisibility);
-  on(dom.byId("layer7CheckBox"), "change", updateLayerVisibility);
+  on(dom.byId("layer4CheckBox"), "change", updateLayerVisibility);
+  on(dom.byId("layer6CheckBox"), "change", updateLayerVisibility);
   on(dom.byId("layer8CheckBox"), "change", updateLayerVisibility);
   on(dom.byId("layer9CheckBox"), "change", updateLayerVisibility);
   on(dom.byId("layer10CheckBox"), "change", updateLayerVisibility);
   on(dom.byId("layer11CheckBox"), "change", updateLayerVisibility);
   on(dom.byId("layer12CheckBox"), "change", updateLayerVisibility);
   on(dom.byId("layer13CheckBox"), "change", updateLayerVisibility);
+  on(dom.byId("layer14CheckBox"), "change", updateLayerVisibility);
+  on(dom.byId("layer15CheckBox"), "change", updateLayerVisibility);
 
   function updateLayerVisibility() {
     var i;
     var inputs = query(".list_item");
     var inputCount = inputs.length;
     //in this application, layer 2 is always on.
-    visibleLayerIds = [0, 2, 3, 4, 6];
+    visibleLayerIds = [0, 2, 3, 5, 7]; // [0, 2, 3, 4, 6];
     addlIdArray = []; // array used to track layers turned on in the "Additional Layers" pane.
     // It informs the identifyParams.layerIds array in the executeIdentifyTask function below.
     for (i = 0; i < inputCount; i++) {

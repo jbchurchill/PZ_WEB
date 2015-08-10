@@ -195,7 +195,7 @@ require([
   );
 
   imageParameters = new ImageParameters();
-  imageParameters.layerIds = [0, 2, 3, 4, 6]; // [1, 4, 5, 6, 8];
+  imageParameters.layerIds = [0, 2, 3, 5, 7]; // [0, 2, 3, 4, 6]; // [1, 4, 5, 6, 8];
   imageParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
 
   // visibleLayers = new ArcGISDynamicMapServiceLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
@@ -204,7 +204,7 @@ require([
   map.addLayer(visibleLayers);
 
   // parcelsLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/8", {
-    parcelsLayer = new FeatureLayer("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/6", {
+    parcelsLayer = new FeatureLayer("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/7", {
     mode: FeatureLayer.MODE_ONDEMAND,
     outFields: ["*"]
   });

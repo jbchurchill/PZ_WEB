@@ -87,16 +87,18 @@
               <div id="addLayers" >
                 <h3>Additional Layers : </h3>
                 <span id="layer_list"><!-- updated layer order -->
-                  <!--<input type='checkbox' class='list_item' id='layer2CheckBox' value=2 />Gas Wells&nbsp;&nbsp;<img src="http://maps.garrettcounty.org/arcgis/images/GAS_WELLS.png" /><br/>-->
+                  <!--<input type='checkbox' class='list_item' id='layer2CheckBox' value=2 />Gas Wells&nbsp;&nbsp;<img src="https://maps.garrettcounty.org/arcgis/images/GAS_WELLS.png" /><br/>-->
                   <input type='checkbox' class='list_item' id='layer1CheckBox' value=1 />Wind Turbines&nbsp;&nbsp;<img src="https://maps.garrettcounty.org/arcgis/images/Wind_Turbines.png" height="10" width="10" /><br/>
-                  <input type='checkbox' class='list_item' id='layer5CheckBox' value=5 />Zip Codes&nbsp;&nbsp;<img src="https://maps.garrettcounty.org/arcgis/images/zip_codes.png" height="16" width="16" /><br />
-                  <input type='checkbox' class='list_item' id='layer7CheckBox' value=7 />Water Service&nbsp;&nbsp;<img src="https://maps.garrettcounty.org/arcgis/images/tax_map.png" height="16" width="16" /><br />
-                  <input type='checkbox' class='list_item' id='layer8CheckBox' value=8 />Sewer Service&nbsp;&nbsp;<img src="https://maps.garrettcounty.org/arcgis/images/tax_map.png" height="16" width="16" /><br />
-                  <input type='checkbox' class='list_item' id='layer9CheckBox' value=9 />Tax Map&nbsp;&nbsp;<img src="https://maps.garrettcounty.org/arcgis/images/tax_map.png" height="16" width="16" /><br />
-                  <input type='checkbox' class='list_item' id='layer10CheckBox' value=10 />Zoning&nbsp;&nbsp;(See legend below)<br />
-                  <input type='checkbox' class='list_item' id='layer11CheckBox' value=11 />Election Districts&nbsp;&nbsp;<img src="https://maps.garrettcounty.org/arcgis/images/Election_Districts.png" height="16" width="16" /><br />
-                  <input type='checkbox' class='list_item' id='layer12CheckBox' value=12 />Town Boundaries&nbsp;&nbsp;<img src="https://maps.garrettcounty.org/arcgis/images/tax_map.png" height="16" width="16" /><br />
-                  <input type='checkbox' class='list_item' id='layer13CheckBox' value=13 />County Boundary&nbsp;&nbsp;<img src="https://maps.garrettcounty.org/arcgis/images/CountyBoundary.jpg" height="16" width="16" /><br />
+                  <input type='checkbox' class='list_item' id='layer4CheckBox' value=4 />Traffic Cameras&nbsp;&nbsp;<img src="https://maps.garrettcounty.org/arcgis/images/Traffic_Cameras.png" height="10" width="10" /><br/>
+                  <input type='checkbox' class='list_item' id='layer6CheckBox' value=6 />Zip Codes&nbsp;&nbsp;<img src="https://maps.garrettcounty.org/arcgis/images/zip_codes.png" height="16" width="16" /><br />
+                  <input type='checkbox' class='list_item' id='layer8CheckBox' value=8 />Water Service&nbsp;&nbsp;<img src="https://maps.garrettcounty.org/arcgis/images/tax_map.png" height="16" width="16" /><br />
+                  <input type='checkbox' class='list_item' id='layer9CheckBox' value=9 />Sewer Service&nbsp;&nbsp;<img src="https://maps.garrettcounty.org/arcgis/images/tax_map.png" height="16" width="16" /><br />
+                  <input type='checkbox' class='list_item' id='layer10CheckBox' value=10 />Tax Map&nbsp;&nbsp;<img src="https://maps.garrettcounty.org/arcgis/images/tax_map.png" height="16" width="16" /><br />
+                  <input type='checkbox' class='list_item' id='layer11CheckBox' value=11 />Zoning&nbsp;&nbsp;(See legend below)<br />
+                  <input type='checkbox' class='list_item' id='layer12CheckBox' value=12 />School Zones&nbsp;&nbsp;<img src="https://maps.garrettcounty.org/arcgis/images/School_Zones.png" height="16" width="16" /><br />
+                  <input type='checkbox' class='list_item' id='layer13CheckBox' value=13 />Election Districts&nbsp;&nbsp;<img src="https://maps.garrettcounty.org/arcgis/images/Election_Districts.png" height="16" width="16" /><br />
+                  <input type='checkbox' class='list_item' id='layer14CheckBox' value=14 />Town Boundaries&nbsp;&nbsp;<img src="https://maps.garrettcounty.org/arcgis/images/tax_map.png" height="16" width="16" /><br />
+                  <input type='checkbox' class='list_item' id='layer15CheckBox' value=15 />County Boundary&nbsp;&nbsp;<img src="https://maps.garrettcounty.org/arcgis/images/CountyBoundary.jpg" height="16" width="16" /><br />
                 </span><hr /><br />
                 <div class="boundary_disclaimer"><span class="emphasis">Note:</span> Boundaries such as school districts, and water and sewer service areas are considered approximate and should always be checked with governing authorities 
                   (e.g. Public Utilities Office, School Board, or Election Board). We take no responsibility for decisions made based on these estimated boundaries.

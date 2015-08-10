@@ -304,17 +304,17 @@ require([
   PZ_fLayer = new ArcGISDynamicMapServiceLayer("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
     {"imageParameters": pzParameters, opacity: 0.75, id: "Parcels & Addresses"});
 
-  CT_fLayer = new FeatureLayer("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/3", { // was 5
+  CT_fLayer = new FeatureLayer("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/3", { // was 5 // (still 3)
     mode: FeatureLayer.MODE_ONDEMAND,
     id: "Cell Towers"
   });
 
-  WT_fLayer = new FeatureLayer("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/1", { // was 3
+  WT_fLayer = new FeatureLayer("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/1", { // was 3 // (still 1)
     mode: FeatureLayer.MODE_ONDEMAND,
     id: "Wind Turbines"
   });
 
-  CL_fLayer = new FeatureLayer("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/4", { // was 6
+  CL_fLayer = new FeatureLayer("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/5", { // was 6 // was 4
     mode: FeatureLayer.MODE_ONDEMAND,
     outFields: [labelField],
     showLabels: true,
@@ -326,7 +326,7 @@ require([
     id: "Perennial Streams"
   });
 
-  ZN_fLayer = new FeatureLayer("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/10", { // still 10!
+  ZN_fLayer = new FeatureLayer("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/11", { // still 10! // was 10
     mode: FeatureLayer.MODE_ONDEMAND,
     opacity: 0.3,
     id: "Zoning"

@@ -180,7 +180,7 @@
           <th field="TO_LEFT_P">TO LEFT</th>
           <th width="130px" field="FROM_RIGHT_P">FROM RIGHT</th>
           <th field="TO_RIGHT_P">TO RIGHT</th>
-          <!--<th field="RESYRBLT ">Year Built</th>--?
+          <!--<th field="RESYRBLT ">Year Built</th>-->
           <!--<th field="SITEADDRESS" width="100%">Address</th>-->
         </tr>
       </thead>
@@ -207,7 +207,7 @@
           <th field="PARCEL">PARCEL</th>
           <th field="OWNNAME1" width="130px">OWNERNAME 1</th>
           <th field="OWNNAME2" width="130px">OWNERNAME 2</th>
-          <!--<th field="RESYRBLT ">Year Built</th>--?
+          <!--<th field="RESYRBLT ">Year Built</th>-->
           <!--<th field="SITEADDRESS" width="100%">Address</th>-->
         </tr>
       </thead>

@@ -16,6 +16,22 @@ function contains(a, obj) {
   return false;
 }
 
+function ltrim(stringToTrim) {
+	return stringToTrim.replace(/^\s+/,"");
+}
+
+function popupCamera(url) {
+  var desc = "Traffic Camera";
+  window.open(url, desc, "width=500, height=380");
+}
+
+function getCamUrl(feed) {
+  var desc = "Some Camera";
+  var base =  "http://www.chart.state.md.us/video/video.php?feed=";
+  var url = base + ltrim(feed);
+  return url;
+}
+
 function executeIdentifyTask(evt) {
   "use strict";
   var i;
@@ -129,6 +145,11 @@ function executeIdentifyTask(evt) {
         "<span class=\"sectionhead\">Layer: Street Centerlines</span><br /><br /><hr>Name: ${STREET_ALL} <br />"
         + "Maintenance: ${MAINTENANCE} <br /> Length: ${SHAPE.len:NumberFormat(places:1)} feet <br />");
         feature.setInfoTemplate(template);
+      } else if (result.layerName === 'School Zones') {
+        template = new esri.InfoTemplate("Board of Ed. Info.",
+        "<span class=\"sectionhead\">Layer: School Zones</span><br /><br /><hr>Elementary School: ${School} <br />"
+        + "Middle School: ${MS} <br />High School: ${HS}");
+        feature.setInfoTemplate(template);                           
       } else if (result.layerName === 'Election_Districts') {
         template = new esri.InfoTemplate("",
         "<span class=\"sectionhead\">Layer: Election Districts</span><br /><br /><hr>Election District: ${Dist_Numb} <br /> "
@@ -143,6 +164,12 @@ function executeIdentifyTask(evt) {
         template = new esri.InfoTemplate("",
         "<span class=\"sectionhead\">Layer: Wind Turbines</span><br /><br /><hr>Identifier: ${Identifier} <br />"
         + "Owner: ${Owner} <br />");
+        feature.setInfoTemplate(template);
+      } else if (result.layerName === 'SHA_CamData') {
+        template = new esri.InfoTemplate("Traffic Info",
+        "<span class=\"sectionhead\">Layer: SHA Traffic Cameras</span><br /><br /><hr>ID: ${ID} <br />"
+        + "Description: ${desc_} <br /> Latitude: ${lat} <br /> Longitude ${long} <br /><hr />"
+        + "Link: <button onclick=\"popupCamera('${Feed:getCamUrl}');\">Open Camera</button>");
         feature.setInfoTemplate(template);
       } else if (result.layerName === 'County_Zoning_Layer') {
         template = new esri.InfoTemplate("Zoning Info", "<span class=\"sectionhead\">Layer: County Zoning Layer </span><br /><br /><hr>${GENZONE} <br/> Land Use Code: ${FLU}");

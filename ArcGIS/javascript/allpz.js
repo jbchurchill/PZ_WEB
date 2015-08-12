@@ -23,6 +23,22 @@ function contains(a, obj) {
   return false;
 }
 
+function ltrim(stringToTrim) {
+	return stringToTrim.replace(/^\s+/,"");
+}
+
+function popupCamera(url) {
+  var desc = "Traffic Camera";
+  window.open(url, desc, "width=500, height=380");
+}
+
+function getCamUrl(feed) {
+  var desc = "Some Camera";
+  var base =  "http://www.chart.state.md.us/video/video.php?feed=";
+  var url = base + ltrim(feed);
+  return url;
+}
+
 function executeIdentifyTask(evt) {
   var i;
   identifyParams.geometry = evt.mapPoint;
@@ -150,6 +166,16 @@ function executeIdentifyTask(evt) {
         template = new esri.InfoTemplate("",
         "<span class=\"sectionhead\">Layer: Wind Turbines</span><br /><br /><hr>Identifier: ${Identifier} <br />"
         + "Owner: ${Owner} <br />");
+        feature.setInfoTemplate(template);
+      } else if (result.layerName === 'SHA_CamData') {
+        // $myLink = "${link}"; // "http://www.chart.state.md.us/video/video.php?feed=9c00ad6c00a300100053fa36c4235c0a";
+        // $myDesc = "${desc_}";
+        // alert($myLink);
+        // $myDesc = "Swanton MD Highway";
+        template = new esri.InfoTemplate("Traffic Info",
+        "<span class=\"sectionhead\">Layer: SHA Traffic Cameras</span><br /><br /><hr>ID: ${ID} <br />"
+        + "Description: ${desc_} <br /> Latitude: ${lat} <br /> Longitude ${long} <br /><hr />"
+        + "Link: <button onclick=\"popupCamera('${Feed:getCamUrl}');\">Open Camera</button>");
         feature.setInfoTemplate(template);
       } else if (result.layerName === 'County_Zoning_Layer') {
         template = new esri.InfoTemplate("Zoning Info", "<span class=\"sectionhead\">Layer: County Zoning Layer </span><br /><br /><hr>${GENZONE} <br/> Land Use Code: ${FLU}");

@@ -146,7 +146,22 @@
                 The different maps have different uses (see the <a href="../help.php">Help &amp; Documentation</a> for more information).
               </p>
             </div><!-- ContentPane 3 -->
-          </div><!-- TitlePane Navigation -->          
+          </div><!-- TitlePane Navigation -->
+          <div data-dojo-type="dijit/TitlePane" 
+               data-dojo-props="title:'Enter Lat Long', closable:false,  open:false">
+            <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">
+              <div id="enterLatLong" ><form><input type="text" id="textLatLong"><br /><input type="button" value="Submit" label="Submit" id="submitLatLongButton" dojoType="dijit.form.Button" /></form><br /><span id="latlongInstructions">Enter Lat, Long in Decimal Degrees<br />e.g. 39.499059, -79.418682</span></div><br />
+              <div class="viewLatLong">
+                <h4>Current Map Centroid:</h4>
+                <span id="centroid"></span><br /><br />
+                <p>Click the button to get the coordinates<br /> of your current location. Then click &#8220;Submit&#8221;</p>
+                <!-- <button onclick="getLocation()">Your Location</button> -->
+                <button id="getLocationButton">Your Location</button>
+
+              </div><!-- viewLatLong -->
+            </div><!-- ContentPane 3 -->
+          </div><!-- TitlePane 1 "Enter Lat Long" -->                      
+
         </div><!-- positioning div -->
       </div><!-- mapDiv -->
       

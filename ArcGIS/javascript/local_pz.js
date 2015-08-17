@@ -345,11 +345,11 @@ require([
 
       map.graphics.add(graphicLL);
 
-      if (graphicLL.geometry.type === 'point') {  
-        maxZoom = map.getMaxZoom();  
-        map.centerAndZoom(graphicLL.geometry, maxZoom - 1);  
-      } else {  
-        map.setExtent(graphicsUtils.graphicsExtent([graphicLL]));  
+      if (graphicLL.geometry.type === 'point') {
+        maxZoom = map.getMaxZoom();
+        map.centerAndZoom(graphicLL.geometry, maxZoom - 1);
+      } else {
+        map.setExtent(graphicsUtils.graphicsExtent([graphicLL]));
       }      
     } else {
       return "";
@@ -362,6 +362,7 @@ require([
   }
 
   function getLocation() {
+    map.graphics.clear();
     var x = document.getElementById("centroid");
     if (navigator.geolocation) {
   	navigator.geolocation.getCurrentPosition(showLocation);
@@ -678,7 +679,7 @@ require([
   comboBox = new ComboBox({
     id: "mapSelect",
     name: "map",
-    value: "Planning and Zoning",
+    value: "Local Planning",
     store: mapLaunchStore,
     searchAttr: "name"
   }, "mapSelect").startup();
@@ -688,24 +689,28 @@ require([
   function launchURL () {
     var selectedMap = dijit.byId('mapSelect').get('value'), baseURL, url, winTarget;
     switch (selectedMap) {
+    case "Local Planning":
+      winTarget = '_self';
+      baseURL = "local_pz.php";
+			break;
     case "Measurement":
       winTarget = '_blank';
-      baseURL = "measure.php";
+      baseURL = "../measure.php";
       break;
     case "Planning and Zoning":
-      baseURL = "pz_map.php";
-      winTarget = '_self';
+      baseURL = "../pz_map.php";
+      winTarget = '_blank';
       break;
     case "Flood Hazard":
-      baseURL = "FEMA_map.php";
+      baseURL = "../FEMA_map.php";
       winTarget = '_blank';
       break;
     case "Sensitive Areas":
-      baseURL = "sensitive.php";
+      baseURL = "../sensitive.php";
       winTarget = '_blank';
       break;
     case "Printable":
-      baseURL = "printable.php";
+      baseURL = "../printable.php";
       winTarget = '_blank';
       break;
     }

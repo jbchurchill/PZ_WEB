@@ -2,6 +2,7 @@ var map, console, require;
 var passedCenter, passedX, passedY, zoomLevel;
 require([
   "dojo/dom",
+	"dojo/on",
   "esri/Color",
   "dojo/keys",
   "dojo/parser",
@@ -12,16 +13,19 @@ require([
   "esri/config",
   "esri/sniff",
   "esri/map",
+	"esri/graphic",
   "esri/tasks/GeometryService",
   "esri/dijit/Scalebar",
   "esri/dijit/Basemap",
   "esri/SnappingManager",
   "esri/dijit/Measurement",
   "esri/geometry/webMercatorUtils",
+	"esri/geometry/Point",
   "esri/layers/FeatureLayer",
   "esri/renderers/SimpleRenderer",
   "esri/symbols/SimpleLineSymbol",
   "esri/symbols/SimpleFillSymbol",
+	"esri/symbols/SimpleMarkerSymbol",
   "dojo/store/Memory",
   "dijit/form/ComboBox",
   "dijit/registry",
@@ -32,6 +36,7 @@ require([
   "dojo/domReady!"
   ], function (
   dom,
+	on,
   Color,
   keys,
   parser,
@@ -42,16 +47,19 @@ require([
   esriConfig,
   has,
   Map,
+	Graphic,
   GeometryService,
   Scalebar,
   Basemap,
   SnappingManager,
   Measurement,
   webMercatorUtils,
+	Point,
   FeatureLayer,
   SimpleRenderer,
   SimpleLineSymbol,
   SimpleFillSymbol,
+	SimpleMarkerSymbol,
   Memory,
   ComboBox,
   registry,
@@ -119,6 +127,51 @@ require([
     zoom: zoomLevel // 12
   });
 
+  function zoomToLatLong() {
+    var txtLL, txtComma, txtLat, txtLong, sms, point, graphicLL, maxZoom;
+    txtLL = document.getElementById("textLatLong").value;
+    txtLL = txtLL.replace(/\s+/g, ''); // get rid of white space so it is just lat,long
+    txtComma = txtLL.indexOf(",");
+
+    if (txtComma > 0) {
+      txtLat = parseFloat(txtLL.slice(0, txtComma)); // using parseFloat may take some alpha garbage out of the string
+      txtLong = parseFloat(txtLL.substring(txtComma + 1));
+	      // console.log("latitude: " + txtLat);
+	      // console.log("longitude: " + txtLong);
+      sms = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_SQUARE, 12, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([10,10,10,0.75]), 1), new Color([255,0,0,0.5]));
+      point = new Point(txtLong, txtLat, map.spatialRefernce);
+      graphicLL = new Graphic(point, sms, null, null);
+
+      map.graphics.add(graphicLL);
+
+      if (graphicLL.geometry.type === 'point') {
+        maxZoom = map.getMaxZoom();
+        map.centerAndZoom(graphicLL.geometry, maxZoom - 1);
+      } else {
+        map.setExtent(graphicsUtils.graphicsExtent([graphicLL]));
+      }      
+    } else {
+      return "";
+    } // end if
+  } // end zoomToLatLong function
+
+	function showLocation(position) {
+    var x = document.getElementById("textLatLong");
+    x.value = position.coords.latitude + ", " + position.coords.longitude;	
+  }
+
+  function getLocation() {
+    map.graphics.clear();
+    var x = document.getElementById("centroid");
+    if (navigator.geolocation) {
+  	navigator.geolocation.getCurrentPosition(showLocation);
+    } else { 
+      x.innerHTML = "Geolocation is not supported by this browser.";
+    }
+  }
+
+  on(dom.byId("getLocationButton"), "click", getLocation);
+
   //add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
   basemapGallery = new BasemapGallery({
     showArcGISBasemaps: true,
@@ -137,6 +190,7 @@ require([
 
   // LAUNCH MAP
   map.on("load", startTrackingExtent);
+	on(dom.byId("submitLatLongButton"), "click", zoomToLatLong);
   var mapLaunchStore = new Memory({
     data: [
       {name: "Flood Hazard", id: "FEMA", baseURL: "FEMA_map.php"},
@@ -161,6 +215,8 @@ require([
     passedY = parseFloat(center.y.toFixed(5));
     zoomLevel = map.getLevel();
     // console.log("Zoom: " + zoomLevel + ";  XY: " + passedX + ", " + passedY);
+    var x = document.getElementById("centroid");
+    x.innerHTML = "Latitude: " + passedY + "<br />Longitude: " + passedX;
   }
 
   mdImagelayer = new esri.layers.ArcGISTiledMapServiceLayer("https://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/ImageServer");

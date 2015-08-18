@@ -152,6 +152,11 @@ function executeIdentifyTask(evt) {
         "<span class=\"sectionhead\">Layer: Street Centerlines</span><br /><br /><hr>Name: ${STREET_ALL} <br />"
         + "Maintenance: ${MAINTENANCE} <br /> Length: ${SHAPE.len:NumberFormat(places:1)} feet <br />");
         feature.setInfoTemplate(template);
+      } else if (result.layerName === 'School Zones') {
+        template = new esri.InfoTemplate("Board of Ed. Info.",
+        "<span class=\"sectionhead\">Layer: School Zones</span><br /><br /><hr>Elementary School: ${School} <br />"
+        + "Middle School: ${MS} <br />High School: ${HS}");
+        feature.setInfoTemplate(template);                           
       } else if (result.layerName === 'Election_Districts') {
         template = new esri.InfoTemplate("",
         "<span class=\"sectionhead\">Layer: Election Districts</span><br /><br /><hr>Election District: ${Dist_Numb} <br /> "
@@ -168,10 +173,6 @@ function executeIdentifyTask(evt) {
         + "Owner: ${Owner} <br />");
         feature.setInfoTemplate(template);
       } else if (result.layerName === 'SHA_CamData') {
-        // $myLink = "${link}"; // "http://www.chart.state.md.us/video/video.php?feed=9c00ad6c00a300100053fa36c4235c0a";
-        // $myDesc = "${desc_}";
-        // alert($myLink);
-        // $myDesc = "Swanton MD Highway";
         template = new esri.InfoTemplate("Traffic Info",
         "<span class=\"sectionhead\">Layer: SHA Traffic Cameras</span><br /><br /><hr>ID: ${ID} <br />"
         + "Description: ${desc_} <br /> Latitude: ${lat} <br /> Longitude ${long} <br /><hr />"
@@ -229,6 +230,7 @@ require([
   "esri/dijit/BasemapGallery",
   "esri/dijit/Popup",
   "esri/geometry/webMercatorUtils",
+	"esri/geometry/Point",
   "esri/layers/ArcGISDynamicMapServiceLayer",
   "esri/layers/ImageParameters",
   "esri/tasks/query",
@@ -242,6 +244,8 @@ require([
   "esri/dijit/InfoWindow",
   "esri/symbols/SimpleFillSymbol",
   "esri/symbols/SimpleLineSymbol",
+	"esri/symbols/SimpleMarkerSymbol",
+	"esri/graphic",
   "esri/InfoTemplate",
   "dojo/_base/array",
   "dojo/_base/connect",
@@ -270,6 +274,7 @@ require([
   BasemapGallery,
   Popup,
   webMercatorUtils,
+	Point,
   ArcGISDynamicMapServiceLayer,
   ImageParameters,
   Query,
@@ -283,6 +288,8 @@ require([
   InfoWindow,
   SimpleFillSymbol,
   SimpleLineSymbol,
+	SimpleMarkerSymbol,
+	Graphic,
   InfoTemplate,
   arrayUtil,
   connect,
@@ -328,6 +335,50 @@ require([
     infoWindow: popup
   });
 
+  function zoomToLatLong() {
+    var txtLL, txtComma, txtLat, txtLong, sms, point, graphicLL, maxZoom;
+    txtLL = document.getElementById("textLatLong").value;
+    txtLL = txtLL.replace(/\s+/g, ''); // get rid of white space so it is just lat,long
+    txtComma = txtLL.indexOf(",");
+
+    if (txtComma > 0) {
+      txtLat = parseFloat(txtLL.slice(0, txtComma)); // using parseFloat may take some alpha garbage out of the string
+      txtLong = parseFloat(txtLL.substring(txtComma + 1));
+	      // console.log("latitude: " + txtLat);
+	      // console.log("longitude: " + txtLong);
+      sms = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_SQUARE, 12, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([10,10,10,0.75]), 1), new Color([255,0,0,0.5]));
+      point = new Point(txtLong, txtLat, map.spatialRefernce);
+      graphicLL = new Graphic(point, sms, null, null);
+
+      map.graphics.add(graphicLL);
+
+      if (graphicLL.geometry.type === 'point') {
+        maxZoom = map.getMaxZoom();
+        map.centerAndZoom(graphicLL.geometry, maxZoom - 1);
+      } else {
+        map.setExtent(graphicsUtils.graphicsExtent([graphicLL]));
+      }      
+    } else {
+      return "";
+    } // end if
+  } // end zoomToLatLong function
+
+	function showLocation(position) {
+    var x = document.getElementById("textLatLong");
+    x.value = position.coords.latitude + ", " + position.coords.longitude;	
+  }
+
+  function getLocation() {
+    map.graphics.clear();
+    var x = document.getElementById("centroid");
+    if (navigator.geolocation) {
+  	navigator.geolocation.getCurrentPosition(showLocation);
+    } else { 
+      x.innerHTML = "Geolocation is not supported by this browser.";
+    }
+  }
+
+  on(dom.byId("getLocationButton"), "click", getLocation);
 
   // findTask = new FindTask("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
   findTask = new FindTask("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
@@ -339,6 +390,7 @@ require([
     findParams.searchFields = ["RDNAMELOCAL", "PARCEL"]; // "ACCTID", "MAINTENANCE", "FRADDL_P", "TOADDL_P", "FRADDR_P", "TOADDR_P"];
     findParams.outSpatialReference = map.spatialReference;
     console.log("find sr: ", findParams.outSpatialReference);
+		on(dom.byId("submitLatLongButton"), "click", zoomToLatLong);
   });
 
   scalebar = new Scalebar({
@@ -573,6 +625,8 @@ require([
     passedX = parseFloat(center.x.toFixed(5));
     passedY = parseFloat(center.y.toFixed(5));
     zoomLevel = map.getLevel();
+    var x = document.getElementById("centroid");
+    x.innerHTML = "Latitude: " + passedY + "<br />Longitude: " + passedX;
   }
 
   function initSelectToolbar(event) {

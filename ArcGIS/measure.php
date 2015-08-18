@@ -86,7 +86,39 @@
                 The different maps have different uses (see the <a href="../help.php">Help &amp; Documentation</a> for more information).
               </p>
             </div><!-- ContentPane 3 -->
-          </div><!-- TitlePane Navigation -->          
+          </div><!-- TitlePane Navigation -->
+          <div data-dojo-type="dijit/TitlePane" 
+               data-dojo-props="title:'Enter Lat Long', closable:false,  open:false">
+            <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">
+              <div id="enterLatLong" >
+                <form>
+                  <input type="text" id="textLatLong"><br />
+                  <input type="button" value="Submit" label="Submit" id="submitLatLongButton" dojoType="dijit.form.Button" />
+                </form><br />
+                <span id="latlongInstructions">
+                  <a href="#" class="tooltip">
+                    <span>
+                      <img class="callout" src="images/callout.gif" alt="Tooltip graphic" />
+                      Coordinates shown are for <br />
+                      <strong>&#8220;Swallow Falls State Park&#8221;</strong>
+                    </span>
+                    Enter Lat, Long in Decimal Degrees<br />
+                  </a>          
+                </span>
+              </div><br />
+              <span class="textInfo">
+                e.g. 39.499059, -79.418682
+              </span>
+              <br /><br />
+              <div class="viewLatLong">
+                <h4>Current Map Centroid:</h4>
+                <span id="centroid"></span><br />
+                <button id="getLocationButton">Your Location</button>
+                <p>Click the button to get the coordinates<br /> of your current location. Then click &#8220;<strong>Submit</strong>&#8221;</p>
+                <!-- <button onclick="getLocation()">Your Location</button> -->
+              </div><!-- viewLatLong -->
+            </div><!-- ContentPane 4 -->
+          </div><!-- TitlePane "Enter Lat Long" -->
         </div><!-- positioning div -->
       </div>
     </div>

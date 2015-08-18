@@ -179,8 +179,8 @@
                 
 
               </div><!-- viewLatLong -->
-            </div><!-- ContentPane 3 -->
-          </div><!-- TitlePane 1 "Enter Lat Long" -->                      
+            </div><!-- ContentPane 4 -->
+          </div><!-- TitlePane "Enter Lat Long" -->                      
 
         </div><!-- positioning div -->
       </div><!-- mapDiv -->

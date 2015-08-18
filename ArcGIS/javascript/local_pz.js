@@ -224,7 +224,7 @@ require([
   "esri/dijit/BasemapGallery",
   "esri/dijit/Popup",
   "esri/geometry/webMercatorUtils",
-  "esri/geometry/Point", 
+  "esri/geometry/Point",
   "esri/layers/ArcGISDynamicMapServiceLayer",
   "esri/layers/ImageParameters",
   "esri/tasks/query",

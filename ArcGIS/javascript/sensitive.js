@@ -7,6 +7,7 @@ require(["esri/map",
   "esri/dijit/Popup",
   "esri/dijit/BasemapGallery",
   "dojo/dom",
+	"dojo/on",
   "dojo/store/Memory",
   "dijit/form/ComboBox",
   "dijit/registry",
@@ -17,9 +18,12 @@ require(["esri/map",
   "esri/layers/ArcGISTiledMapServiceLayer",
   "esri/layers/ImageParameters",
   "esri/geometry/webMercatorUtils",
+	"esri/geometry/Point",
   "esri/symbols/SimpleFillSymbol",
   "esri/symbols/SimpleLineSymbol",
+	"esri/symbols/SimpleMarkerSymbol",
   "esri/Color",
+	"esri/graphic",
   "esri/tasks/IdentifyTask",
   "esri/tasks/IdentifyParameters",
   "esri/InfoTemplate",
@@ -32,6 +36,7 @@ require(["esri/map",
   Popup,
   BasemapGallery,
   dom,
+	on,
   Memory,
   ComboBox,
   registry,
@@ -42,9 +47,12 @@ require(["esri/map",
   ArcGISTiledMapServiceLayer,
   ImageParameters,
   webMercatorUtils,
+	Point,
   SimpleFillSymbol,
   SimpleLineSymbol,
+	SimpleMarkerSymbol,
   Color,
+	Graphic,
   IdentifyTask,
   IdentifyParameters,
   InfoTemplate,
@@ -91,6 +99,8 @@ require(["esri/map",
     passedX = parseFloat(center.x.toFixed(5));
     passedY = parseFloat(center.y.toFixed(5));
     zoomLevel = map.getLevel();
+    var x = document.getElementById("centroid");
+    x.innerHTML = "Latitude: " + passedY + "<br />Longitude: " + passedX;
   }
 
   function makePopupDraggable() {
@@ -128,8 +138,54 @@ require(["esri/map",
     scalebarUnit: "english"
   });
 
+  function zoomToLatLong() {
+    var txtLL, txtComma, txtLat, txtLong, sms, point, graphicLL, maxZoom;
+    txtLL = document.getElementById("textLatLong").value;
+    txtLL = txtLL.replace(/\s+/g, ''); // get rid of white space so it is just lat,long
+    txtComma = txtLL.indexOf(",");
+
+    if (txtComma > 0) {
+      txtLat = parseFloat(txtLL.slice(0, txtComma)); // using parseFloat may take some alpha garbage out of the string
+      txtLong = parseFloat(txtLL.substring(txtComma + 1));
+	      // console.log("latitude: " + txtLat);
+	      // console.log("longitude: " + txtLong);
+      sms = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_SQUARE, 12, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([10,10,10,0.75]), 1), new Color([255,0,0,0.5]));
+      point = new Point(txtLong, txtLat, map.spatialRefernce);
+      graphicLL = new Graphic(point, sms, null, null);
+
+      map.graphics.add(graphicLL);
+
+      if (graphicLL.geometry.type === 'point') {
+        maxZoom = map.getMaxZoom();
+        map.centerAndZoom(graphicLL.geometry, maxZoom - 1);
+      } else {
+        map.setExtent(graphicsUtils.graphicsExtent([graphicLL]));
+      }      
+    } else {
+      return "";
+    } // end if
+  } // end zoomToLatLong function
+
+	function showLocation(position) {
+    var x = document.getElementById("textLatLong");
+    x.value = position.coords.latitude + ", " + position.coords.longitude;	
+  }
+
+  function getLocation() {
+    map.graphics.clear();
+    var x = document.getElementById("centroid");
+    if (navigator.geolocation) {
+  	navigator.geolocation.getCurrentPosition(showLocation);
+    } else { 
+      x.innerHTML = "Geolocation is not supported by this browser.";
+    }
+  }
+
+  on(dom.byId("getLocationButton"), "click", getLocation);
+
   // LAUNCH MAP
   map.on("load", startTrackingExtent);
+	on(dom.byId("submitLatLongButton"), "click", zoomToLatLong);
   mapLaunchStore = new Memory({
     data: [
       {name: "Flood Hazard", id: "FEMA", baseURL: "FEMA_map.php"},

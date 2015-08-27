@@ -511,7 +511,7 @@ require([
 
     arrayUtil.forEach(event.features, function (feature) {
 
-      parcelValue = [ String(feature.attributes.MAP), String(feature.attributes.PARCEL), String(feature.attributes.SDATWEBADR) ];
+      parcelValue = [ String(feature.attributes.MAP), String(feature.attributes.PARCEL), String(feature.attributes.LOT), (feature.attributes.SDATWEBADR) ];
       parcelIndex = arrStructNum.indexOf(parcelValue);
 
       for (x = 0; x < arrStructNum.length; x++) {
@@ -543,8 +543,9 @@ require([
     for (i = 0; i < arrStructNum.length; i++) {
       strParcelInfo += "<strong>MAP: </strong>" + arrStructNum[i][0] + "<br \/>" +
           "<strong>PARCEL: </strong>" + arrStructNum[i][1] + "<br />" +
-          "<strong>LINK: </strong><a href=\"" + arrStructNum[i][2] + "\" target=\"_blank\">Link</a><br /><hr />";
-      strStrippedInfo += arrStructNum[i][0] + ", " + arrStructNum[i][1] + ", " + arrStructNum[i][2] + "<br />";
+				  "<strong>LOT: </strong>" + arrStructNum[i][2] + "<br />" +
+          "<strong>LINK: </strong><a href=\"" + arrStructNum[i][3] + "\" target=\"_blank\">Link</a><br /><hr />";
+      strStrippedInfo += arrStructNum[i][0] + ", " + arrStructNum[i][1] + ", " + arrStructNum[i][2] + ", " + arrStructNum[i][3] + "<br />";
     }
     strFormInfo = "Save these parcel records<br />"
       + "<form action=\"file.php\" method=\"post\" target=\"_blank\"><input id=\"save\" type=\"submit\"></input><input type=\"checkbox\" name=\"append_data\" checked=\"true\" value=\"parcel\">Write new file?<br /><input id=\"hidden_field\" name=\"hidden_field\" type=\"hidden\" value=\"" + strStrippedInfo + "\" /></form><br />";

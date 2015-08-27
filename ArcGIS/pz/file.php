@@ -24,7 +24,7 @@
   $Handle = fopen($File, $fileAccess); // 'a+'); // use write instead of append
   // $Data = "Jane Doe\r\n";
   if ($fileAccess === 'w' && $doAppend === "parcel") {
-    fwrite($Handle, "M, P, Link\r\n");
+    fwrite($Handle, "M, P, Lot, Link, Owner Name 1, Owner Name 2, Owner Address, Owner City State Zip\r\n");
   }
   if ($fileAccess === 'a+' && $doAppend === "address") {
     fwrite($Handle, "Addresses:");

@@ -578,7 +578,7 @@ require([
 
   // Add Geocoder
   geocoders = [{
-    url: "https://geodata.md.gov/imap/rest/services/GeocodeServices/MD_CompositeLocatorWithEsri/GeocodeServer",
+    url: "https://geodata.md.gov/imap/rest/services/GeocodeServices/MD_CompositeLocator/GeocodeServer",
     name: "MDiMap Composite Locator", 
     singleLineFieldName: "SingleLine",
   }];

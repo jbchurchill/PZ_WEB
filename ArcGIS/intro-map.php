@@ -237,6 +237,7 @@
           <th field="MAP">MAP</th>
           <!--<th field="OWNERNME2">Owner 2</th>-->
           <th field="PARCEL">PARCEL</th>
+          <th field="LOT">LOT</th>
           <th field="OWNNAME1" width="130px">OWNERNAME 1</th>
           <th field="OWNNAME2" width="130px">OWNERNAME 2</th>
           <!--<th field="RESYRBLT ">Year Built</th>-->

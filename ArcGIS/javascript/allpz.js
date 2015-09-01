@@ -483,6 +483,7 @@ require([
     arrayUtil.forEach(event.features, function (feature) {
       strParcelInfo += "<strong>MAP: </strong>" + feature.attributes.MAP + "<br />" +
           "<strong>PARCEL: </strong>" + feature.attributes.PARCEL + "<br />" +
+				  "<strong>LOT: </strong>" + feature.attributes.LOT + "<br />" +
           "<strong>LINK: </strong><a href=\"" + feature.attributes.SDATWEBADR + "\" target=\"_blank\">Link</a><br /><hr />";
       arrParcelData.push(feature.attributes.MAP);
       parcelSum += 1;

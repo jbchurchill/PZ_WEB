@@ -45,6 +45,10 @@
 							{
 								"title":"Printable Map",
 								"link":"/arcgis/printable.php"
+							},
+							{
+								"title":"PDF Grid Maps",
+								"link":"/arcgis/app/index.php"
 							}
 						]
 					}

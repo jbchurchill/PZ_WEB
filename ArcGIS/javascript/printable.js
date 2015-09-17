@@ -308,7 +308,7 @@ require([
   saParameters.layerIds = [1, 4, 5, 6, 7]; // [0, 1, 2, 3, 4, 5, 6, 7];
   saParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
   pzParameters = new ImageParameters();
-  pzParameters.layerIds = [2, 6]; // addresspoints, parcels - OLD [4, 8]; // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+  pzParameters.layerIds = [2, 7]; // addresspoints, parcels - OLD [4, 8]; // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
   pzParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
   labelField = "RDNAMELOCAL";
   epParameters = new ImageParameters();

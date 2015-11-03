@@ -42,7 +42,7 @@
         $urlLength = ($fullLength - $start);
         $fullUrl = substr($line, $start, $urlLength);
         $arraySDAT = getSDAT($fullUrl);
-        $line .= ", " . $arraySDAT[0] . ", " . $arraySDAT[1] . ", " . $arraySDAT[2] . "\n";
+        $line .= ", " . $arraySDAT[0] . ", " . $arraySDAT[1] . ", " . $arraySDAT[2] . "\r\n";
         fwrite($Handle, $line);
       }  
     }

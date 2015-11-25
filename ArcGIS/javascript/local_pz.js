@@ -485,8 +485,8 @@ require([
     for (i = 0; i < arrStructNum.length; i++) {
       strAddresses += arrStructNum[i] + "<br \/>";
     }
-    strFormInfo = "Save these point records<br />"
-        + "<form action=\"file.php\" method=\"post\" target=\"_blank\"><input id=\"save\" type=\"submit\"></input><input type=\"checkbox\" name=\"append_data\" checked=\"true\" value=\"address\">Write new file?<br /><input id=\"hidden_field\" name=\"hidden_field\" type=\"hidden\" value=\"" + strAddresses + "\" /></form>";
+    strFormInfo = "Download these point records<br />"
+        + "<form action=\"file.php\" method=\"post\" target=\"_blank\"><input id=\"save\" type=\"submit\"></input><br /><br />File Name<input id=\"fname\" name=\"fname\" type=\"text\"></input><br /><input type=\"hidden\" name=\"append_data\" value=\"address\"></input><input id=\"hidden_field\" name=\"hidden_field\" type=\"hidden\" value=\"" + strAddresses + "\" /></form>";
     // ToDo - Do this next line ONLY if >0 records are selected.
     if (pointSum > 0) {
       dom.byId('formContent').innerHTML = strFormInfo;
@@ -496,8 +496,7 @@ require([
     dom.byId('messages').innerHTML = "<strong>Number of Selected Points: " +
                                             // pointSum + "</strong><br />" + strAddresses + "<br /><button id=\"save\" data-dojo-type=\"dijit.form.Button\" type=\"button\" data-dojo-attach-point=\"button\">Save</button><br />";
                                             pointSum + "</strong><br />" + strAddresses + "<br />";
-                                            
-                                            //+ "<form action=\"file.php\" method=\"post\" target=\"_blank\"><input id=\"save\" type=\"submit\"></input><input type=\"checkbox\" name=\"append_data\" checked=\"true\" value=\"address\">Write new file?<br /><input id=\"hidden_field\" name=\"hidden_field\" type=\"hidden\" value=\"" + strAddresses + "\" /></form><br />";
+
   }
 
   function sumSelectedParcelInfo(event) {
@@ -547,8 +546,8 @@ require([
           "<strong>LINK: </strong><a href=\"" + arrStructNum[i][3] + "\" target=\"_blank\">Link</a><br /><hr />";
       strStrippedInfo += arrStructNum[i][0] + ", " + arrStructNum[i][1] + ", " + arrStructNum[i][2] + ", " + arrStructNum[i][3] + "<br />";
     }
-    strFormInfo = "Save these parcel records<br />"
-      + "<form action=\"file.php\" method=\"post\" target=\"_blank\"><input id=\"save\" type=\"submit\"></input><input type=\"checkbox\" name=\"append_data\" checked=\"true\" value=\"parcel\">Write new file?<br /><input id=\"hidden_field\" name=\"hidden_field\" type=\"hidden\" value=\"" + strStrippedInfo + "\" /></form><br />";
+    strFormInfo = "Download these parcel records<br />"
+      + "<form action=\"file.php\" method=\"post\" target=\"_blank\"><input id=\"save\" type=\"submit\"></input><br /><br />File Name<input id=\"fname\" name=\"fname\" type=\"text\"></input><br /><input type=\"hidden\" name=\"append_data\" value=\"parcel\"></input><input id=\"hidden_field\" name=\"hidden_field\" type=\"hidden\" value=\"" + strStrippedInfo + "\" /></form><br />";
      if (parcelSum > 0) {
       dom.byId('formContent').innerHTML = strFormInfo;
     } else {

@@ -38,8 +38,12 @@ form#basemap {
   display: inline-block;
   overflow: hidden;
 }
-.selType{
-  float:left;
+.selType {
+  float: left;
+  margin: 0 2em 0 1em;
+}
+.infoWindowMoveable {
+  float: right;
   margin: 0 2em 0 1em;
 }
 #geosearch {
@@ -130,6 +134,53 @@ div#header {
 div#rightPane {
   width: 230px;
 }
+
+/* Enter Lat Long */
+div.viewLatLong {
+  line-height: 5px;
+}
+
+/* Tooltips */
+.map a.tooltip {outline:none; display:inherit; width:200px; color:inherit; position: inherit; line-height:inherit; font-size: inherit; margin:inherit; padding: inherit; border: none; text-decoration:none;}
+a.tooltip strong {line-height:30px;}
+.map a.tooltip:hover {text-decoration:none;} 
+a.tooltip span {
+    z-index:10;display:none; padding:14px 20px;
+    margin-top:-30px; margin-left:20px;
+    width:180px; line-height:16px;
+}
+a.tooltip:hover span{
+  display:inline; position:absolute; color:#111;
+  left: 40%;  
+  border:1px solid #DCA; background:#fffAF0;}
+.callout {z-index:20;position:absolute;top:20px;border:0;left:-12px;}
+    
+/*CSS3 extras*/
+a.tooltip span
+{
+  border-radius:4px;
+  box-shadow: 5px 5px 8px #CCC;
+}
+div.viewLatLong {
+  line-height: 20px;
+  color:#111;
+  /* clear: both; */
+}
+span.textInfo {
+ margin-top: 15px; 
+}
+/* form modifications */
+.clearfix:after {
+	visibility: hidden;
+	display: block;
+	font-size: 0;
+	content: " ";
+	clear: both;
+	height: 0;
+	}
+* html .clearfix             { zoom: 1; } /* IE6 */
+*:first-child+html .clearfix { zoom: 1; } /* IE7 */
+
 /* menu fix */
 @media all and (max-width: 1004px) {
   .grid-container {

@@ -49,21 +49,26 @@
     </script>
     <div data-dojo-type="dijit/layout/ContentPane" id="cp"
       data-dojo-props="region: 'top'">
-    <button id="selectPointsButton" data-dojo-type="dijit/form/Button">Select Points/Polys</button>
-    <button id="addPointsButton" data-dojo-type="dijit/form/Button">Add</button>
-    <button id="removePointsButton" data-dojo-type="dijit/form/Button">Remove</button>
-    <button id="clearSelectionButton" data-dojo-type="dijit/form/Button">Clear Selection</button>
-    <div class="selType">
+      <button id="selectPointsButton" data-dojo-type="dijit/form/Button">Select Points/Polys</button>
+      <button id="addPointsButton" data-dojo-type="dijit/form/Button">Add</button>
+      <button id="removePointsButton" data-dojo-type="dijit/form/Button">Remove</button>
+      <button id="clearSelectionButton" data-dojo-type="dijit/form/Button">Clear Selection</button>
+      <div class="selType">
         <input type="radio" id="rectangle" data-dojo-type="dijit/form/RadioButton" name="selectType"  checked="checked">Rectangle<br />
         <input type="radio" id="polygon" data-dojo-type="dijit/form/RadioButton" name="selectType">Polygon<br />
-    </div>
-    <div class="selType">
+      </div>
+      <div class="selType">
+      <!-- data-dojo-type="dijit/form/RadioButton" -->
         <input type="radio" id="points" data-dojo-type="dijit/form/RadioButton" name="geomType" checked="checked" />Address Points<br />
         <input type="radio" id="polys" data-dojo-type="dijit/form/RadioButton" name="geomType" />Parcels<br />
-    </div>
-    <span style="font-size: 0.8em; float:right; text-align:center">
-    Click the triangle at the lower right corner<br /> to search roads or parcels.
-    </span>
+      </div>
+      <div class="infoWindowMoveable" style="float: right"> <!-- ? -->
+        <input type="radio" id="moveable" data-dojo-type="dijit/form/RadioButton" name="moveableWindow" checked="checked" />Yes - Moveable Info Window?<br />
+        <input type="radio" id="notMoveable" data-dojo-type="dijit/form/RadioButton" name="moveableWindow" />No<br />
+      </div>
+      <span style="font-size: 0.8em; float:right; text-align:center; margin-right: 1em;">
+      Click the triangle at the lower right corner<br /> to search roads or parcels.
+      </span>
     </div><!-- #cp CONTENT PANE -->
     <!-- moving this outside of the Border Container allows you to scroll the form controls out of the way! -->
     <div data-dojo-type="dijit/layout/BorderContainer" 

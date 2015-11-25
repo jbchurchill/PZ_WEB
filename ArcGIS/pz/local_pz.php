@@ -47,27 +47,28 @@
       var passedY = '<?php echo $py; ?>';
       var zoomLevel = '<?php echo $zoom; ?>';
     </script>
+    <div data-dojo-type="dijit/layout/ContentPane" id="cp"
+      data-dojo-props="region: 'top'">
+    <button id="selectPointsButton" data-dojo-type="dijit/form/Button">Select Points/Polys</button>
+    <button id="addPointsButton" data-dojo-type="dijit/form/Button">Add</button>
+    <button id="removePointsButton" data-dojo-type="dijit/form/Button">Remove</button>
+    <button id="clearSelectionButton" data-dojo-type="dijit/form/Button">Clear Selection</button>
+    <div class="selType">
+        <input type="radio" id="rectangle" data-dojo-type="dijit/form/RadioButton" name="selectType"  checked="checked">Rectangle<br />
+        <input type="radio" id="polygon" data-dojo-type="dijit/form/RadioButton" name="selectType">Polygon<br />
+    </div>
+    <div class="selType">
+        <input type="radio" id="points" data-dojo-type="dijit/form/RadioButton" name="geomType" checked="checked" />Address Points<br />
+        <input type="radio" id="polys" data-dojo-type="dijit/form/RadioButton" name="geomType" />Parcels<br />
+    </div>
+    <span style="font-size: 0.8em; float:right; text-align:center">
+    Click the triangle at the lower right corner<br /> to search roads or parcels.
+    </span>
+    </div><!-- #cp CONTENT PANE -->
+    <!-- moving this outside of the Border Container allows you to scroll the form controls out of the way! -->
     <div data-dojo-type="dijit/layout/BorderContainer" 
          data-dojo-props="design:'headline', gutters:false" 
          style="width:100%;height:100%;margin:0;">
-      <div data-dojo-type="dijit/layout/ContentPane" id="cp"
-        data-dojo-props="region: 'top'">
-      <button id="selectPointsButton" data-dojo-type="dijit/form/Button">Select Points/Polys</button>
-      <button id="addPointsButton" data-dojo-type="dijit/form/Button">Add</button>
-      <button id="removePointsButton" data-dojo-type="dijit/form/Button">Remove</button>
-      <button id="clearSelectionButton" data-dojo-type="dijit/form/Button">Clear Selection</button>
-      <div class="selType">
-          <input type="radio" id="rectangle" data-dojo-type="dijit/form/RadioButton" name="selectType"  checked="checked">Rectangle<br />
-          <input type="radio" id="polygon" data-dojo-type="dijit/form/RadioButton" name="selectType">Polygon<br />
-      </div>
-      <div class="selType">
-          <input type="radio" id="points" data-dojo-type="dijit/form/RadioButton" name="geomType" checked="checked" />Address Points<br />
-          <input type="radio" id="polys" data-dojo-type="dijit/form/RadioButton" name="geomType" />Parcels<br />
-      </div>
-      <span style="font-size: 0.8em; float:right; text-align:center">
-      Click the triangle at the lower right corner<br /> to search roads or parcels.
-      </span>
-      </div><!-- #cp CONTENT PANE -->
       <!-- onclick="runTest();"  -->
       <div id="mapDiv" data-dojo-type="dijit/layout/ContentPane" 
            data-dojo-props="region:'center'" 

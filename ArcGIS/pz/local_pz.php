@@ -62,10 +62,6 @@
         <input type="radio" id="points" data-dojo-type="dijit/form/RadioButton" name="geomType" checked="checked" />Address Points<br />
         <input type="radio" id="polys" data-dojo-type="dijit/form/RadioButton" name="geomType" />Parcels<br />
       </div>
-      <div class="infoWindowMoveable" style="float: right"> <!-- ? -->
-        <input type="radio" id="moveable" data-dojo-type="dijit/form/RadioButton" name="moveableWindow" checked="checked" />Yes - Moveable Info Window?<br />
-        <input type="radio" id="notMoveable" data-dojo-type="dijit/form/RadioButton" name="moveableWindow" />No<br />
-      </div>
       <span style="font-size: 0.8em; float:right; text-align:center; margin-right: 1em;">
       Click the triangle at the lower right corner<br /> to search roads or parcels.
       </span>

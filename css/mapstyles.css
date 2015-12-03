@@ -42,10 +42,6 @@ form#basemap {
   float: left;
   margin: 0 2em 0 1em;
 }
-.infoWindowMoveable {
-  float: right;
-  margin: 0 2em 0 1em;
-}
 #geosearch {
   display: block;
   position: absolute;

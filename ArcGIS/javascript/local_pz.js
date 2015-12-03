@@ -499,6 +499,15 @@ require([
 
   }
 
+  function makePopupDraggable() {
+    var popupDiv, dnd;
+    popupDiv = document.querySelector(".esriPopup");
+    if (popupDiv) {
+      dnd = new dojo.dnd.Moveable(dom.byId(popupDiv));
+    }
+    return dnd;
+  }
+
   function sumSelectedParcelInfo(event) {
     "use strict";
     var parcelSum, parcelValue, arrParcelData, strParcelInfo, strFormInfo, strStrippedInfo, parcelIndex, i, x, n; // n, x;
@@ -770,6 +779,7 @@ require([
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // IDENTIFY LAYERS
   map.on("click", executeIdentifyTask);
+  map.on("click", makePopupDraggable);
   // identifyTask = new IdentifyTask("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
   identifyTask = new IdentifyTask("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer");
 

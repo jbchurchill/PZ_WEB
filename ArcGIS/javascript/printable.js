@@ -217,7 +217,7 @@ require([
   legSourceWater = new LegendLayer();
   legSourceWater.layerId = "Source Water Prot. Areas";
 
-  var PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer, BF_fLayer, EP_fLayer, CN_fLayer;
+  var PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer, BF_fLayer, EP_fLayer, CN_fLayer, HY_fLayer;
   var myCounter = 0;
   function setupPrint () {
     // if (typeof app.printer !== "undefined") {
@@ -303,7 +303,7 @@ require([
   on(dom.byId("clearGraphics"), "click", clearMapGraphics);
   on(dom.byId("textLabel"), "click", addTextLabel);
 
-  var saParameters, pzParameters, epParameters, cnParameters, labels, labelField;
+  var saParameters, pzParameters, epParameters, cnParameters, hyParameters, labels, labelField;
   saParameters = new ImageParameters();
   saParameters.layerIds = [1, 4, 5, 6, 7]; // [0, 1, 2, 3, 4, 5, 6, 7];
   saParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
@@ -317,8 +317,10 @@ require([
   cnParameters = new ImageParameters();
   cnParameters.layerIds = [11, 12, 13, 14];
   cnParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
-
-
+  hyParameters = new ImageParameters();
+  hyParameters.layerIds = [0, 1, 2, 3, 4]
+  hyParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
+  
   // PZ_fLayer = new ArcGISDynamicMapServiceLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
   PZ_fLayer = new ArcGISDynamicMapServiceLayer("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
     {"imageParameters": pzParameters, opacity: 0.75, id: "Parcels & Addresses"});
@@ -387,13 +389,16 @@ require([
   CN_fLayer = new ArcGISDynamicMapServiceLayer("https://maps.garrettcounty.org/arcweb/rest/services/Contours_and_Plan/Contours_and_Plan/MapServer",
     {"imageParameters": cnParameters, opacity: 0.75, id: "Contours"});
 
-  app.map.addLayers([PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer, BF_fLayer, EP_fLayer, CN_fLayer]);
+  HY_fLayer = new ArcGISDynamicMapServiceLayer("https://maps.garrettcounty.org/arcweb/rest/services/Hydrography/Hydrography/MapServer",
+    {"imageParameters": hyParameters, opacity: 0.75, id: "Hydrography"});
+
+  app.map.addLayers([PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer, BF_fLayer, EP_fLayer, CN_fLayer, HY_fLayer]);
 
   // console.log(EP_fLayer.id);
   // console.log(SP_fLayer.id);
 
   // create a check box for each map layer
-  arrayUtils.forEach(["Parcels & Addresses", "Cell Towers", "Wind Turbines", "Street Centerlines", "Perennial Streams", "Zoning", "Source Water Prot. Areas", "Protected Species", "Growth Areas", "Flood Hazard", "Building Footprints", "Edge of Pavement", "Contours"], function(id) {
+  arrayUtils.forEach(["Parcels & Addresses", "Cell Towers", "Wind Turbines", "Street Centerlines", "Perennial Streams", "Zoning", "Source Water Prot. Areas", "Protected Species", "Growth Areas", "Flood Hazard", "Building Footprints", "Edge of Pavement", "Hydrography", "Contours"], function(id) {
     new CheckBox({
       id: "cb_" + id,
       name: "cb_" + id,

@@ -7,6 +7,7 @@ require([
   "esri/map",
   "esri/toolbars/draw",
   "esri/toolbars/edit",
+  "esri/dijit/Scalebar",
   "esri/dijit/Print",
   "esri/dijit/Geocoder",
   "esri/dijit/BasemapGallery",
@@ -48,6 +49,7 @@ require([
   Map,
   Draw,
   editToolbar,
+  Scalebar,
   Print,
   Geocoder,
   BasemapGallery,
@@ -85,7 +87,7 @@ require([
   parser.parse();
 
   esriConfig.defaults.io.proxyUrl = "/proxy";
-  var basemapGallery, legZoning, legSpecies, legGrowth, legEOP;
+  var basemapGallery, legZoning, legSpecies, legGrowth, legEOP, scalebar;
   var isLabel = false;
   passedCenter = [passedX, passedY];
 
@@ -172,6 +174,16 @@ require([
     app.toolbar.on("draw-end", addToMap);
     on.once(dom.byId("map"), "click", showCoordinates);
   }
+  
+  scalebar = new Scalebar({
+    map: app.map,
+    attachTo: "bottom-right",
+    scalebarStyle: "line",
+    // "dual" displays both miles and kilmometers
+    // "english" is the default, which displays miles
+    // use "metric" for kilometers
+    scalebarUnit: "english"
+  });
 
      //add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
   basemapGallery = new BasemapGallery({

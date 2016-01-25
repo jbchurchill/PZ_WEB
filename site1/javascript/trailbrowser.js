@@ -4,7 +4,6 @@ function executeIdentifyTask(evt) {
   var i;
   identifyParams.geometry = evt.mapPoint;
   identifyParams.mapExtent = map.extent;
-  console.log("Hi There!");
 
 
   // layers that can be identified by "click" that are NOT in the "Additional Layers" Content Pane
@@ -20,7 +19,6 @@ function executeIdentifyTask(evt) {
     // response is an array of identify result objects
     // Let's return an array of features.
     return dojo.map(response, function (result) {
-      console.log("HERE I AM");
       var feature = result.feature;
       feature.attributes.layerName = result.layerName;
       if (result.layerName === 'Garrett.DBO.Trails') {
@@ -45,6 +43,7 @@ function executeIdentifyTask(evt) {
 
 }; // end of function executeIdentifyTask
 
+
 require([
   "esri/map",
   "esri/dijit/Scalebar",
@@ -62,6 +61,7 @@ require([
   "esri/InfoTemplate",
   "esri/Color",
   "dojo/on",
+  "dojo/dom",
   "dojo/parser"
 ], function (
   Map,
@@ -80,11 +80,21 @@ require([
   InfoTemplate,
   Color,
   on,
+  dom,
   parser
 ) {
   parser.parse();
   var popup, scalebar, basemapGallery, mdImagelayer, mdImageBasemap, imageParameters, visibleLayerIds, landBaseLayer;
-  
+
+  function makePopupDraggable() {
+    var popupDiv, dnd;
+    popupDiv = document.querySelector(".esriPopup");
+    if (popupDiv) {
+      dnd = new dojo.dnd.Moveable(dom.byId(popupDiv));
+    }
+    return dnd;
+  }
+
   popup = new Popup({
     fillSymbol: new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255, 0, 0]), 2), new Color([255, 255, 0, 0.25]))
   }, dojo.create("div"));
@@ -92,7 +102,7 @@ require([
   map = new Map("map-canvas", {
     basemap: "streets",
     center: [-79.280, 39.500], // passedCenter, // center,
-    zoom: 11, // zoomLevel, // zoom,
+    zoom: 10, // zoomLevel, // zoom,
     infoWindow: popup
   });
   
@@ -101,6 +111,7 @@ require([
   map.addLayer(landBaseLayer);
 
   map.on("click", executeIdentifyTask);
+  map.on("click", makePopupDraggable);
 
     identifyTask = new IdentifyTask("https://maps.garrettcounty.org/arcweb/rest/services/GarrettTrails/GarrettTrails/MapServer");
 

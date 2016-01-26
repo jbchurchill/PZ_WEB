@@ -1,4 +1,4 @@
-var map, center, zoom, identifyTask, identifyParams;
+var map, center, zoom, identifyTask, identifyParams, passedCenter, passedX, passedY, zoomLevel;
 
 function executeIdentifyTask(evt) {
   var i;
@@ -9,7 +9,7 @@ function executeIdentifyTask(evt) {
   // layers that can be identified by "click" that are NOT in the "Additional Layers" Content Pane
   // Critical Facilities, addresspoints, celltowers, centerlines, dbo.TaxParcel
   // THIS MAY NOT EVEN BE NECESSARY FOR THE TRAIL BROWSER
-  identifyParams.layerIds = [0];
+  // identifyParams.layerIds = [0, 1];
 
 
   var deferred = identifyTask.execute(identifyParams);
@@ -21,13 +21,21 @@ function executeIdentifyTask(evt) {
     return dojo.map(response, function (result) {
       var feature = result.feature;
       feature.attributes.layerName = result.layerName;
+      console.log(result.layerName);
       if (result.layerName === 'Garrett.DBO.Trails') {
         template = new esri.InfoTemplate("Trail Info", 
-        "<span class=\"sectionhead\">Layer: Trails</span><br /><br /><hr>Name: ${Name} <br /><br /> System: ${system} <br />" + "Mileage: ${miles} <br /><hr><br />"
+        "<span class=\"sectionhead\">Layer: Trails</span><br /><br /><hr>Name: ${Name} <br />System: ${system} <br />" + "Mileage: ${miles} <br />"
+        + "Calculated by ${len_method} <br /><hr><br />"
         + "<div><span style=\"float: left;\">Information Provided by <br /><a href=\"\http://garretttrails.org\">Garrett Trails</a></span><img src=\"../../uploads/2/8/3/9/2839881/6974422.png\" style=\"float: right;\" width=\"40\" /></div>");
-        map.infoWindow.resize(250, 500);
+        // map.infoWindow.resize(250, 500);
         feature.setInfoTemplate(template);
-      } else {console.log("WTF");}
+      } else if (result.layerName === 'Markers') {
+        template = new esri.InfoTemplate("Trail Info", 
+        "<span class=\"sectionhead\">Layer: Trail Markers</span><br /><br /><hr>Name: ${label} <br /><br /> Type: ${type} <br />" + "Segment Mileage: ${mileage} <br /><br />"
+        + "<a href=\"${link}\">Trail details and map</a><hr><br />"
+        + "<div><span style=\"float: left;\">Information Provided by <br /><a href=\"\http://garretttrails.org\">Garrett Trails</a></span><img src=\"../../uploads/2/8/3/9/2839881/6974422.png\" style=\"float: right;\" width=\"40\" /></div>");
+        feature.setInfoTemplate(template);
+      }
       return feature;
     });
     
@@ -86,6 +94,8 @@ require([
   parser.parse();
   var popup, scalebar, basemapGallery, mdImagelayer, mdImageBasemap, imageParameters, visibleLayerIds, landBaseLayer;
 
+  passedCenter = [passedX, passedY];
+  
   function makePopupDraggable() {
     var popupDiv, dnd;
     popupDiv = document.querySelector(".esriPopup");
@@ -101,8 +111,8 @@ require([
   
   map = new Map("map-canvas", {
     basemap: "streets",
-    center: [-79.280, 39.500], // passedCenter, // center,
-    zoom: 10, // zoomLevel, // zoom,
+    center: passedCenter, // center, [-79.280, 39.500]
+    zoom: zoomLevel, // zoom,
     infoWindow: popup
   });
   

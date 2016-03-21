@@ -1,30 +1,6 @@
 <?php 
 	ob_start(); 
-	//insert HTML HEAD here
-?>
-    <title>Planning and Zoning &#045; Click to Identify</title>
-    <!-- <link rel="stylesheet" href="https://js.arcgis.com/3.10/js/dojo/dijit/themes/claro/claro.css"> -->
-    <link rel="stylesheet" href="javascript/dojo_1_10_4/dijit/themes/claro/claro.css">
-    <!-- <link rel="stylesheet" href="http://archive.dojotoolkit.org/nightly/dojotoolkit/dojox/layout/resources/ExpandoPane.css"> -->
-    <link rel="stylesheet" href="javascript/dojo_1_10_4/dojox/layout/resources/ExpandoPane.css">
-    <link rel="stylesheet" href="https://js.arcgis.com/3.13/esri/css/esri.css">
-    <link rel="stylesheet" href="../css/mapstyles.css">
-
-    <script src="https://js.arcgis.com/3.13/"></script>
-    <!-- <script src="javascript/php_functions.js" type="text/javascript"></script> -->
-    <script src="javascript/allpz.yui.js" type="text/javascript"></script>
-<?php 
-	$htmlHEAD = ob_get_contents();
-	ob_end_clean();
-	
-	//body class
-	$htmlBodyClass = 'claro';
-  $htmlTitle = 'Planning and Zoning';
-	
-	//build the header
-	include('../includes/inc.header.php'); 
-	
-	//you are now inside the html body:
+	//instert HTML HEAD here
 ?>
 <?php
   if (isset($_GET['px'])) {
@@ -43,37 +19,64 @@
     $zoom = 10;
   }
 ?>
-  <!-- <body class="claro"> -->
+
+    <link rel="stylesheet" href="javascript/dojo_1_10_4/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="javascript/dojo_1_10_4/dojox/layout/resources/ExpandoPane.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.13/esri/css/esri.css">
+    <link rel="stylesheet" href="../css/mapstyles.css">
+
+    <script src="https://js.arcgis.com/3.13/"></script>
+    <!-- <script src="javascript/php_functions.js" type="text/javascript"></script> -->
+    <script src="javascript/allpz.yui.js" type="text/javascript"></script>
+
+<?php 
+	$htmlHEAD = ob_get_contents();
+	ob_end_clean();
+	
+	//body class
+	$htmlBodyClass = 'claro';
+  $htmlTitle = 'Planning and Zoning';
+	
+	//build the header
+	include('../includes/inc.header.php'); 
+	
+	//you are now inside the html body:
+?>
     <script>
       var passedX = '<?php echo $px; ?>';
       var passedY = '<?php echo $py; ?>';
       var zoomLevel = '<?php echo $zoom; ?>';
     </script>
+    <div data-dojo-type="dijit/layout/ContentPane" id="cp"
+      data-dojo-props="region: 'top'">
+      <button id="selectPointsButton" data-dojo-type="dijit/form/Button">Select Points/Polys</button>
+      <button id="addPointsButton" data-dojo-type="dijit/form/Button">Add</button>
+      <button id="removePointsButton" data-dojo-type="dijit/form/Button">Remove</button>
+      <button id="clearSelectionButton" data-dojo-type="dijit/form/Button">Clear Selection</button>
+      <div class="selType">
+        <input type="radio" id="rectangle" data-dojo-type="dijit/form/RadioButton" name="selectType"  checked="checked">Rectangle<br />
+        <input type="radio" id="polygon" data-dojo-type="dijit/form/RadioButton" name="selectType">Polygon<br />
+      </div>
+      <div class="selType">
+      <!-- data-dojo-type="dijit/form/RadioButton" -->
+        <input type="radio" id="points" data-dojo-type="dijit/form/RadioButton" name="geomType" checked="checked" />Address Points<br />
+        <input type="radio" id="polys" data-dojo-type="dijit/form/RadioButton" name="geomType" />Parcels<br />
+      </div>
+      <span style="font-size: 0.8em; float:right; text-align:center; margin-right: 1em;">
+      Click the triangle at the lower right corner<br /> to search roads or parcels.
+      </span>
+    </div><!-- #cp CONTENT PANE -->
+    <!-- moving this outside of the Border Container allows you to scroll the form controls out of the way! -->
     <div data-dojo-type="dijit/layout/BorderContainer" 
          data-dojo-props="design:'headline', gutters:false" 
          style="width:100%;height:100%;margin:0;">
-      <div data-dojo-type="dijit/layout/ContentPane" id="cp"
-        data-dojo-props="region: 'top'">
-      <button id="selectPointsButton" data-dojo-type="dijit/form/Button">Select Points/Polys</button>
-      <button id="clearSelectionButton" data-dojo-type="dijit/form/Button">Clear Selection</button>
-      <div class="selType">
-          <input type="radio" id="rectangle" data-dojo-type="dijit/form/RadioButton" name="selectType"  checked="true">Rectangle<br />
-          <input type="radio" id="polygon" data-dojo-type="dijit/form/RadioButton" name="selectType">Polygon<br />
-      </div>
-      <div class="selType">
-          <input type="radio" id="points" data-dojo-type="dijit/form/RadioButton" name="geomType" checked="true" />Address Points<br />
-          <input type="radio" id="polys" data-dojo-type="dijit/form/RadioButton" name="geomType" />Parcels<br />
-      </div>
-      <span style="font-size: 0.8em; float:right; text-align:center">
-      Click the triangle at the lower right corner<br /> to search roads or parcels.
-      </span>
-      </div><!-- #cp CONTENT PANE -->
       <!-- onclick="runTest();"  -->
       <div id="mapDiv" data-dojo-type="dijit/layout/ContentPane" 
            data-dojo-props="region:'center'" 
            style="padding:0;">
         <div id="geosearch"></div>
         <div id="positioning_div">
+          <span id="formContent"></span><br />
           <span id="messages"></span>  
           <div data-dojo-type="dijit/TitlePane" 
                data-dojo-props="title:'Switch Basemap', closable:false,  open:false">
@@ -100,9 +103,6 @@
                   <input type='checkbox' class='list_item' id='layer14CheckBox' value=14 />Town Boundaries&nbsp;&nbsp;<img src="https://maps.garrettcounty.org/arcgis/images/tax_map.png" height="16" width="16" /><br />
                   <input type='checkbox' class='list_item' id='layer15CheckBox' value=15 />County Boundary&nbsp;&nbsp;<img src="https://maps.garrettcounty.org/arcgis/images/CountyBoundary.jpg" height="16" width="16" /><br />
                 </span><hr /><br />
-                <div class="boundary_disclaimer"><span class="emphasis">Note:</span> Boundaries such as school districts, and water and sewer service areas are considered approximate and should always be checked with governing authorities 
-                  (e.g. Public Utilities Office, School Board, or Election Board). We take no responsibility for decisions made based on these estimated boundaries.
-                </div><hr /><br />
                 <div id="ZoningLegend">
                   <img src="https://maps.garrettcounty.org/arcgis/images/Zoning.PNG" /><br/>
                   <h4>Layers that are always on:</h4>
@@ -138,14 +138,14 @@
               <button id="launchButton" data-dojo-type="dijit/form/Button">Launch</button>
               <input id="mapSelect"><br />
               <ul>
-                <li><a href="../help.php">Help ?</a></li>
-                <li><a href="../">Home</a></li>
+                <li><a href="../../help.php">Help ?</a></li>
+                <li><a href="../../">Home</a></li>
               </ul>
               <p>
                 By default, the Launch Button will reload this page in the same window, updating the extent in the address bar. 
                 This works well for copying and pasting a link to a specific location on this map.
                 Choose a different map to launch the current extent in a new window or tab (depending on your browser preferences).
-                The different maps have different uses (see the <a href="../help.php">Help &amp; Documentation</a> for more information).
+                The different maps have different uses (see the <a href="../../help.php">Help &amp; Documentation</a> for more information).
               </p>
             </div><!-- ContentPane 3 -->
           </div><!-- TitlePane Navigation -->
@@ -178,10 +178,13 @@
                 <button id="getLocationButton">Your Location</button>
                 <p>Click the button to get the coordinates<br /> of your current location. Then click &#8220;<strong>Submit</strong>&#8221;</p>
                 <!-- <button onclick="getLocation()">Your Location</button> -->
+                
+
               </div><!-- viewLatLong -->
             </div><!-- ContentPane 4 -->
-          </div><!-- TitlePane "Enter Lat Long" -->
-        </div><!-- unnamed div -->
+          </div><!-- TitlePane "Enter Lat Long" -->                      
+
+        </div><!-- positioning div -->
       </div><!-- mapDiv -->
       
     <div data-dojo-type="dojox.layout.ExpandoPane" title="Search Functionality"

@@ -1,13 +1,6 @@
-var findTask, findParams;
-// var dojo, getExtent, require, doFind, esri, document, dijit, console, window;
-var getExtent, doFind;
-var map, center, zoom;
-var grid, store;
-var identifyTask, identifyParams;
+var findTask, findParams, checkNull, getExtent, require, doFind, map, center, zoom, grid, store, identifyTask, identifyParams, passedCenter, passedX, passedY, zoomLevel, xMin, yMin, xMax, yMax;
 var addlIdArray = [];
-var xMin, yMin, xMax, yMax;
 var extArray = [];
-var passedCenter, passedX, passedY, zoomLevel;
 
 function startTrackingExtent() {
   dojo.connect(map, "onExtentChange", getExtent);
@@ -32,6 +25,7 @@ function popupCamera(url) {
   window.open(url, desc, "width=500, height=380");
 }
 
+
 function getCamUrl(feed) {
   var desc = "Some Camera";
   var base =  "http://www.chart.state.md.us/video/video.php?feed=";
@@ -40,14 +34,14 @@ function getCamUrl(feed) {
 }
 
 function executeIdentifyTask(evt) {
+  "use strict";
   var i;
   identifyParams.geometry = evt.mapPoint;
   identifyParams.mapExtent = map.extent;
 
-
   // layers that can be identified by "click" that are NOT in the "Additional Layers" Content Pane
   // Critical Facilities, addresspoints, celltowers, centerlines, dbo.TaxParcel
-  identifyParams.layerIds = [0, 2, 3, 5, 7];
+  identifyParams.layerIds = [0, 2, 3, 5, 7]; // [0, 2, 3, 4, 6];
   // If a layer is checked in the "Additional Layers" pane, it will have been added
   // to the array (in updateLayerVisibility above), so add it to the list of those 
   // that can be clicked and identified.
@@ -62,7 +56,7 @@ function executeIdentifyTask(evt) {
   var deferred = identifyTask.execute(identifyParams);
 
   // checkNull infoTemplate Formatting Function
-  checkNull = function (value, key, data) {
+  checkNull = function (value, key) {
     var content;
     function determineVal(val, strKey, addBreak) {
       if (val == "" | val == "Null") {
@@ -182,7 +176,7 @@ function executeIdentifyTask(evt) {
         template = new esri.InfoTemplate("Zoning Info", "<span class=\"sectionhead\">Layer: County Zoning Layer </span><br /><br /><hr>${GENZONE} <br/> Land Use Code: ${FLU}");
         feature.setInfoTemplate(template);
       } else if (result.layerName === 'Tax Map Grid') {
-        template = new esri.InfoTemplate("Tax Map Info", "<span class=\"sectionhead\">Layer: Tax Map Grid </span><br /><br /><hr>Map ID: ${MAPID} <br />Tax Map: ${TAXMAP}")
+        template = new esri.InfoTemplate("Tax Map Info", "<span class=\"sectionhead\">Layer: Tax Map Grid </span><br /><br /><hr>Map ID: ${MAPID} <br />Tax Map: ${TAXMAP}");
         feature.setInfoTemplate(template);
       } else if (result.layerName === 'Garrett.DBO.TaxParcel') {
         template = new esri.InfoTemplate("",
@@ -222,7 +216,7 @@ function executeIdentifyTask(evt) {
   map.infoWindow.setFeatures([ deferred ]);
   map.infoWindow.show(evt.mapPoint);
 
-  }; // end of function executeIdentifyTask
+} // end of function executeIdentifyTask
 
 require([
   "esri/map",
@@ -230,7 +224,7 @@ require([
   "esri/dijit/BasemapGallery",
   "esri/dijit/Popup",
   "esri/geometry/webMercatorUtils",
-	"esri/geometry/Point",
+  "esri/geometry/Point",
   "esri/layers/ArcGISDynamicMapServiceLayer",
   "esri/layers/ImageParameters",
   "esri/tasks/query",
@@ -244,8 +238,8 @@ require([
   "esri/dijit/InfoWindow",
   "esri/symbols/SimpleFillSymbol",
   "esri/symbols/SimpleLineSymbol",
-	"esri/symbols/SimpleMarkerSymbol",
-	"esri/graphic",
+  "esri/symbols/SimpleMarkerSymbol",
+  "esri/graphic",
   "esri/InfoTemplate",
   "dojo/_base/array",
   "dojo/_base/connect",
@@ -274,7 +268,7 @@ require([
   BasemapGallery,
   Popup,
   webMercatorUtils,
-	Point,
+  Point,
   ArcGISDynamicMapServiceLayer,
   ImageParameters,
   Query,
@@ -288,8 +282,8 @@ require([
   InfoWindow,
   SimpleFillSymbol,
   SimpleLineSymbol,
-	SimpleMarkerSymbol,
-	Graphic,
+  SimpleMarkerSymbol,
+  Graphic,
   InfoTemplate,
   arrayUtil,
   connect,
@@ -316,8 +310,8 @@ require([
 
   // doZoom variable allows us to zoom to extent of selected features (default) 
   // or not when that is unwanted (like when clicking "Clear Selection")
-  var doZoom, popup, scalebar, basemapGallery, mdImagelayer, mdImageBasemap, imageParameters, visibleLayerIds, landBaseLayer, selectionToolbar, geocoders, geocoder;
-  doZoom = 1;
+  var doZoom, popup, scalebar, basemapGallery, mdImagelayer, mdImageBasemap, imageParameters, visibleLayerIds, landBaseLayer, selectionToolbar, addSelectionToolbar, removeSelectionToolbar, geocoders, geocoder, arrStructNum, plusOrMinus;
+  doZoom = 1, arrStructNum = []; // pointSum = 0, arrStructNum = [], strAddresses = "";
 
   registry.byId("search").on("click", doFind);
   registry.byId("search2").on("click", doFind);
@@ -327,7 +321,6 @@ require([
     fillSymbol: new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID, new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([255, 0, 0]), 2), new Color([255, 255, 0, 0.25]))
   }, dojo.create("div"));
 
-  passedCenter = [passedX, passedY];
   map = new Map("mapDiv", {
     basemap: "streets",
     center: passedCenter, // center,
@@ -363,7 +356,7 @@ require([
     } // end if
   } // end zoomToLatLong function
 
-	function showLocation(position) {
+  function showLocation(position) {
     var x = document.getElementById("textLatLong");
     x.value = position.coords.latitude + ", " + position.coords.longitude;	
   }
@@ -386,11 +379,11 @@ require([
     //Create the find parameters
     findParams = new FindParameters();
     findParams.returnGeometry = true;
-    findParams.layerIds = [5, 7]; // CHANGED[4, 6]; // CHANGED [6, 8]; // Shows the Roads (6) when it first loads
+    findParams.layerIds = [5, 7]; // CHANGED [4, 6]; // CHANGED [6, 8]; // Shows the Roads (7) when it first loads
     findParams.searchFields = ["RDNAMELOCAL", "PARCEL"]; // "ACCTID", "MAINTENANCE", "FRADDL_P", "TOADDL_P", "FRADDR_P", "TOADDR_P"];
     findParams.outSpatialReference = map.spatialReference;
     console.log("find sr: ", findParams.outSpatialReference);
-		on(dom.byId("submitLatLongButton"), "click", zoomToLatLong);
+    on(dom.byId("submitLatLongButton"), "click", zoomToLatLong);
   });
 
   scalebar = new Scalebar({
@@ -409,7 +402,6 @@ require([
     map: map
   }, "basemapGallery");
 
-  // http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer");
   mdImagelayer = new esri.layers.ArcGISTiledMapServiceLayer("https://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/ImageServer");
   
   mdImage2011 = new esri.layers.ArcGISTiledMapServiceLayer("https://imagery.geodata.md.gov/imap/rest/services/SixInch/SixInchImagery2011_2013/MapServer");
@@ -451,19 +443,60 @@ require([
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
   // SELECT POINTS SECTION
   // Determine how many points were selected and list the Addresses for each point
+  
   function sumSelectedPoints(event) {
-    var pointSum, arrStructNum, strAddresses;
-    pointSum = 0;
-    arrStructNum = [];
-    strAddresses = "";
+    "use strict";
+    var pointSum, strAddresses, strFormInfo, addrIndex, i;
     //show the selected address points in the map display
     arrayUtil.forEach(event.features, function (feature) {
-      strAddresses += feature.attributes.ADDRESS + "<br />";
-      arrStructNum.push(feature.attributes.ADDRESS);
-      pointSum += 1;
+      addrIndex = arrStructNum.indexOf(feature.attributes.ADDRESS);
+      if (arrStructNum.length == 0) {
+        // strAddresses += feature.attributes.ADDRESS + "<br />";
+        arrStructNum.push(feature.attributes.ADDRESS);
+        // pointSum += 1;
+      } else if (arrStructNum.indexOf(feature.attributes.ADDRESS) == -1) { // current value is not in the Array
+        // START SEPARATE IF STATEMENT
+        if (plusOrMinus == 1) {
+          // strAddresses += feature.attributes.ADDRESS + "<br />";
+          arrStructNum.push(feature.attributes.ADDRESS);
+          // pointSum += 1;
+        } else if (plusOrMinus == 0) {
+          // DO NOTHING ... Attempt to remove an address that is not in the array
+        }
+        // END SEPARATE IF STATEMENT        
+      } else { // Array has at least one value and the present value is one of them
+        // START SEPARATE IF STATEMENT
+        if (plusOrMinus == 0) {
+          // strAddresses = strAddresses.replace(feature.attributes.ADDRESS + "<br \/>", '');
+          arrStructNum.splice(addrIndex, 1);
+          // pointSum -= 1;          
+        } else if (plusOrMinus == 1) {
+          // Do nothing. This was an attempt to add a value to array that is already present.
+        }
+        // SEPARATE IF STATEMENT
+      }
+      // console.log(addrIndex);
+      // console.log("Array: " + arrStructNum);
+      // console.log("Addresses: " + strAddresses);
     });
+    // ATTEMPT TO RE-WRITE strAddresses
+    strAddresses = "";
+    pointSum = arrStructNum.length;
+    for (i = 0; i < arrStructNum.length; i++) {
+      strAddresses += arrStructNum[i] + "<br \/>";
+    }
+    strFormInfo = "Download these point records<br />"
+        + "<form action=\"pz\\file.php\" method=\"post\" target=\"_blank\"><input id=\"save\" type=\"submit\"></input><br /><br />File Name<input id=\"fname\" name=\"fname\" type=\"text\"></input><br /><input type=\"hidden\" name=\"append_data\" value=\"address\"></input><input id=\"hidden_field\" name=\"hidden_field\" type=\"hidden\" value=\"" + strAddresses + "\" /></form>";
+    // ToDo - Do this next line ONLY if >0 records are selected.
+    if (pointSum > 0) {
+      dom.byId('formContent').innerHTML = strFormInfo;
+    } else {
+      dom.byId('formContent').innerHTML = "";
+    }
     dom.byId('messages').innerHTML = "<strong>Number of Selected Points: " +
-                                            pointSum + "</strong><br />" + strAddresses;
+                                            // pointSum + "</strong><br />" + strAddresses + "<br /><button id=\"save\" data-dojo-type=\"dijit.form.Button\" type=\"button\" data-dojo-attach-point=\"button\">Save</button><br />";
+                                            pointSum + "</strong><br />" + strAddresses + "<br />";
+
   }
 
   function makePopupDraggable() {
@@ -476,21 +509,60 @@ require([
   }
 
   function sumSelectedParcelInfo(event) {
-    var parcelSum, arrParcelData, strParcelInfo;
+    "use strict";
+    var parcelSum, parcelValue, arrParcelData, strParcelInfo, strFormInfo, strStrippedInfo, parcelIndex, i, x, n; // n, x;
     parcelSum = 0;
-    arrParcelData = [];
     strParcelInfo = "";
-    arrayUtil.forEach(event.features, function (feature) {
-      strParcelInfo += "<strong>MAP: </strong>" + feature.attributes.MAP + "<br />" +
-          "<strong>PARCEL: </strong>" + feature.attributes.PARCEL + "<br />" +
-				  "<strong>LOT: </strong>" + feature.attributes.LOT + "<br />" +
-          "<strong>LINK: </strong><a href=\"" + feature.attributes.SDATWEBADR + "\" target=\"_blank\">Link</a><br /><hr />";
-      arrParcelData.push(feature.attributes.MAP);
-      parcelSum += 1;
-    });
-    dom.byId('messages').innerHTML = "<strong>Number of Selected Parcels: " +
-                                            parcelSum + "</strong><br />" + strParcelInfo;
+    // strStrippedInfo = "M, P, Link<br />";
+    strStrippedInfo = "";
+    n = 0;
 
+    arrayUtil.forEach(event.features, function (feature) {
+
+      parcelValue = [ String(feature.attributes.MAP), String(feature.attributes.PARCEL), String(feature.attributes.LOT), (feature.attributes.SDATWEBADR) ];
+      parcelIndex = arrStructNum.indexOf(parcelValue);
+
+      for (x = 0; x < arrStructNum.length; x++) {
+        if (String(arrStructNum[x]) === String(parcelValue)) {
+          parcelIndex = x;
+        }
+      }
+
+      if (parcelIndex >= 0) {
+        if (plusOrMinus === 0) {
+          arrStructNum.splice(parcelIndex, 1);
+        }
+      } else { // Parcel Index = -1
+        if (plusOrMinus === 1) {
+          if (parcelIndex === 'undefined') { // if (typeof parcelIndex === 'undefined') {
+            arrStructNum.push(parcelValue);
+          } else if (parcelIndex === -1) {
+            arrStructNum.push(parcelValue);
+          }
+        }
+      }
+
+      n += 1;
+    });
+
+    parcelSum = arrStructNum.length;
+    strParcelInfo = "<strong>Number of Selected Parcels: " + parcelSum + "</strong><br />";
+
+    for (i = 0; i < arrStructNum.length; i++) {
+      strParcelInfo += "<strong>MAP: </strong>" + arrStructNum[i][0] + "<br \/>" +
+          "<strong>PARCEL: </strong>" + arrStructNum[i][1] + "<br />" +
+				  "<strong>LOT: </strong>" + arrStructNum[i][2] + "<br />" +
+          "<strong>LINK: </strong><a href=\"" + arrStructNum[i][3] + "\" target=\"_blank\">Link</a><br /><hr />";
+      strStrippedInfo += arrStructNum[i][0] + ", " + arrStructNum[i][1] + ", " + arrStructNum[i][2] + ", " + arrStructNum[i][3] + "<br />";
+    }
+    strFormInfo = "Download these parcel records<br />"
+      + "<form action=\"pz\\file.php\" method=\"post\" target=\"_blank\"><input id=\"save\" type=\"submit\"></input><br /><br />File Name<input id=\"fname\" name=\"fname\" type=\"text\"></input><br /><input type=\"hidden\" name=\"append_data\" value=\"parcel\"></input><input id=\"hidden_field\" name=\"hidden_field\" type=\"hidden\" value=\"" + strStrippedInfo + "\" /></form><br />";
+     if (parcelSum > 0) {
+      dom.byId('formContent').innerHTML = strFormInfo;
+    } else {
+      dom.byId('formContent').innerHTML = "";
+    }
+    dom.byId('messages').innerHTML = strParcelInfo;
   }
 
 
@@ -505,7 +577,7 @@ require([
           "Lot: ${LOT}<br />Grid: ${GRID}<br />Tax ID: ${ACCTID}<br /><hr>";
       infoTemplate = new InfoTemplate("${FIELD_NAME}", content);
 
-      // Parcels = Layer 8 (NOW 6) (NOW 7)
+      // Parcels = Layer 7 (was 6) (and before that was 8)
       // featureLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/8", {
         featureLayer = new FeatureLayer("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/7", {
         mode: FeatureLayer.MODE_ONDEMAND,
@@ -518,9 +590,9 @@ require([
       content = "Address: ${ADDRESS}<br />" +
         "City: ${CITY} <br /> Owner: ${OWNNAME1} ${OWNNAME2} <br /> Tax Id: ${ACCTID} <br /><hr>";
       infoTemplate = new InfoTemplate("${FIELD_NAME}", content);
-      // Address Points = Layer 4 (NOW 2) (STILL 2)
+      // Address Points = Layer 2 (was 4) (still 2)
       // featureLayer = new FeatureLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/4", {
-      featureLayer = new FeatureLayer("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/2", {  
+        featureLayer = new FeatureLayer("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer/2", {
         mode: FeatureLayer.MODE_ONDEMAND,
         outFields: ["*"]
       });
@@ -551,7 +623,11 @@ require([
   // SELECT POINTS/POLYS CODE
   // If Rectangle radio button is selected select by rectangle, if not, select by polygon
   on(dom.byId("selectPointsButton"), "click", function () {
+    "use strict";
+    plusOrMinus = 1;
+    // console.log("click registered for selectPointsButton");
     var SelectRectangle;
+    arrStructNum = [];
     SelectRectangle = document.getElementById("rectangle").checked;
     if (SelectRectangle) {
       selectionToolbar.activate(Draw.EXTENT);
@@ -560,10 +636,40 @@ require([
     }
   });
 
+  on(dom.byId("addPointsButton"), "click", function () {
+    "use strict";
+    plusOrMinus = 1;
+    // console.log("click registered for addPointsButton");
+    var SelectRectangle;
+    SelectRectangle = document.getElementById("rectangle").checked;
+    if (SelectRectangle) {
+      addSelectionToolbar.activate(Draw.EXTENT);
+    } else {
+      addSelectionToolbar.activate(Draw.FREEHAND_POLYGON);
+    }
+  });
+
+  on(dom.byId("removePointsButton"), "click", function () {
+    "use strict";
+    plusOrMinus = 0;
+    // console.log("click registered for removePointsButton");
+    var SelectRectangle;
+    SelectRectangle = document.getElementById("rectangle").checked;
+    if (SelectRectangle) {
+      removeSelectionToolbar.activate(Draw.EXTENT);
+    } else {
+      removeSelectionToolbar.activate(Draw.FREEHAND_POLYGON);
+    }
+  });
+  
   on(dom.byId("clearSelectionButton"), "click", function () {
     featureLayer.clearSelection();
+    pointSum = 0;
+    arrStructNum = [];
+    strAddresses = "";
     map.graphics.clear();
     doZoom = 0;
+    dom.byId("formContent").innerHTML = "";
     showResults("");
   });
 
@@ -631,7 +737,7 @@ require([
   }
 
   function initSelectToolbar(event) {
-    var selectQuery; // selectionToolbar is already defined
+    var selectQuery, addSelectQuery, removeSelectQuery; // selectionToolbar and the other 2 are already defined globally
     setupSelections();
     dojo.connect(map, "onExtentChange", getExtent);
 
@@ -642,6 +748,24 @@ require([
       selectQuery.geometry = geometry;
       featureLayer.selectFeatures(selectQuery,
         FeatureLayer.SELECTION_NEW);
+    });
+
+    addSelectionToolbar = new Draw(event.map);
+    addSelectQuery = new Query();
+    on(addSelectionToolbar, "DrawEnd", function (geometry) {
+      addSelectionToolbar.deactivate();
+      addSelectQuery.geometry = geometry;
+      featureLayer.selectFeatures(addSelectQuery,
+        FeatureLayer.SELECTION_ADD);
+    });
+
+    removeSelectionToolbar = new Draw(event.map);
+    removeSelectQuery = new Query();
+    on(removeSelectionToolbar, "DrawEnd", function (geometry) {
+      removeSelectionToolbar.deactivate();
+      removeSelectQuery.geometry = geometry;
+      featureLayer.selectFeatures(removeSelectQuery,
+        FeatureLayer.SELECTION_SUBTRACT);
     });
   }
   map.on("load", initSelectToolbar);
@@ -679,7 +803,7 @@ require([
     }
     findTask.execute(findParams, showResults);
   }
-  
+
   function showResults(results) {
     //This function works with an array of FindResult that the task returns
     map.graphics.clear();
@@ -719,7 +843,6 @@ require([
         grid.on("rowclick", onRowClickHandler);
       }
     }
-
     //Zoom back to the initial map extent
     if (doZoom == 1) {
       map.centerAndZoom(center, zoom);
@@ -748,8 +871,6 @@ require([
   /////////////////////////////////////////////////////////////////////////////////////    
 
   // TURN LAYERS ON AND OFF
-  
-  // on(dom.byId("layer2CheckBox"), "change", updateLayerVisibility);
   on(dom.byId("layer1CheckBox"), "change", updateLayerVisibility);
   on(dom.byId("layer4CheckBox"), "change", updateLayerVisibility);
   on(dom.byId("layer6CheckBox"), "change", updateLayerVisibility);
@@ -789,7 +910,7 @@ require([
   }        
 
   // TURN LAYERS ON AND OFF
-  // Add Geocoder
+  // Add Geocoder  
   geocoders = [{
     url: "https://geodata.md.gov/imap/rest/services/GeocodeServices/MD_CompositeLocator/GeocodeServer",
     name: "MDiMap Composite Locator", 

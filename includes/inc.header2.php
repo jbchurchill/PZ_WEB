@@ -118,7 +118,7 @@
             <a href="#" class="parent">Help</a>
             <ul>
               <li>
-                <a href="http://localhost/video/Webmaps2.mp4">Video</a>
+                <a href="../video/Webmaps2.mp4">Video</a>
               </li>
               <li>
                 <a href="../help.php">Documentation</a>

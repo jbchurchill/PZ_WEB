@@ -49,8 +49,8 @@
     <link rel="stylesheet" href="/includes/css/gcmenu2.css" />
 		<link rel="icon" href="/includes/images/favicon.ico" />
 
-		<!-- <script src="/includes/js/jquery-1.11.1.min.js"></script> -->
-    <script src="../sandbox/menu_testing/js/gc2_jquery.min.js"></script>
+		<script src="/includes/js/jquery-1.11.1.min.js"></script>
+    <!-- <script src="../sandbox/menu_testing/js/gc2_jquery.min.js"></script> -->
 		<script src="/includes/js/listeners.js"></script>
     <script src="/includes/js/gc_menu2.js" type="text/javascript"></script>
 		

@@ -67,7 +67,8 @@
                   Area as determined by detailed methods.</li>
                   <li>The 0.2 PCT Annual Hazard is also known as 
                   the 500&#045;year Flood Hazard Area.</li>
-                </ul>
+                </ul><br />
+                <p><strong>Note:</strong> Boundaries such as Parcel Boundaries, are considered approximate and should <strong>NOT</strong> be used for a final assessment of inclusion in the floodplain. We take no responsibility for decisions made based on these estimated boundaries.</p>
               </div>
             </div><!-- ContentPane 2 -->            
           </div><!-- TitlePane 1 "Switch Basemap" -->  

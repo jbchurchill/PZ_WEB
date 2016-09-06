@@ -18,6 +18,7 @@ require([
   "esri/layers/FeatureLayer",
   "esri/layers/ImageParameters",
   "esri/layers/GraphicsLayer",
+  "esri/layers/LabelClass",
   "esri/tasks/PrintTemplate",
   "esri/tasks/LegendLayer",
   "esri/symbols/SimpleMarkerSymbol",
@@ -60,6 +61,7 @@ require([
   FeatureLayer,
   ImageParameters,
   GraphicsLayer,
+  LabelClass,
   PrintTemplate,
   LegendLayer,
   SimpleMarkerSymbol,
@@ -94,6 +96,7 @@ require([
   app.map = new Map("map", {
     basemap: "streets",
     center: passedCenter, // [-79.2, 39.5],
+	showLabels: true,
     zoom: zoomLevel // 12
   });
 
@@ -229,7 +232,7 @@ require([
   legSourceWater = new LegendLayer();
   legSourceWater.layerId = "Source Water Prot. Areas";
 
-  var PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer, BF_fLayer, EP_fLayer, CN_fLayer, HY_fLayer;
+  var PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer, BF_fLayer, EP_fLayer, CN_fLayer, HY_fLayer, SO_fLayer, WSC_fLayer;
   var myCounter = 0;
   function setupPrint () {
     // if (typeof app.printer !== "undefined") {
@@ -332,6 +335,9 @@ require([
   hyParameters = new ImageParameters();
   hyParameters.layerIds = [0, 1, 2, 3, 4]
   hyParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
+  soParameters = new ImageParameters();
+  soParameters.layerIds = [0];
+  soParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
   
   // PZ_fLayer = new ArcGISDynamicMapServiceLayer("http://maps.garrettcounty.org:6080/arcgis/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
   PZ_fLayer = new ArcGISDynamicMapServiceLayer("https://maps.garrettcounty.org/arcweb/rest/services/P_and_Z/Parcels_and_Zoning/MapServer",
@@ -404,13 +410,43 @@ require([
   HY_fLayer = new ArcGISDynamicMapServiceLayer("https://maps.garrettcounty.org/arcweb/rest/services/Hydrography/Hydrography/MapServer",
     {"imageParameters": hyParameters, opacity: 0.75, id: "Hydrography"});
 
-  app.map.addLayers([PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer, BF_fLayer, EP_fLayer, CN_fLayer, HY_fLayer]);
+  SO_fLayer = new FeatureLayer("http://geodata.md.gov/imap/rest/services/Geoscientific/MD_SSURGOSoils/MapServer/0", {
+    mode: FeatureLayer.MODE_ONDEMAND,
+	id: "SSurgo Soils",
+    outFields: ["MUSYM"],
+	showLabels: true,
+	opacity: 0.75
+  });
+
+  WSC_fLayer = new FeatureLayer("http://geodata.md.gov/imap/rest/services/Hydrology/MD_Wetlands/MapServer/3/", {
+    mode: FeatureLayer.MODE_ONDEMAND,
+	id: "Wetlands of State Concern",
+	opacity: 0.75
+  });
+
+  // create a text symbol to define the style of labels
+  var statesColor = new Color([255, 170, 0, 255]); // ("#666"); Copied RGBT value from the Service Definition
+  var statesLabel = new TextSymbol().setColor(statesColor);
+  statesLabel.font.setSize("14pt");
+  statesLabel.font.setFamily("tahoma"); // was arial
+
+  var soilJSON = {
+    "labelExpressionInfo": {"value": "{MUSYM}"}
+  };
+
+  //create instance of LabelClass (note: multiple LabelClasses can be passed in as an array)
+  var labelClass = new LabelClass(soilJSON);
+  labelClass.symbol = statesLabel; // symbol also can be set in LabelClass' json
+  SO_fLayer.setLabelingInfo([ labelClass ]);
+  // SO_fLayer.setRenderer(statesRenderer);
+
+  app.map.addLayers([PZ_fLayer, CT_fLayer, WT_fLayer, CL_fLayer, PS_fLayer, ZN_fLayer, SP_fLayer, PR_fLayer, GA_fLayer, FH_fLayer, BF_fLayer, EP_fLayer, CN_fLayer, HY_fLayer, SO_fLayer, WSC_fLayer]);
 
   // console.log(EP_fLayer.id);
   // console.log(SP_fLayer.id);
 
   // create a check box for each map layer
-  arrayUtils.forEach(["Parcels & Addresses", "Cell Towers", "Wind Turbines", "Street Centerlines", "Perennial Streams", "Zoning", "Source Water Prot. Areas", "Protected Species", "Growth Areas", "Flood Hazard", "Building Footprints", "Edge of Pavement", "Hydrography", "Contours"], function(id) {
+  arrayUtils.forEach(["Parcels & Addresses", "Cell Towers", "Wind Turbines", "Street Centerlines", "Perennial Streams", "Zoning", "Source Water Prot. Areas", "Protected Species", "Growth Areas", "Flood Hazard", "Building Footprints", "Edge of Pavement", "Hydrography", "Contours", "SSurgo Soils", "Wetlands of State Concern"], function(id) {
     new CheckBox({
       id: "cb_" + id,
       name: "cb_" + id,

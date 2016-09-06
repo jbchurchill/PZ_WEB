@@ -410,7 +410,7 @@ require([
   HY_fLayer = new ArcGISDynamicMapServiceLayer("https://maps.garrettcounty.org/arcweb/rest/services/Hydrography/Hydrography/MapServer",
     {"imageParameters": hyParameters, opacity: 0.75, id: "Hydrography"});
 
-  SO_fLayer = new FeatureLayer("http://geodata.md.gov/imap/rest/services/Geoscientific/MD_SSURGOSoils/MapServer/0", {
+  SO_fLayer = new FeatureLayer("https://geodata.md.gov/imap/rest/services/Geoscientific/MD_SSURGOSoils/MapServer/0", {
     mode: FeatureLayer.MODE_ONDEMAND,
 	id: "SSurgo Soils",
     outFields: ["MUSYM"],
@@ -418,7 +418,7 @@ require([
 	opacity: 0.75
   });
 
-  WSC_fLayer = new FeatureLayer("http://geodata.md.gov/imap/rest/services/Hydrology/MD_Wetlands/MapServer/3/", {
+  WSC_fLayer = new FeatureLayer("https://geodata.md.gov/imap/rest/services/Hydrology/MD_Wetlands/MapServer/3/", {
     mode: FeatureLayer.MODE_ONDEMAND,
 	id: "Wetlands of State Concern",
 	opacity: 0.75
